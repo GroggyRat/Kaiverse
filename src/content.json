@@ -1,0 +1,81 @@
+{
+  "site": {
+    "name": "KaiTech",
+    "tagline": "Software that keeps Fiji business moving",
+    "email": "kaitechfj@gmail.com",
+    "phones": [["+679 756 9670", "+6797569670"], ["+679 999 1115", "+6799991115"]],
+    "founder": "Kartik Nand"
+  },
+  "sections": [
+    { "id": "home", "tag": "KaiTech · Fiji", "title": "Kaitech",
+      "body": "Software that keeps Fiji business moving. Four live products for paying people, sending invoices, checking the work and getting deliveries out.",
+      "slots": [["Products", "Four, all live"], ["Clients", { "logos": true }]],
+      "acts": [["Book a demo", "#demo:KaiTech"], ["Our story", "about.html", 1]] },
+
+    { "id": "workforce", "product": "KaiWorkforce", "kind": "Payroll and HR", "tag": "Product 1 of 4 · payroll and HR · live", "title": "KaiWorkforce",
+      "body": "Payroll and HR for staffing agencies. FNPF and PAYE are worked out for you, staff clock in at their work site, and payslips go out by email.",
+      "slots": [["Payroll", "FNPF · PAYE · payslips"], ["Attendance", "Clock-in by work site"], ["People", "Leave · timesheets · org chart"]],
+      "acts": [["Book a demo", "#demo:KaiWorkforce"], ["Details", "workforce.html", 1]],
+      "seo": "KaiWorkforce is payroll and HR software for staffing agencies in Fiji: FNPF and PAYE worked out for you, clock-in at the work site, and payslips by email.",
+      "points": [
+        ["Payroll that knows Fiji", "FNPF and PAYE are calculated from your configured rates every pay run. Bonuses, allowances, rate changes, tax adjustments and termination pay are handled in the same run."],
+        ["Clock-in where the work is", "Staff clock in and out at their work site. Supervisors see who is on site on a live map, and the hours flow straight into timesheets."],
+        ["Payslips without the printing", "When the pay run is done, every employee gets their payslip by email."],
+        ["Built for agencies", "Each agency gets its own private workspace, with leave, timesheets, work sites, an org chart and an audit log of every change."]
+      ] },
+
+    { "id": "billzilla", "product": "BillZilla", "kind": "Invoicing", "tag": "Product 2 of 4 · invoicing · live", "title": "BillZilla",
+      "body": "Invoicing for Fiji businesses. Quotes become invoices with gap-free numbers, stock moves when you finalise, and customers get statements and reminders.",
+      "slots": [["Documents", "Quotes · invoices · credit notes"], ["Payments", "Bank · cash · M-PAiSA · MyCash"], ["Currency", "FJD or the customer’s own"]],
+      "acts": [["Book a demo", "#demo:BillZilla"], ["See screens", "#screens:billzilla", 1], ["Details", "billzilla.html", 1]],
+      "screens": [
+        { "src": "assets/screens/billzilla-invoice.webp", "w": 1440, "h": 900, "caption": "An invoice with its payments, credit note and reminders" },
+        { "src": "assets/screens/billzilla-dashboard.webp", "w": 1440, "h": 900, "caption": "The dashboard: what is outstanding, overdue and waiting for approval" }
+      ],
+      "seo": "BillZilla is invoicing software for Fiji businesses: quotes, invoices and credit notes with gap-free numbering, M-PAiSA and MyCash payments, stock and statements.",
+      "points": [
+        ["Quotes to invoices, in order", "A quote becomes an invoice in one step. Numbers are given when you finalise, so there are never gaps, and every invoice uses one of seven A4 layouts with your logo."],
+        ["Paid the way Fiji pays", "Record bank transfers, cash, cash on delivery, cheques, M-PAiSA and MyCash, including part payments."],
+        ["Stock that keeps up", "Stock moves when an invoice is finalised, voided or credited, and load sheets are ready for the delivery run."],
+        ["Chasing done for you", "Customers get emailed invoices, statements and automatic payment reminders. Prices below a product's minimum wait for the owner's approval."]
+      ] },
+
+    { "id": "inspect", "product": "KaiInspect", "kind": "Quality control", "tag": "Product 3 of 4 · quality control · live", "title": "KaiInspect",
+      "body": "Cleaning quality control for facility services companies. An auditor marks each room Pass or Fail, every Fail needs a photo, and the cleaner sends back a photo of the fix.",
+      "slots": [["Inspect", "Saves with no signal"], ["Fix", "WhatsApp link, no account"], ["Report", "Customer and internal"]],
+      "acts": [["Book a demo", "#demo:KaiInspect"], ["Details", "inspect.html", 1]],
+      "seo": "KaiInspect is cleaning quality control software for facility services companies in Fiji: room-by-room inspections, photo proof of fixes and customer reports.",
+      "points": [
+        ["Room by room", "An auditor walks the site and marks each checklist item Pass or Fail. Every Fail needs a photo and becomes a problem with a due date."],
+        ["Works with no signal", "The inspection saves on the phone after every tap and sends when the signal comes back."],
+        ["Fixes with proof", "The cleaner gets a WhatsApp link, opens it with no account, and photographs the fix. The auditor approves it or sends it back."],
+        ["Reports for both sides", "Customers get a clean report link. The company gets the full detail: every item, photo, time to fix and the most repeated problems."]
+      ] },
+
+    { "id": "drivo", "product": "Drivo", "kind": "Delivery", "tag": "Product 4 of 4 · delivery · live", "title": "Drivo",
+      "body": "Delivery routing and fleet tracking for distribution companies. Dispatchers plan routes from confirmed invoices, drivers navigate in the app, and every vehicle shows live.",
+      "slots": [["Routes", "From confirmed invoices"], ["Drivers", "Navigation · proof of delivery"], ["Works with", "BillZilla · KaiWorkforce"]],
+      "acts": [["Book a demo", "#demo:Drivo"], ["See screens", "#screens:drivo", 1], ["Details", "drivo.html", 1]],
+      "screens": [
+        { "src": "assets/screens/drivo-plan.webp", "w": 780, "h": 1328, "caption": "Planning a route from invoices ready for delivery", "phone": true },
+        { "src": "assets/screens/drivo-settings.webp", "w": 780, "h": 1328, "caption": "Route settings: depot, vehicle and what to optimise for", "phone": true }
+      ],
+      "seo": "Drivo is delivery routing and fleet tracking for Fiji distribution companies: routes from confirmed invoices, in-app navigation, proof of delivery and live vehicles.",
+      "points": [
+        ["Routes from invoices", "Choose confirmed invoices, compare three route options, then assign a driver and vehicle. Optimise for fuel, time or distance."],
+        ["Drivers stay in one app", "Drivers navigate inside Drivo, record proof of delivery and drop pins for new shops."],
+        ["See every vehicle", "Dispatchers watch vehicles live and see where each run is up to."],
+        ["Fiji's own roads", "Maps and routing run on open-source tools built from Fiji's road data, with no paid map fees to pass on. Drivo connects to BillZilla and KaiWorkforce when you use them."]
+      ] },
+
+    { "id": "about", "tag": "About · founded by Kartik Nand", "title": "About",
+      "body": "KaiTech exists to give Fiji businesses software they can afford, built around how work is done here instead of adapted from somewhere else.",
+      "slots": [["Founder", "Kartik Nand"], ["Clients", { "logos": true }]],
+      "acts": [["Read the story", "about.html"], ["Book a demo", "#demo:KaiTech", 1]] },
+
+    { "id": "contact", "tag": "Get in touch", "title": "Contact",
+      "body": "Book a demo of any product, or call.",
+      "slots": [["Email", [["kaitechfj@gmail.com", "mailto:kaitechfj@gmail.com", 1]]], ["Phone", [["+679 756 9670", "tel:+6797569670"], ["+679 999 1115", "tel:+6799991115"]]], ["Legal", [["Privacy", "privacy.html"], ["Terms", "terms.html"]]]],
+      "acts": [["Book a demo", "#demo:KaiTech"]] }
+  ]
+}

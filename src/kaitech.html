@@ -81,6 +81,23 @@ html.locked{overflow:hidden}
 .demo .acts{margin-top:20px;gap:16px}
 .demo .alt{font:400 12px/1.4 var(--mono);color:var(--dim)}
 .demo .done p.body{margin:0 0 22px;color:var(--dim)}
+.demo .ts{margin-top:16px;min-height:0}
+
+/* client logos, in a slot */
+.logos{display:inline-flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:flex-end}
+.logos img{height:15px;width:auto;display:block;opacity:.9}
+.logos .tp{display:inline-flex;align-items:center;gap:7px;font:400 10px/1 var(--display);letter-spacing:.14em;color:var(--fg);opacity:.9;white-space:nowrap}
+.logos .tp svg{width:14px;height:14px}
+
+/* product screens */
+.shots{width:min(1100px,calc(100vw - 24px))}
+.shots figure{margin:0;display:flex;flex-direction:column;gap:14px}
+.shots .frame{display:grid;place-items:center;background:var(--bg1);border-radius:14px;padding:clamp(10px,2vw,22px);min-height:0}
+.shots img{display:block;max-width:100%;height:auto;max-height:calc(100dvh - 230px);width:auto;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+.shots figcaption{display:flex;justify-content:space-between;align-items:center;gap:16px;color:var(--dim);font-size:15px}
+.shots .nav{display:flex;gap:8px;align-items:center;flex:none}
+.shots .nav span{font:400 12px/1 var(--mono);color:var(--dim);font-variant-numeric:tabular-nums}
+.shots .note{margin:10px 0 0;font:400 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--dim)}
 @media (max-width:520px){.demo .grid{grid-template-columns:1fr}}
 .tag{margin:0;font:400 11px/1 var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.14em}
 .panel h1{margin:0;font:400 clamp(27px,4.6vw,64px)/1.05 var(--display);letter-spacing:.02em;text-transform:uppercase}
@@ -167,6 +184,7 @@ html.locked{overflow:hidden}
       <label class="wide" for="d-message"><span>Anything we should know <small>(optional)</small></span><textarea id="d-message" name="message" maxlength="2000"></textarea></label>
       <div class="hp" aria-hidden="true"><label for="d-website">Website<input id="d-website" name="website" tabindex="-1" autocomplete="off"></label></div>
     </div>
+    <div class="ts" id="demo-ts"></div>
     <p class="err" id="demo-err" role="alert" hidden></p>
     <div class="acts"><button class="cta" type="submit" id="demo-send">Send request</button><span class="alt">or email kaitechfj@gmail.com</span></div>
   </form>
@@ -178,46 +196,391 @@ html.locked{overflow:hidden}
   </div>
 </dialog>
 
+<dialog class="demo shots" id="shots" aria-labelledby="shots-h">
+  <header><p class="tag" id="shots-h">Screens</p>
+    <button type="button" class="x" data-close aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12"/></svg></button></header>
+  <figure>
+    <div class="frame"><img id="shots-img" alt=""></div>
+    <figcaption><span id="shots-cap"></span>
+      <span class="nav"><button type="button" class="x" id="shots-prev" aria-label="Previous screen"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M9 2 4 7l5 5"/></svg></button>
+        <span id="shots-n"></span>
+        <button type="button" class="x" id="shots-next" aria-label="Next screen"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="m5 2 5 5-5 5"/></svg></button></span>
+    </figcaption>
+  </figure>
+  <p class="note">Shown with sample data</p>
+</dialog>
+
 <script>
 (() => {
 const $ = id => document.getElementById(id);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const cv = $('fx'), ctx = cv.getContext('2d');
-const N = Math.min(innerWidth, innerHeight) < 600 ? 4500 : 8000;
+// lighter on small or slow devices, and when the visitor has asked to save data
+const LOW = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 3 || !!(navigator.connection && navigator.connection.saveData);
+const N = Math.min(innerWidth, innerHeight) < 600 ? (LOW ? 2600 : 4000) : (LOW ? 4500 : 8000);
 const NB = N * 0.8 | 0;            // points 0..NB are the white ones; NB..N are the blue ones, used for the part of each form that matters
 
-const MAIL = 'kaitechfj@gmail.com';
-const demo = what => '#demo:' + what;   // opens the demo request form with that product chosen
+// <content> written by build.py from src/content.json; edit that file, not this block
+const MAIL = "kaitechfj@gmail.com";
 const MODES = [
-  { id: 'home', tag: 'KaiTech · Fiji', title: 'Kaitech',
-    body: 'Software that keeps Fiji business moving. Four live products for paying people, sending invoices, checking the work and getting deliveries out.',
-    slots: [['Products', 'Four, all live'], ['Clients', 'NAFCO · Totoka Pacific']],
-    acts: [['Book a demo', demo('KaiTech')], ['Our story', 'about.html', 1]] },
-  { id: 'workforce', tag: 'Product 1 of 4 · payroll and HR · live', title: 'KaiWorkforce',
-    body: 'Payroll and HR for staffing agencies. FNPF and PAYE are worked out for you, staff clock in at their work site, and payslips go out by email.',
-    slots: [['Payroll', 'FNPF · PAYE · payslips'], ['Attendance', 'Clock-in by work site'], ['People', 'Leave · timesheets · org chart']],
-    acts: [['Book a demo', demo('KaiWorkforce')]] },
-  { id: 'billzilla', tag: 'Product 2 of 4 · invoicing · live', title: 'BillZilla',
-    body: 'Invoicing for Fiji businesses. Quotes become invoices with gap-free numbers, stock moves when you finalise, and customers get statements and reminders.',
-    slots: [['Documents', 'Quotes · invoices · credit notes'], ['Payments', 'Bank · cash · M-PAiSA · MyCash'], ['Currency', 'FJD or the customer’s own']],
-    acts: [['Book a demo', demo('BillZilla')]] },
-  { id: 'inspect', tag: 'Product 3 of 4 · quality control · live', title: 'KaiInspect',
-    body: 'Cleaning quality control for facility services companies. An auditor marks each room Pass or Fail, every Fail needs a photo, and the cleaner sends back a photo of the fix.',
-    slots: [['Inspect', 'Saves with no signal'], ['Fix', 'WhatsApp link, no account'], ['Report', 'Customer and internal']],
-    acts: [['Book a demo', demo('KaiInspect')]] },
-  { id: 'drivo', tag: 'Product 4 of 4 · delivery · live', title: 'Drivo',
-    body: 'Delivery routing and fleet tracking for distribution companies. Dispatchers plan routes from confirmed invoices, drivers navigate in the app, and every vehicle shows live.',
-    slots: [['Routes', 'From confirmed invoices'], ['Drivers', 'Navigation · proof of delivery'], ['Works with', 'BillZilla · KaiWorkforce']],
-    acts: [['Book a demo', demo('Drivo')]] },
-  { id: 'about', tag: 'About · founded by Kartik Nand', title: 'About',
-    body: 'KaiTech exists to give Fiji businesses software they can afford, built around how work is done here instead of adapted from somewhere else.',
-    slots: [['Founder', 'Kartik Nand'], ['Clients', 'NAFCO · Totoka Pacific']],
-    acts: [['Read the story', 'about.html'], ['Book a demo', demo('KaiTech'), 1]] },
-  { id: 'contact', tag: 'Get in touch', title: 'Contact',
-    body: 'Email us to book a demo of any product, or call.',
-    slots: [['Email', [[MAIL, 'mailto:' + MAIL, 1]]], ['Phone', [['+679 756 9670', 'tel:+6797569670'], ['+679 999 1115', 'tel:+6799991115']]], ['Legal', [['Privacy', 'privacy.html'], ['Terms', 'terms.html']]]],
-    acts: [['Book a demo', demo('KaiTech')]] },
+ {
+  "id": "home",
+  "tag": "KaiTech · Fiji",
+  "title": "Kaitech",
+  "body": "Software that keeps Fiji business moving. Four live products for paying people, sending invoices, checking the work and getting deliveries out.",
+  "slots": [
+   [
+    "Products",
+    "Four, all live"
+   ],
+   [
+    "Clients",
+    {
+     "logos": true
+    }
+   ]
+  ],
+  "acts": [
+   [
+    "Book a demo",
+    "#demo:KaiTech"
+   ],
+   [
+    "Our story",
+    "about.html",
+    1
+   ]
+  ]
+ },
+ {
+  "id": "workforce",
+  "product": "KaiWorkforce",
+  "kind": "Payroll and HR",
+  "tag": "Product 1 of 4 · payroll and HR · live",
+  "title": "KaiWorkforce",
+  "body": "Payroll and HR for staffing agencies. FNPF and PAYE are worked out for you, staff clock in at their work site, and payslips go out by email.",
+  "slots": [
+   [
+    "Payroll",
+    "FNPF · PAYE · payslips"
+   ],
+   [
+    "Attendance",
+    "Clock-in by work site"
+   ],
+   [
+    "People",
+    "Leave · timesheets · org chart"
+   ]
+  ],
+  "acts": [
+   [
+    "Book a demo",
+    "#demo:KaiWorkforce"
+   ],
+   [
+    "Details",
+    "workforce.html",
+    1
+   ]
+  ],
+  "seo": "KaiWorkforce is payroll and HR software for staffing agencies in Fiji: FNPF and PAYE worked out for you, clock-in at the work site, and payslips by email.",
+  "points": [
+   [
+    "Payroll that knows Fiji",
+    "FNPF and PAYE are calculated from your configured rates every pay run. Bonuses, allowances, rate changes, tax adjustments and termination pay are handled in the same run."
+   ],
+   [
+    "Clock-in where the work is",
+    "Staff clock in and out at their work site. Supervisors see who is on site on a live map, and the hours flow straight into timesheets."
+   ],
+   [
+    "Payslips without the printing",
+    "When the pay run is done, every employee gets their payslip by email."
+   ],
+   [
+    "Built for agencies",
+    "Each agency gets its own private workspace, with leave, timesheets, work sites, an org chart and an audit log of every change."
+   ]
+  ]
+ },
+ {
+  "id": "billzilla",
+  "product": "BillZilla",
+  "kind": "Invoicing",
+  "tag": "Product 2 of 4 · invoicing · live",
+  "title": "BillZilla",
+  "body": "Invoicing for Fiji businesses. Quotes become invoices with gap-free numbers, stock moves when you finalise, and customers get statements and reminders.",
+  "slots": [
+   [
+    "Documents",
+    "Quotes · invoices · credit notes"
+   ],
+   [
+    "Payments",
+    "Bank · cash · M-PAiSA · MyCash"
+   ],
+   [
+    "Currency",
+    "FJD or the customer’s own"
+   ]
+  ],
+  "acts": [
+   [
+    "Book a demo",
+    "#demo:BillZilla"
+   ],
+   [
+    "See screens",
+    "#screens:billzilla",
+    1
+   ],
+   [
+    "Details",
+    "billzilla.html",
+    1
+   ]
+  ],
+  "screens": [
+   {
+    "src": "assets/screens/billzilla-invoice.webp",
+    "w": 1440,
+    "h": 900,
+    "caption": "An invoice with its payments, credit note and reminders"
+   },
+   {
+    "src": "assets/screens/billzilla-dashboard.webp",
+    "w": 1440,
+    "h": 900,
+    "caption": "The dashboard: what is outstanding, overdue and waiting for approval"
+   }
+  ],
+  "seo": "BillZilla is invoicing software for Fiji businesses: quotes, invoices and credit notes with gap-free numbering, M-PAiSA and MyCash payments, stock and statements.",
+  "points": [
+   [
+    "Quotes to invoices, in order",
+    "A quote becomes an invoice in one step. Numbers are given when you finalise, so there are never gaps, and every invoice uses one of seven A4 layouts with your logo."
+   ],
+   [
+    "Paid the way Fiji pays",
+    "Record bank transfers, cash, cash on delivery, cheques, M-PAiSA and MyCash, including part payments."
+   ],
+   [
+    "Stock that keeps up",
+    "Stock moves when an invoice is finalised, voided or credited, and load sheets are ready for the delivery run."
+   ],
+   [
+    "Chasing done for you",
+    "Customers get emailed invoices, statements and automatic payment reminders. Prices below a product's minimum wait for the owner's approval."
+   ]
+  ]
+ },
+ {
+  "id": "inspect",
+  "product": "KaiInspect",
+  "kind": "Quality control",
+  "tag": "Product 3 of 4 · quality control · live",
+  "title": "KaiInspect",
+  "body": "Cleaning quality control for facility services companies. An auditor marks each room Pass or Fail, every Fail needs a photo, and the cleaner sends back a photo of the fix.",
+  "slots": [
+   [
+    "Inspect",
+    "Saves with no signal"
+   ],
+   [
+    "Fix",
+    "WhatsApp link, no account"
+   ],
+   [
+    "Report",
+    "Customer and internal"
+   ]
+  ],
+  "acts": [
+   [
+    "Book a demo",
+    "#demo:KaiInspect"
+   ],
+   [
+    "Details",
+    "inspect.html",
+    1
+   ]
+  ],
+  "seo": "KaiInspect is cleaning quality control software for facility services companies in Fiji: room-by-room inspections, photo proof of fixes and customer reports.",
+  "points": [
+   [
+    "Room by room",
+    "An auditor walks the site and marks each checklist item Pass or Fail. Every Fail needs a photo and becomes a problem with a due date."
+   ],
+   [
+    "Works with no signal",
+    "The inspection saves on the phone after every tap and sends when the signal comes back."
+   ],
+   [
+    "Fixes with proof",
+    "The cleaner gets a WhatsApp link, opens it with no account, and photographs the fix. The auditor approves it or sends it back."
+   ],
+   [
+    "Reports for both sides",
+    "Customers get a clean report link. The company gets the full detail: every item, photo, time to fix and the most repeated problems."
+   ]
+  ]
+ },
+ {
+  "id": "drivo",
+  "product": "Drivo",
+  "kind": "Delivery",
+  "tag": "Product 4 of 4 · delivery · live",
+  "title": "Drivo",
+  "body": "Delivery routing and fleet tracking for distribution companies. Dispatchers plan routes from confirmed invoices, drivers navigate in the app, and every vehicle shows live.",
+  "slots": [
+   [
+    "Routes",
+    "From confirmed invoices"
+   ],
+   [
+    "Drivers",
+    "Navigation · proof of delivery"
+   ],
+   [
+    "Works with",
+    "BillZilla · KaiWorkforce"
+   ]
+  ],
+  "acts": [
+   [
+    "Book a demo",
+    "#demo:Drivo"
+   ],
+   [
+    "See screens",
+    "#screens:drivo",
+    1
+   ],
+   [
+    "Details",
+    "drivo.html",
+    1
+   ]
+  ],
+  "screens": [
+   {
+    "src": "assets/screens/drivo-plan.webp",
+    "w": 780,
+    "h": 1328,
+    "caption": "Planning a route from invoices ready for delivery",
+    "phone": true
+   },
+   {
+    "src": "assets/screens/drivo-settings.webp",
+    "w": 780,
+    "h": 1328,
+    "caption": "Route settings: depot, vehicle and what to optimise for",
+    "phone": true
+   }
+  ],
+  "seo": "Drivo is delivery routing and fleet tracking for Fiji distribution companies: routes from confirmed invoices, in-app navigation, proof of delivery and live vehicles.",
+  "points": [
+   [
+    "Routes from invoices",
+    "Choose confirmed invoices, compare three route options, then assign a driver and vehicle. Optimise for fuel, time or distance."
+   ],
+   [
+    "Drivers stay in one app",
+    "Drivers navigate inside Drivo, record proof of delivery and drop pins for new shops."
+   ],
+   [
+    "See every vehicle",
+    "Dispatchers watch vehicles live and see where each run is up to."
+   ],
+   [
+    "Fiji's own roads",
+    "Maps and routing run on open-source tools built from Fiji's road data, with no paid map fees to pass on. Drivo connects to BillZilla and KaiWorkforce when you use them."
+   ]
+  ]
+ },
+ {
+  "id": "about",
+  "tag": "About · founded by Kartik Nand",
+  "title": "About",
+  "body": "KaiTech exists to give Fiji businesses software they can afford, built around how work is done here instead of adapted from somewhere else.",
+  "slots": [
+   [
+    "Founder",
+    "Kartik Nand"
+   ],
+   [
+    "Clients",
+    {
+     "logos": true
+    }
+   ]
+  ],
+  "acts": [
+   [
+    "Read the story",
+    "about.html"
+   ],
+   [
+    "Book a demo",
+    "#demo:KaiTech",
+    1
+   ]
+  ]
+ },
+ {
+  "id": "contact",
+  "tag": "Get in touch",
+  "title": "Contact",
+  "body": "Book a demo of any product, or call.",
+  "slots": [
+   [
+    "Email",
+    [
+     [
+      "kaitechfj@gmail.com",
+      "mailto:kaitechfj@gmail.com",
+      1
+     ]
+    ]
+   ],
+   [
+    "Phone",
+    [
+     [
+      "+679 756 9670",
+      "tel:+6797569670"
+     ],
+     [
+      "+679 999 1115",
+      "tel:+6799991115"
+     ]
+    ]
+   ],
+   [
+    "Legal",
+    [
+     [
+      "Privacy",
+      "privacy.html"
+     ],
+     [
+      "Terms",
+      "terms.html"
+     ]
+    ]
+   ]
+  ],
+  "acts": [
+   [
+    "Book a demo",
+    "#demo:KaiTech"
+   ]
+  ]
+ }
 ];
+// </content>
 
 /* ── forms: every one is the same N points, rearranged ── */
 const rnd = (a = 1) => (Math.random() - 0.5) * 2 * a, TAU = 6.2832;
@@ -298,8 +661,8 @@ const BUCKETS = 9, palette = [], bucket = new Uint8Array(N);
 }
 
 /* ── view ── */
-let W = 0, H = 0, dpr = 1, mode = 0, yaw = 0, pitch = 0, uy = 0, up = 0, vy = 0, vp = 0, px = 0, py = 0, spin = 0, drag = null;
-function resize() { dpr = Math.min(devicePixelRatio || 1, 2); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; }
+let W = innerWidth, H = 0, dpr = 1, stride = 1, slow = 0, lastT = 0, mode = 0, yaw = 0, pitch = 0, uy = 0, up = 0, vy = 0, vp = 0, px = 0, py = 0, spin = 0, drag = null;
+function resize() { dpr = Math.min(devicePixelRatio || 1, W < 720 || LOW ? 1.5 : 2); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; }
 new ResizeObserver(resize).observe(cv); resize();
 
 function frame(now) {
@@ -313,6 +676,9 @@ function frame(now) {
   const cx = W * (narrow ? 0.5 : 0.68), cyy = H * (narrow ? 0.3 : 0.42);
   const scale = Math.min(W / (narrow ? 3.6 : 6.4), H / (narrow ? 5.6 : 4)) * dpr, base = dpr * (narrow ? 1.25 : 1.45);
 
+  // if frames keep running long, draw every second point (positions still all move, so forms stay whole)
+  if (lastT) { const dt = now - lastT; slow = dt > 28 && dt < 200 ? slow + 1 : Math.max(0, slow - 1); if (slow > 45 && stride === 1) stride = 2; }
+  lastT = now;
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
   ctx.globalCompositeOperation = 'lighter';
   let last = -1;
@@ -320,6 +686,7 @@ function frame(now) {
     const i = order[o], j = i * 3, e = reduced ? 1 : ease[i];
     const x = pos[j] += (target[j] - pos[j]) * e, y = pos[j + 1] += (target[j + 1] - pos[j + 1]) * e, z = pos[j + 2] += (target[j + 2] - pos[j + 2]) * e;
     const x1 = x * cy + z * sy, z1 = -x * sy + z * cy, y1 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
+    if (stride > 1 && o % stride) continue;
     const f = 4 / (4 + z2); if (f <= 0) continue;
     if (bucket[i] !== last) { last = bucket[i]; ctx.fillStyle = palette[last]; }
     const blue = i >= NB;
@@ -351,6 +718,7 @@ function fill() {
   (m.slots || []).forEach(([label, val]) => {
     const li = document.createElement('li'), k = document.createElement('span'), v = document.createElement('span'); k.textContent = label;
     if (typeof val === 'string') v.textContent = val;
+    else if (val.logos) { v.className = 'logos'; v.innerHTML = LOGOS; }
     else { v.className = 'raw'; val.forEach(([text, href, copy], n) => {
       if (n) v.append(' · ');
       const x = document.createElement('a'); x.href = href; x.textContent = text; v.append(x);
@@ -363,9 +731,11 @@ function fill() {
   });
   const acts = $('p-acts'); acts.textContent = ''; acts.hidden = !m.acts;
   (m.acts || []).forEach(([text, href, ghost]) => {
-    const form = href.startsWith('#demo:'), x = document.createElement(form ? 'button' : 'a');
+    const form = href.startsWith('#demo:'), shots = href.startsWith('#screens:'), x = document.createElement(form || shots ? 'button' : 'a');
     x.className = 'cta' + (ghost ? ' ghost' : ''); x.textContent = text;
-    if (form) { x.type = 'button'; x.addEventListener('click', () => openDemo(href.slice(6))); } else x.href = href;
+    if (form) { x.type = 'button'; x.addEventListener('click', () => openDemo(href.slice(6))); }
+    else if (shots) { x.type = 'button'; x.addEventListener('click', () => openShots(href.slice(9))); }
+    else x.href = href;
     acts.appendChild(x);
   });
   $('h-n').textContent = '0' + (mode + 1);
@@ -388,10 +758,48 @@ function go(i, instant) {
 }
 addEventListener('scroll', () => setMode(Math.round(scrollY / stepH())), { passive: true });
 
+const LOGOS = '<img src="assets/clients/nafco.png" alt="NAFCO" width="51" height="15">'
+  + '<span class="tp"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x=".75" y=".75" width="22.5" height="22.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 4l8 8-8 8zM20 4l-8 8 8 8z" fill="currentColor"/><path d="M12 7l2.2 5L12 17l-2.2-5z" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>Totoka Pacific</span>';
+
+/* ── product screens ── */
+const sd = $('shots'), simg = $('shots-img');
+let sList = [], sAt = 0;
+function showShot(k) {
+  sAt = (k + sList.length) % sList.length; const it = sList[sAt];
+  simg.src = it.src; simg.width = it.w; simg.height = it.h; simg.alt = it.caption;
+  simg.style.maxWidth = it.phone ? 'min(100%, 380px)' : '100%';
+  $('shots-cap').textContent = it.caption; $('shots-n').textContent = (sAt + 1) + ' / ' + sList.length;
+  $('shots-prev').hidden = $('shots-next').hidden = $('shots-n').hidden = sList.length < 2;
+}
+function openShots(id) {
+  const m = MODES.find(x => x.id === id); if (!m || !m.screens) return;
+  sList = m.screens; $('shots-h').textContent = m.title + ' · screens'; showShot(0);
+  document.documentElement.classList.add('locked'); if (!sd.open) sd.showModal();
+}
+$('shots-prev').addEventListener('click', () => showShot(sAt - 1));
+$('shots-next').addEventListener('click', () => showShot(sAt + 1));
+sd.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') showShot(sAt - 1); if (e.key === 'ArrowRight') showShot(sAt + 1); });
+sd.addEventListener('click', e => { if (e.target === sd || e.target.closest('[data-close]')) sd.close(); });
+sd.addEventListener('close', () => document.documentElement.classList.remove('locked'));
+
 /* ── demo request form ── */
 const dlg = $('demo'), form = $('demo-form'), done = $('demo-done'), err = $('demo-err'), sendBtn = $('demo-send');
 const FALLBACK = 'Please email ' + MAIL + ' or call +679 756 9670 instead.';
+let tsReady = null;
+function spamCheck() {   // Cloudflare Turnstile, loaded only if the server has a site key set
+  if (tsReady) return tsReady;
+  tsReady = fetch('api/demo').then(r => r.json()).then(c => {
+    if (!c.turnstile) return;
+    return new Promise(res => {
+      window.onKaiTurnstile = () => { window.turnstile.render('#demo-ts', { sitekey: c.turnstile, theme: 'dark', size: 'flexible' }); res(); };
+      const sc = document.createElement('script'); sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onKaiTurnstile&render=explicit'; sc.async = true;
+      sc.onerror = () => res(); document.head.appendChild(sc);
+    });
+  }).catch(() => {});
+  return tsReady;
+}
 function openDemo(what) {
+  spamCheck();
   const pick = $('d-product'); pick.value = [...pick.options].some(o => o.value === what) ? what : 'Not sure yet';
   form.hidden = false; done.hidden = true; err.hidden = true; sendBtn.disabled = false; sendBtn.textContent = 'Send request';
   document.documentElement.classList.add('locked');
@@ -399,7 +807,7 @@ function openDemo(what) {
 }
 dlg.addEventListener('close', () => {
   document.documentElement.classList.remove('locked');
-  if (location.hash === '#demo') try { history.replaceState(null, '', '#' + MODES[mode].id); } catch (e) {}
+  if (/^#demo/.test(location.hash)) try { history.replaceState(null, '', '#' + MODES[mode].id); } catch (e) {}
 });
 dlg.addEventListener('click', e => { if (e.target === dlg || e.target.closest('[data-close]')) dlg.close(); });
 form.addEventListener('submit', async e => {
@@ -408,26 +816,28 @@ form.addEventListener('submit', async e => {
   let problem = '';
   try {
     const res = await fetch('api/demo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-    if (!res.ok) { const j = await res.json().catch(() => ({})); problem = res.status === 400 && j.error ? j.error : 'We could not send your request. ' + FALLBACK; }
+    if (!res.ok) { const j = await res.json().catch(() => ({})); problem = (res.status === 400 || res.status === 429) && j.error ? j.error : 'We could not send your request. ' + FALLBACK; }
   } catch (x) { problem = 'We could not send your request. ' + FALLBACK; }
   if (problem) { err.textContent = problem; err.hidden = false; sendBtn.disabled = false; sendBtn.textContent = 'Send request'; return; }
   $('demo-done-p').textContent = 'We have your request for ' + (data.product === 'Not sure yet' ? 'a demo' : 'a ' + data.product + ' demo') + ' and will reply to ' + data.email + '.';
-  form.reset(); form.hidden = true; done.hidden = false; done.querySelector('[data-close]').focus();
+  form.reset(); if (window.turnstile) try { window.turnstile.reset('#demo-ts'); } catch (x) {}
+  form.hidden = true; done.hidden = false; done.querySelector('[data-close]').focus();
 });
 const fromHash = () => Math.max(0, MODES.findIndex(m => m.id === location.hash.slice(1)));
-addEventListener('hashchange', () => { if (location.hash === '#demo') openDemo(); else go(fromHash()); });
+const demoFromHash = () => { const m = MODES.find(x => '#demo-' + x.id === location.hash); return m ? m.product || 'KaiTech' : 'KaiTech'; };
+addEventListener('hashchange', () => { if (/^#demo/.test(location.hash)) openDemo(demoFromHash()); else go(fromHash()); });
 links.forEach((a, i) => a.addEventListener('click', e => { e.preventDefault(); go(i); }));
 document.querySelector('.mark').addEventListener('click', e => { e.preventDefault(); go(0); });
 addEventListener('keydown', e => {
-  if (dlg.open || (e.target.closest && e.target.closest('input,textarea,select'))) return;
+  if (dlg.open || sd.open || (e.target.closest && e.target.closest('input,textarea,select'))) return;
   const k = e.key, next = k === 'ArrowDown' || k === 'ArrowRight' || k === 'PageDown' || k === ' ', prev = k === 'ArrowUp' || k === 'ArrowLeft' || k === 'PageUp';
   if (next || prev) { e.preventDefault(); go(mode + (next ? 1 : -1)); }
   else if (k >= '1' && k <= '7') go(+k - 1);
 });
-const wantDemo = location.hash === '#demo';   // read before the hash is rewritten to the section's name
+const wantDemo = /^#demo/.test(location.hash) && demoFromHash();   // read before the hash is rewritten to the section's name
 mode = fromHash(); if (mode) pos.set(shapes[mode]);
 setMode(mode, true); requestAnimationFrame(frame);
 if (mode) requestAnimationFrame(() => scrollTo(0, mode * stepH()));
-if (wantDemo) openDemo();
+if (wantDemo) openDemo(wantDemo);
 })();
 </script>

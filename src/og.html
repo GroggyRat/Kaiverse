@@ -1,0 +1,30 @@
+<!doctype html>
+<!-- The link preview image. Regenerate assets/og.jpg with: node src/og.js -->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=JetBrains+Mono&family=Michroma&display=swap">
+<style>
+html,body{margin:0;width:1200px;height:630px;overflow:hidden}
+body{background:radial-gradient(90% 100% at 78% 40%,#14295A 0%,#030712 66%);color:#F5F6F9;font-family:'Inter Tight',sans-serif;position:relative}
+canvas{position:absolute;inset:0}
+.t{position:absolute;left:72px;bottom:70px;width:620px}
+.mark{display:flex;align-items:center;gap:18px;font:400 30px/1 Michroma,sans-serif;letter-spacing:.42em}
+.mark svg{width:46px;height:46px}
+h1{margin:40px 0 18px;font:400 44px/1.15 Michroma,sans-serif;text-transform:uppercase;letter-spacing:.01em}
+p{margin:0;font:400 17px/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#A3ACC0}
+</style></head><body>
+<canvas id="c" width="1200" height="630"></canvas>
+<div class="t">
+  <div class="mark"><svg viewBox="0 0 26 26"><rect x="0" y="1" width="26" height="6" rx="3" fill="#F5F6F9"/><rect x="6.5" y="10" width="13" height="6" rx="3" fill="#4C8DF5"/><rect x="0" y="19" width="26" height="6" rx="3" fill="#F5F6F9"/></svg>KAITECH</div>
+  <h1>Software that keeps Fiji business moving</h1>
+  <p>KaiWorkforce · BillZilla · KaiInspect · Drivo</p>
+</div>
+<script>
+// the three-bar mark in points, as on the site
+const g = document.getElementById('c').getContext('2d'); g.globalCompositeOperation = 'lighter';
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const bar = (cx, cy, half, r, n, col, size) => { for (let i = 0; i < n; i++) {
+  const a = rnd() * 6.283, d = r * (0.72 + 0.28 * rnd()) * Math.sqrt(rnd());
+  const x = cx + (rnd() * 2 - 1) * (half - r) + Math.cos(a) * d, y = cy + Math.sin(a) * d;
+  g.globalAlpha = 0.35 + 0.6 * rnd(); g.fillStyle = col; g.fillRect(x, y, size, size); } };
+bar(935, 175, 200, 46, 2600, '#F5F6F9', 1.8); bar(935, 315, 100, 46, 1500, '#4C8DF5', 2.4); bar(935, 455, 200, 46, 2600, '#F5F6F9', 1.8);
+</script></body></html>
