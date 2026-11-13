@@ -61,6 +61,13 @@ org = json.dumps({"@context": "https://schema.org", "@type": "Organization", "na
     + '</head>\n<body>\n'
     + src + '</body>\n</html>\n')
 
+# the previous main site, kept at /classic
+cl = root / 'src/classic.html'
+if cl.exists():
+    c = re.sub(r'// <content>.*?// </content>\n', lambda m: JS, cl.read_text(), count=1, flags=re.S)
+    c = re.sub(r'<title>.*?</title>\n', '', c, count=1)
+    (root / 'classic.html').write_text(head('KaiTech · ' + site['tagline'], sections[0]['body'], 'classic', '<meta name="robots" content="noindex">\n<style>body{margin:0}[hidden]{display:none!important}</style>\n') + '</head>\n<body>\n' + c + '</body>\n</html>\n')
+
 # ── 2. shared look for the plain pages ──
 FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&family=Inter+Tight:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Michroma&display=swap">'
 PAGE_CSS = '''<style>

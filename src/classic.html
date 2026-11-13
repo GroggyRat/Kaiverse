@@ -1,0 +1,917 @@
+<title>KaiTech</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&family=Inter+Tight:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Michroma&display=swap">
+<style>
+/* Layout: one fixed frame, no scroll. A single object made of points holds the centre: first the KaiTech mark, then one form per product. Everything else sits on the frame's edges like instrument markings. */
+:root{
+  /* KaiTech logo: navy bars #14295A, blue bar #2563CC. Blues are lifted where they have to read on the dark ground. */
+  --bg0:#030712; --bg1:#14295A; --fg:#F5F6F9; --dim:#8D97AD; --line:#243049; --accent:#4C8DF5;
+  --cool:#2563CC; --mid:#6FA0F2; --warm:#F5F6F9; --scrim:rgba(3,7,18,.72); --bad:#FF9A8A;
+  --brand:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --display:'Michroma','Eurostile','Arial Black',sans-serif;
+  --text:'Inter Tight',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+/* the page really scrolls: seven screen-high steps snap past a fixed frame, and the step in view picks the section */
+html{scroll-snap-type:y mandatory;scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+.steps{padding-bottom:40vh;padding-bottom:40svh}
+.steps i{display:block;height:60vh;height:60svh;scroll-snap-align:start;scroll-snap-stop:always}   /* shorter than the screen, so a short swipe is enough */
+body{background:var(--bg0);color:var(--fg);font-family:var(--text);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.k{position:fixed;inset:0;overflow:hidden;
+  background:radial-gradient(110% 85% at 62% 42%,var(--bg1) 0%,var(--bg0) 64%);
+  padding-top:calc(22px + env(safe-area-inset-top,0px));padding-bottom:calc(22px + env(safe-area-inset-bottom,0px));padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px));
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr) auto;gap:16px 24px}
+#fx{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y;cursor:grab}
+#fx:active{cursor:grabbing}
+.k>*:not(#fx){position:relative;pointer-events:none}
+.k a,.k button{pointer-events:auto}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:4px}
+
+.mark{grid-column:1/3;grid-row:1;align-self:start;justify-self:start;display:flex;align-items:center;gap:11px;font:500 21px/1 var(--brand);letter-spacing:-.01em}
+.wm .t{color:var(--accent)}
+.mark svg{width:26px;height:26px;flex:none}
+.mark .bar{fill:var(--fg)} .mark .bar.b{fill:var(--accent)}
+
+.idx{grid-column:1;grid-row:2;align-self:center;display:flex;flex-direction:column;gap:2px;font:400 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.14em}
+.idx a{display:flex;align-items:center;gap:12px;padding:10px 0;color:var(--dim);transition:color .3s}
+.idx a::before{content:"";width:14px;height:1px;background:currentColor;transition:width .45s cubic-bezier(.2,.7,.1,1)}
+.idx a:hover{color:var(--fg)}
+.idx a[aria-current="true"]{color:var(--fg)}
+.idx a[aria-current="true"]::before{width:44px;background:var(--accent)}
+.idx kbd{font:inherit;color:var(--dim)}
+
+.panel{grid-column:1/3;grid-row:3;align-self:end;max-width:min(40rem,46vw);display:flex;flex-direction:column;gap:14px}
+.leaving{position:absolute!important;margin:0;pointer-events:none!important;z-index:1}
+.leaving *{pointer-events:none!important}
+.panel>*{pointer-events:auto}
+.acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px}
+.cta{display:inline-flex;align-items:center;padding:13px 22px;border-radius:999px;background:var(--accent);color:var(--bg0);border:1px solid var(--accent);
+  font:500 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.12em;transition:background-color .25s,color .25s,border-color .25s}
+.cta:hover{background:var(--fg);border-color:var(--fg)}
+.cta.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+.cta.ghost:hover{background:transparent;border-color:var(--fg)}
+.slots .raw{text-transform:none;letter-spacing:0;color:var(--fg);font-size:13px}
+.slots a{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--dim)}
+.slots a:hover{text-decoration-color:var(--fg)}
+.copy{margin-left:8px;padding:3px 8px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--dim);font:400 10px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.1em;cursor:pointer}
+.copy:hover{color:var(--fg);border-color:var(--fg)}
+button.cta{cursor:pointer}
+button.cta:disabled{opacity:.6;cursor:default}
+
+/* demo request: a sheet over the frame */
+html.locked{overflow:hidden}
+.demo{width:min(580px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:clamp(20px,3vw,30px);
+  background:var(--bg0);color:var(--fg);border:1px solid var(--line);border-radius:22px}
+.demo::backdrop{background:var(--scrim);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.demo header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.demo h2{margin:0 0 22px;font:400 clamp(20px,3vw,28px)/1.15 var(--display);letter-spacing:.02em;text-transform:uppercase;text-wrap:balance}
+.demo .x{width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:transparent;color:var(--fg);cursor:pointer}
+.demo .x:hover{border-color:var(--fg)}
+.demo .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.demo label{display:flex;flex-direction:column;gap:7px;min-width:0;font:400 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--dim)}
+.demo label.wide{grid-column:1/-1}
+.demo label small{font:inherit;text-transform:none;letter-spacing:0;opacity:.8}
+.demo input,.demo select,.demo textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:var(--bg0);color:var(--fg);
+  font:400 16px/1.3 var(--text);letter-spacing:0;text-transform:none}
+.demo textarea{min-height:92px;resize:vertical}
+.demo input:focus,.demo select:focus,.demo textarea:focus{outline:none;border-color:var(--accent)}
+.demo .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.demo .err{margin:16px 0 0;color:var(--bad);font-size:15px}
+.demo .acts{margin-top:20px;gap:16px}
+.demo .alt{font:400 12px/1.4 var(--mono);color:var(--dim)}
+.demo .done p.body{margin:0 0 22px;color:var(--dim)}
+.demo .ts{margin-top:16px;min-height:0}
+
+/* client logos, in a slot */
+.logos{display:inline-flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:flex-end}
+.logos img{height:15px;width:auto;display:block;opacity:.9}
+.logos .tp{display:inline-flex;align-items:center;gap:7px;font:400 10px/1 var(--display);letter-spacing:.14em;color:var(--fg);opacity:.9;white-space:nowrap}
+.logos .tp svg{width:14px;height:14px}
+
+/* product screens */
+.shots{width:min(1100px,calc(100vw - 24px))}
+.shots figure{margin:0;display:flex;flex-direction:column;gap:14px}
+.shots .frame{display:grid;place-items:center;background:var(--bg1);border-radius:14px;padding:clamp(10px,2vw,22px);min-height:0}
+.shots img{display:block;max-width:100%;height:auto;max-height:calc(100dvh - 230px);width:auto;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+.shots figcaption{display:flex;justify-content:space-between;align-items:center;gap:16px;color:var(--dim);font-size:15px}
+.shots .nav{display:flex;gap:8px;align-items:center;flex:none}
+.shots .nav span{font:400 12px/1 var(--mono);color:var(--dim);font-variant-numeric:tabular-nums}
+.shots .note{margin:10px 0 0;font:400 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--dim)}
+@media (max-width:520px){.demo .grid{grid-template-columns:1fr}}
+.tag{margin:0;font:400 11px/1 var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.14em}
+.panel h1{margin:0;font:400 clamp(27px,4.6vw,64px)/1.05 var(--display);letter-spacing:.02em;text-transform:uppercase}
+.panel h1.brand{font:500 clamp(44px,7vw,104px)/1 var(--brand);letter-spacing:-.025em;text-transform:none}
+.panel p.body{margin:0;max-width:34rem;font-size:clamp(15px,1.25vw,18px);color:var(--dim);text-wrap:pretty}
+.slots{list-style:none;margin:4px 0 0;padding:0;max-width:34rem;border-top:1px solid var(--line);font:400 12px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.08em}
+.slots li{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid var(--line)}
+.slots span:last-child{color:var(--dim);text-align:right}
+.slots li{align-items:baseline}
+
+.hint{grid-column:3;grid-row:3;align-self:end;justify-self:end;text-align:right;font:400 11px/1.6 var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
+.hint b{display:block;font:400 clamp(22px,2.6vw,36px)/1 var(--display);color:var(--fg);letter-spacing:.04em;margin-bottom:10px;font-variant-numeric:tabular-nums}
+.hint b i{font-style:normal;color:var(--dim)}
+.hint b span{color:var(--accent)}
+.hint .legal{display:block;margin-top:10px}
+.hint a{text-decoration:underline;text-underline-offset:3px}
+.hint a:hover{color:var(--fg)}
+
+@media (max-width:720px){
+  .k{grid-template-columns:minmax(0,1fr) auto;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .mark{grid-column:1/3}
+  /* phone: every section named in one row you can swipe; the current one is marked on the rule above it */
+  .k>.idx{grid-column:1/3;grid-row:3;flex-direction:row;gap:26px;justify-content:flex-start;border-top:1px solid var(--line);font-size:12px;
+    pointer-events:auto;overflow-x:auto;overscroll-behavior-x:contain;touch-action:pan-x;scrollbar-width:none;
+    margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));padding-right:max(16px,env(safe-area-inset-right,0px));
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent)}
+  .idx::-webkit-scrollbar{display:none}
+  .idx a{flex:none;padding:16px 0 14px;margin-top:-1px;border-top:2px solid transparent;white-space:nowrap}
+  .idx a::before,.idx kbd{display:none}
+  .idx a[aria-current="true"]{border-top-color:var(--accent)}
+  .panel{grid-column:1/3;grid-row:2;max-width:none;max-height:100%;overflow:auto;gap:10px}
+  .acts{gap:8px} .cta{padding:12px 14px;letter-spacing:.08em}
+  .hint{display:none}
+}
+/* press feedback: a small press-in on anything tappable */
+.cta,.copy,.x{transition:background-color .25s,color .25s,border-color .25s,transform .1s ease-out}
+.cta:active,.copy:active,.x:active{transform:scale(.97)}
+/* one shared line under the current section on phones; it slides rather than jumping */
+.idx .ind{display:none}
+@media (max-width:720px){ .idx{position:relative} .idx a[aria-current="true"]{border-top-color:transparent}
+  .idx .ind{display:block;position:absolute;left:0;top:-1px;height:2px;width:0;background:var(--accent);transition:transform .38s cubic-bezier(.65,0,.35,1),width .38s cubic-bezier(.65,0,.35,1)} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="steps" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<div class="k">
+  <canvas id="fx" aria-hidden="true"></canvas>
+
+  <a class="mark" href="#home" aria-label="KaiTech">
+    <svg viewBox="0 0 26 26" aria-hidden="true"><rect class="bar" x="0" y="1" width="26" height="6" rx="3"/><rect class="bar b" x="6.5" y="10" width="13" height="6" rx="3"/><rect class="bar" x="0" y="19" width="26" height="6" rx="3"/></svg>
+    <span class="wm"><span>Kai</span><span class="t">Tech</span></span>
+  </a>
+
+
+  <nav class="idx" aria-label="Sections">
+    <i class="ind" aria-hidden="true"></i>
+    <a href="#home"><kbd>1</kbd><span>KaiTech</span></a>
+    <a href="#workforce"><kbd>2</kbd><span>KaiWorkforce</span></a>
+    <a href="#billzilla"><kbd>3</kbd><span>BillZilla</span></a>
+    <a href="#inspect"><kbd>4</kbd><span>KaiInspect</span></a>
+    <a href="#drivo"><kbd>5</kbd><span>Drivo</span></a>
+    <a href="#about"><kbd>6</kbd><span>About</span></a>
+    <a href="#contact"><kbd>7</kbd><span>Contact</span></a>
+  </nav>
+
+  <section class="panel" id="panel" aria-live="polite">
+    <p class="tag" id="p-tag"></p>
+    <h1 id="p-title"></h1>
+    <p class="body" id="p-body"></p>
+    <ul class="slots" id="p-slots" hidden></ul>
+    <div class="acts" id="p-acts" hidden></div>
+  </section>
+
+  <div class="hint" aria-hidden="true">
+    <b><span id="h-n">01</span><i> / 07</i></b>
+    Drag sideways to turn<br>Scroll to move on
+    <span class="legal"><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></span>
+  </div>
+</div>
+
+<dialog class="demo" id="demo" aria-labelledby="demo-h">
+  <form id="demo-form">
+    <header><p class="tag">Book a demo</p>
+      <button type="button" class="x" data-close aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12"/></svg></button></header>
+    <h2 id="demo-h">Where can we reach you?</h2>
+    <div class="grid">
+      <label for="d-name">Your name<input id="d-name" name="name" required maxlength="120" autocomplete="name"></label>
+      <label for="d-business">Business<input id="d-business" name="business" required maxlength="160" autocomplete="organization"></label>
+      <label for="d-email">Email<input id="d-email" name="email" type="email" required maxlength="200" autocomplete="email"></label>
+      <label for="d-phone"><span>Phone <small>(optional)</small></span><input id="d-phone" name="phone" type="tel" maxlength="40" autocomplete="tel"></label>
+      <label class="wide" for="d-product">Product
+        <select id="d-product" name="product"><option>KaiWorkforce</option><option>BillZilla</option><option>KaiInspect</option><option>Drivo</option><option>Not sure yet</option></select></label>
+      <label class="wide" for="d-message"><span>Anything we should know <small>(optional)</small></span><textarea id="d-message" name="message" maxlength="2000"></textarea></label>
+      <div class="hp" aria-hidden="true"><label for="d-website">Website<input id="d-website" name="website" tabindex="-1" autocomplete="off"></label></div>
+    </div>
+    <div class="ts" id="demo-ts"></div>
+    <p class="err" id="demo-err" role="alert" hidden></p>
+    <div class="acts"><button class="cta" type="submit" id="demo-send">Send request</button><span class="alt">or email kaitechfj@gmail.com</span></div>
+  </form>
+  <div class="done" id="demo-done" hidden>
+    <header><p class="tag">Request sent</p></header>
+    <h2>Thank you. We will be in touch.</h2>
+    <p class="body" id="demo-done-p"></p>
+    <button class="cta" type="button" data-close>Close</button>
+  </div>
+</dialog>
+
+<dialog class="demo shots" id="shots" aria-labelledby="shots-h">
+  <header><p class="tag" id="shots-h">Screens</p>
+    <button type="button" class="x" data-close aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12"/></svg></button></header>
+  <figure>
+    <div class="frame"><img id="shots-img" alt=""></div>
+    <figcaption><span id="shots-cap"></span>
+      <span class="nav"><button type="button" class="x" id="shots-prev" aria-label="Previous screen"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M9 2 4 7l5 5"/></svg></button>
+        <span id="shots-n"></span>
+        <button type="button" class="x" id="shots-next" aria-label="Next screen"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="m5 2 5 5-5 5"/></svg></button></span>
+    </figcaption>
+  </figure>
+  <p class="note">Shown with sample data</p>
+</dialog>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cv = $('fx'), ctx = cv.getContext('2d');
+// lighter on small or slow devices, and when the visitor has asked to save data
+const LOW = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 3 || !!(navigator.connection && navigator.connection.saveData);
+const N = Math.min(innerWidth, innerHeight) < 600 ? (LOW ? 2600 : 4000) : (LOW ? 4500 : 8000);
+const NB = N * 0.8 | 0;            // points 0..NB are the white ones; NB..N are the blue ones, used for the part of each form that matters
+
+// <content> written by build.py from src/content.json; edit that file, not this block
+const MAIL = "kaitechfj@gmail.com";
+const MODES = [
+ {
+  "id": "home",
+  "tag": "KaiTech · Fiji",
+  "title": "KaiTech",
+  "body": "Software that keeps Fiji business moving. Four live products for paying people, sending invoices, checking the work and getting deliveries out.",
+  "slots": [
+   [
+    "Products",
+    "Four, all live"
+   ],
+   [
+    "Clients",
+    {
+     "logos": true
+    }
+   ]
+  ],
+  "acts": [
+   [
+    "Book a demo",
+    "#demo:KaiTech"
+   ],
+   [
+    "Our story",
+    "about.html",
+    1
+   ]
+  ]
+ },
+ {
+  "id": "workforce",
+  "product": "KaiWorkforce",
+  "kind": "Payroll and HR",
+  "tag": "Product 1 of 4 · payroll and HR · live",
+  "title": "KaiWorkforce",
+  "body": "Payroll and HR for staffing agencies. FNPF and PAYE are worked out for you, staff clock in at their work site, and payslips go out by email.",
+  "slots": [
+   [
+    "Payroll",
+    "FNPF · PAYE · payslips"
+   ],
+   [
+    "Attendance",
+    "Clock-in by work site"
+   ],
+   [
+    "People",
+    "Leave · timesheets · org chart"
+   ]
+  ],
+  "acts": [
+   [
+    "Book a demo",
+    "#demo:KaiWorkforce"
+   ],
+   [
+    "Details",
+    "workforce.html",
+    1
+   ]
+  ],
+  "seo": "KaiWorkforce is payroll and HR software for staffing agencies in Fiji: FNPF and PAYE worked out for you, clock-in at the work site, and payslips by email.",
+  "points": [
+   [
+    "Payroll that knows Fiji",
+    "FNPF and PAYE are calculated from your configured rates every pay run. Bonuses, allowances, rate changes, tax adjustments and termination pay are handled in the same run."
+   ],
+   [
+    "Clock-in where the work is",
+    "Staff clock in and out at their work site. Supervisors see who is on site on a live map, and the hours flow straight into timesheets."
+   ],
+   [
+    "Payslips without the printing",
+    "When the pay run is done, every employee gets their payslip by email."
+   ],
+   [
+    "Built for agencies",
+    "Each agency gets its own private workspace, with leave, timesheets, work sites, an org chart and an audit log of every change."
+   ]
+  ],
+  "hook": "FNPF and PAYE, done for you."
+ },
+ {
+  "id": "billzilla",
+  "product": "BillZilla",
+  "kind": "Invoicing",
+  "tag": "Product 2 of 4 · invoicing · live",
+  "title": "BillZilla",
+  "body": "Invoicing for Fiji businesses. Quotes become invoices with gap-free numbers, stock moves when you finalise, and customers get statements and reminders.",
+  "slots": [
+   [
+    "Documents",
+    "Quotes · invoices · credit notes"
+   ],
+   [
+    "Payments",
+    "Bank · cash · M-PAiSA · MyCash"
+   ],
+   [
+    "Currency",
+    "FJD or the customer’s own"
+   ]
+  ],
+  "acts": [
+   [
+    "Book a demo",
+    "#demo:BillZilla"
+   ],
+   [
+    "See screens",
+    "#screens:billzilla",
+    1
+   ],
+   [
+    "Details",
+    "billzilla.html",
+    1
+   ]
+  ],
+  "screens": [
+   {
+    "src": "assets/screens/billzilla-invoice.webp",
+    "w": 1440,
+    "h": 900,
+    "caption": "An invoice with its payments, credit note and reminders"
+   },
+   {
+    "src": "assets/screens/billzilla-dashboard.webp",
+    "w": 1440,
+    "h": 900,
+    "caption": "The dashboard: what is outstanding, overdue and waiting for approval"
+   }
+  ],
+  "seo": "BillZilla is invoicing software for Fiji businesses: quotes, invoices and credit notes with gap-free numbering, M-PAiSA and MyCash payments, stock and statements.",
+  "points": [
+   [
+    "Quotes to invoices, in order",
+    "A quote becomes an invoice in one step. Numbers are given when you finalise, so there are never gaps, and every invoice uses one of seven A4 layouts with your logo."
+   ],
+   [
+    "Paid the way Fiji pays",
+    "Record bank transfers, cash, cash on delivery, cheques, M-PAiSA and MyCash, including part payments."
+   ],
+   [
+    "Stock that keeps up",
+    "Stock moves when an invoice is finalised, voided or credited, and load sheets are ready for the delivery run."
+   ],
+   [
+    "Chasing done for you",
+    "Customers get emailed invoices, statements and automatic payment reminders. Prices below a product's minimum wait for the owner's approval."
+   ]
+  ],
+  "hook": "Invoices with zero gaps."
+ },
+ {
+  "id": "inspect",
+  "product": "KaiInspect",
+  "kind": "Quality control",
+  "tag": "Product 3 of 4 · quality control · live",
+  "title": "KaiInspect",
+  "body": "Cleaning quality control for facility services companies. An auditor marks each room Pass or Fail, every Fail needs a photo, and the cleaner sends back a photo of the fix.",
+  "slots": [
+   [
+    "Inspect",
+    "Saves with no signal"
+   ],
+   [
+    "Fix",
+    "WhatsApp link, no account"
+   ],
+   [
+    "Report",
+    "Customer and internal"
+   ]
+  ],
+  "acts": [
+   [
+    "Book a demo",
+    "#demo:KaiInspect"
+   ],
+   [
+    "Details",
+    "inspect.html",
+    1
+   ]
+  ],
+  "seo": "KaiInspect is cleaning quality control software for facility services companies in Fiji: room-by-room inspections, photo proof of fixes and customer reports.",
+  "points": [
+   [
+    "Room by room",
+    "An auditor walks the site and marks each checklist item Pass or Fail. Every Fail needs a photo and becomes a problem with a due date."
+   ],
+   [
+    "Works with no signal",
+    "The inspection saves on the phone after every tap and sends when the signal comes back."
+   ],
+   [
+    "Fixes with proof",
+    "The cleaner gets a WhatsApp link, opens it with no account, and photographs the fix. The auditor approves it or sends it back."
+   ],
+   [
+    "Reports for both sides",
+    "Customers get a clean report link. The company gets the full detail: every item, photo, time to fix and the most repeated problems."
+   ]
+  ],
+  "hook": "Photo, or it didn’t happen."
+ },
+ {
+  "id": "drivo",
+  "product": "Drivo",
+  "kind": "Delivery",
+  "tag": "Product 4 of 4 · delivery · live",
+  "title": "Drivo",
+  "body": "Delivery routing and fleet tracking for distribution companies. Dispatchers plan routes from confirmed invoices, drivers navigate in the app, and every vehicle shows live.",
+  "slots": [
+   [
+    "Routes",
+    "From confirmed invoices"
+   ],
+   [
+    "Drivers",
+    "Navigation · proof of delivery"
+   ],
+   [
+    "Works with",
+    "BillZilla · KaiWorkforce"
+   ]
+  ],
+  "acts": [
+   [
+    "Book a demo",
+    "#demo:Drivo"
+   ],
+   [
+    "See screens",
+    "#screens:drivo",
+    1
+   ],
+   [
+    "Details",
+    "drivo.html",
+    1
+   ]
+  ],
+  "screens": [
+   {
+    "src": "assets/screens/drivo-plan.webp",
+    "w": 780,
+    "h": 1328,
+    "caption": "Planning a route from invoices ready for delivery",
+    "phone": true
+   },
+   {
+    "src": "assets/screens/drivo-settings.webp",
+    "w": 780,
+    "h": 1328,
+    "caption": "Route settings: depot, vehicle and what to optimise for",
+    "phone": true
+   }
+  ],
+  "seo": "Drivo is delivery routing and fleet tracking for Fiji distribution companies: routes from confirmed invoices, in-app navigation, proof of delivery and live vehicles.",
+  "points": [
+   [
+    "Routes from invoices",
+    "Choose confirmed invoices, compare three route options, then assign a driver and vehicle. Optimise for fuel, time or distance."
+   ],
+   [
+    "Drivers stay in one app",
+    "Drivers navigate inside Drivo, record proof of delivery and drop pins for new shops."
+   ],
+   [
+    "See every vehicle",
+    "Dispatchers watch vehicles live and see where each run is up to."
+   ],
+   [
+    "Fiji's own roads",
+    "Maps and routing run on open-source tools built from Fiji's road data, with no paid map fees to pass on. Drivo connects to BillZilla and KaiWorkforce when you use them."
+   ]
+  ],
+  "hook": "Invoices in. Routes out."
+ },
+ {
+  "id": "about",
+  "tag": "About · founded by Kartik Nand",
+  "title": "About",
+  "body": "KaiTech exists to give Fiji businesses software they can afford, built around how work is done here instead of adapted from somewhere else.",
+  "slots": [
+   [
+    "Founder",
+    "Kartik Nand"
+   ],
+   [
+    "Clients",
+    {
+     "logos": true
+    }
+   ]
+  ],
+  "acts": [
+   [
+    "Read the story",
+    "about.html"
+   ],
+   [
+    "Book a demo",
+    "#demo:KaiTech",
+    1
+   ]
+  ]
+ },
+ {
+  "id": "contact",
+  "tag": "Get in touch",
+  "title": "Contact",
+  "body": "Book a demo of any product, or call.",
+  "slots": [
+   [
+    "Email",
+    [
+     [
+      "kaitechfj@gmail.com",
+      "mailto:kaitechfj@gmail.com",
+      1
+     ]
+    ]
+   ],
+   [
+    "Phone",
+    [
+     [
+      "+679 756 9670",
+      "tel:+6797569670"
+     ],
+     [
+      "+679 999 1115",
+      "tel:+6799991115"
+     ]
+    ]
+   ],
+   [
+    "Legal",
+    [
+     [
+      "Privacy",
+      "privacy.html"
+     ],
+     [
+      "Terms",
+      "terms.html"
+     ]
+    ]
+   ]
+  ],
+  "acts": [
+   [
+    "Book a demo",
+    "#demo:KaiTech"
+   ]
+  ]
+ }
+];
+// </content>
+
+/* ── forms: every one is the same N points, rearranged ── */
+const rnd = (a = 1) => (Math.random() - 0.5) * 2 * a, TAU = 6.2832;
+const make = fill => { const o = new Float32Array(N * 3); for (let i = 0; i < N; i++) { const p = fill(i, i >= NB); o[i * 3] = p[0]; o[i * 3 + 1] = p[1]; o[i * 3 + 2] = p[2] || 0; } return o; };
+const seg = (ax, ay, az, bx, by, bz, j = 0.02) => { const t = Math.random(); return [ax + (bx - ax) * t + rnd(j), ay + (by - ay) * t + rnd(j), az + (bz - az) * t + rnd(j)]; };
+const ring = (r, j = 0.025) => { const a = Math.random() * TAU; return [Math.cos(a) * r + rnd(j), Math.sin(a) * r + rnd(j), rnd(j)]; };
+const pill = (half, y, r) => { // a rounded bar: the logo's shape
+  const a = Math.random() * TAU, u = rnd(1), s = Math.sqrt(1 - u * u), d = r * (0.72 + 0.28 * Math.random());
+  return [rnd(half - r) + Math.cos(a) * s * d, y + Math.sin(a) * s * d, u * d];
+};
+const shapes = [
+  // the KaiTech mark: two long bars, one short blue bar between them
+  make((i, blue) => blue ? pill(0.66, 0, 0.3) : pill(1.32, i % 2 ? -0.92 : 0.92, 0.3)),
+  // KaiWorkforce: a clock face at ten past ten
+  make((i, blue) => {
+    if (blue) return i % 5 < 2 ? seg(0, 0, 0, -0.52, -0.3, 0, 0.03) : seg(0, 0, 0, 0.8, -0.47, 0, 0.025);
+    if (i % 5 < 3) return ring(1.3);
+    const h = (Math.random() * 12 | 0) / 12 * TAU, c = Math.cos(h), s = Math.sin(h), big = Math.round(h / TAU * 12) % 3 === 0;
+    return seg(c * (big ? 0.92 : 1.05), s * (big ? 0.92 : 1.05), 0, c * 1.17, s * 1.17, 0, 0.018);
+  }),
+  // BillZilla: three sheets, the front one with a header and a total
+  make((i, blue) => {
+    if (blue) return i % 3 ? seg(0.1, 0.72, -0.4, 0.62, 0.72, -0.4, 0.035) : seg(-0.62, -0.78, -0.4, -0.2, -0.78, -0.4, 0.035);
+    const k = i % 3, z = -0.4 + k * 0.4, ox = k * 0.16, oy = -k * 0.13, w = 0.8, h = 1.05, e = Math.random() * 4 | 0;
+    if (i % 5 < 3) return e === 0 ? seg(ox - w, oy - h, z, ox + w, oy - h, z, 0.008) : e === 1 ? seg(ox - w, oy + h, z, ox + w, oy + h, z, 0.008)
+      : e === 2 ? seg(ox - w, oy - h, z, ox - w, oy + h, z, 0.008) : seg(ox + w, oy - h, z, ox + w, oy + h, z, 0.008);
+    const row = -0.42 + (Math.random() * 5 | 0) * 0.21;
+    return seg(ox - 0.62, oy + row, z, ox + 0.62, oy + row, z, 0.008);
+  }),
+  // KaiInspect: a pass mark inside its ring
+  make((i, blue) => blue ? (i % 3 ? seg(-0.2, 0.48, 0, 0.7, -0.5, 0, 0.06) : seg(-0.66, 0.02, 0, -0.2, 0.48, 0, 0.06)) : ring(1.3, 0.04)),
+  // Drivo: a route with four stops over a street grid
+  (() => {
+    const path = t => [-1.4 + 2.8 * t, 0.45, 0.85 * Math.sin(t * 5.4) * (0.4 + 0.6 * t)], stops = [0.04, 0.33, 0.66, 0.96];
+    return make((i, blue) => {
+      if (!blue) { const l = ((Math.random() * 7 | 0) - 3) * 0.48; return Math.random() < 0.5 ? seg(l, 0.47, -1.44, l, 0.47, 1.44, 0.006) : seg(-1.44, 0.47, l, 1.44, 0.47, l, 0.006); }
+      if (i % 5 < 3) { const p = path(Math.random()); return [p[0] + rnd(0.02), p[1] + rnd(0.02), p[2] + rnd(0.02)]; }
+      const p = path(stops[Math.random() * 4 | 0]);
+      if (Math.random() < 0.4) return seg(p[0], 0.45, p[2], p[0], -0.2, p[2], 0.012);
+      const a = Math.random() * TAU, u = rnd(1), s = Math.sqrt(1 - u * u);
+      return [p[0] + Math.cos(a) * s * 0.13, -0.3 + u * 0.13, p[2] + Math.sin(a) * s * 0.13];
+    });
+  })(),
+  // About: the Fiji group from above. The two main islands in white, the outer chains in blue
+  (() => {
+    const isl = [[-0.7, 0.25, 0.74, 0.5, 0.1, 50], [0.52, -0.62, 0.7, 0.17, -0.5, 24], [1.2, -0.32, 0.09, 0.25, 0.5, 4], [-0.35, 1.1, 0.3, 0.06, -0.35, 5], [0.12, 0.3, 0.07, 0.05, 0, 2], [-0.08, -0.1, 0.05, 0.08, 0, 2]];
+    const total = isl.reduce((n, v) => n + v[5], 0), dots = [];
+    for (let k = 0; k < 11; k++) dots.push([1.45 + 0.16 * Math.sin(k * 1.7), -0.45 + k * 0.16]);
+    for (let k = 0; k < 7; k++) dots.push([-1.5 + k * 0.055, -0.1 - k * 0.11]);
+    return make((i, blue) => {
+      if (blue) { const d = dots[Math.random() * dots.length | 0], a = Math.random() * TAU, q = Math.sqrt(Math.random()) * 0.04; return [d[0] + Math.cos(a) * q, d[1] + Math.sin(a) * q, rnd(0.01)]; }
+      let pick = Math.random() * total, v = isl[0]; for (const c of isl) { if ((pick -= c[5]) < 0) { v = c; break; } }
+      const a = Math.random() * TAU, q = (Math.random() < 0.3 ? 1 : Math.sqrt(Math.random())) * (1 + 0.09 * Math.sin(3 * a + v[0] * 9) + 0.05 * Math.sin(7 * a));
+      const x = Math.cos(a) * q * v[2], y = Math.sin(a) * q * v[3], c = Math.cos(v[4]), n = Math.sin(v[4]);
+      return [v[0] + x * c - y * n, v[1] + x * n + y * c, rnd(0.015)];
+    });
+  })(),
+  // Contact: a globe with one orbit
+  make((i, blue) => {
+    if (blue) { const a = Math.random() * TAU, r = 1.55 + rnd(0.06), x = Math.cos(a) * r; return [x, x * 0.32 + rnd(0.012), Math.sin(a) * r]; }
+    const y = 1 - 2 * (i + 0.5) / NB, r = Math.sqrt(1 - y * y), a = i * 2.39996323;
+    return [Math.cos(a) * r * 1.1, y * 1.1, Math.sin(a) * r * 1.1];
+  }),
+];
+
+/* colour: blue points take the logo's blue, the rest run from pale blue to white */
+const pos = new Float32Array(shapes[0]), ease = new Float32Array(N), order = new Uint32Array(N);
+const from = new Float32Array(N * 3), dur = new Float32Array(N), lag = new Float32Array(N), bow = new Float32Array(N * 3);
+let moveT = 0, lastTarget = null;
+const inOut = x => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const BUCKETS = 9, palette = [], bucket = new Uint8Array(N);
+{
+  const cs = getComputedStyle(document.documentElement), hex = n => { const h = cs.getPropertyValue(n).trim().slice(1); return [0, 2, 4].map(k => parseInt(h.substr(k, 2), 16)); };
+  const a = hex('--cool'), w = hex('--mid'), b = hex('--warm');
+  for (let k = 0; k < BUCKETS; k++) {
+    const t = k / (BUCKETS - 1), u = t < 0.5 ? t * 2 : (t - 0.5) * 2, p = t < 0.5 ? a : w, q = t < 0.5 ? w : b;
+    palette.push(`rgb(${p.map((v, j) => Math.round(v + (q[j] - v) * u)).join(',')})`);
+  }
+  for (let i = 0; i < N; i++) { bucket[i] = i >= NB ? Math.random() * 3 | 0 : 5 + (Math.random() * 4 | 0); ease[i] = 0.035 + Math.random() * 0.075; order[i] = i; }
+  // each point gets its own travel time, start delay and a sideways bow, so moves between forms follow arcs, not straight lines
+  for (let i = 0; i < N; i++) { dur[i] = 0.85 + (0.11 - ease[i]) / 0.075 * 0.75; lag[i] = Math.random() * 0.22;
+    const a = Math.random() * 6.2832, u = rnd(1), q = Math.sqrt(1 - u * u); bow[i * 3] = Math.cos(a) * q * 0.6; bow[i * 3 + 1] = u * 0.6; bow[i * 3 + 2] = (Math.sin(a) * q + (i % 2 ? 1 : -1)) * 0.7; }
+  order.sort((p, q) => bucket[p] - bucket[q]);
+}
+
+/* ── view ── */
+let W = innerWidth, H = 0, dpr = 1, stride = 1, slow = 0, lastT = 0, mode = 0, yaw = 0, pitch = 0, uy = 0, up = 0, vy = 0, vp = 0, px = 0, py = 0, spin = 0, drag = null;
+function resize() { dpr = Math.min(devicePixelRatio || 1, W < 720 || LOW ? 1.5 : 2); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; }
+new ResizeObserver(resize).observe(cv); resize();
+
+function frame(now) {
+  const t = now / 1000, target = shapes[mode], narrow = W < 720, globe = mode === 6, ground = mode === 4;
+  if (!drag) { uy += vy; up += vp; vy *= 0.94; vp *= 0.94; uy *= 0.985; up *= 0.97; }
+  if (globe && !reduced) spin += 0.0032; else spin *= 0.94;
+  const sway = reduced || globe ? 0 : Math.sin(t * 0.42) * (ground ? 0.5 : 0.4);
+  const ty = uy + spin + sway + px * 0.3, tp = Math.max(-1.1, Math.min(1.1, up + py * 0.22 + (ground ? 0.5 : globe ? -0.25 : 0)));
+  if (!drag) { yaw += (ty - yaw) * 0.12; pitch += (tp - pitch) * 0.12; }   // while held, the object follows the pointer directly
+  if (target !== lastTarget) { from.set(pos); moveT = t; lastTarget = target; }
+  const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const cx = W * (narrow ? 0.5 : 0.68), cyy = H * (narrow ? 0.3 : 0.42);
+  const scale = Math.min(W / (narrow ? 3.6 : 6.4), H / (narrow ? 5.6 : 4)) * dpr, base = dpr * (narrow ? 1.25 : 1.45);
+
+  // if frames keep running long, draw every second point (positions still all move, so forms stay whole)
+  if (lastT) { const dt = now - lastT; slow = dt > 28 && dt < 200 ? slow + 1 : Math.max(0, slow - 1); if (slow > 45 && stride === 1) stride = 2; }
+  lastT = now;
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
+  ctx.globalCompositeOperation = 'lighter';
+  let last = -1;
+  for (let o = 0; o < N; o++) {
+    const i = order[o], j = i * 3;
+    const k = reduced ? 1 : inOut(Math.min(1, Math.max(0, (t - moveT - lag[i]) / dur[i])));
+    const dx = target[j] - from[j], dy = target[j + 1] - from[j + 1], dz = target[j + 2] - from[j + 2];
+    const arc = Math.sin(Math.PI * k) * Math.sqrt(dx * dx + dy * dy + dz * dz) * 0.32;
+    const x = pos[j] = from[j] + dx * k + bow[j] * arc, y = pos[j + 1] = from[j + 1] + dy * k + bow[j + 1] * arc, z = pos[j + 2] = from[j + 2] + dz * k + bow[j + 2] * arc;
+    const x1 = x * cy + z * sy, z1 = -x * sy + z * cy, y1 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
+    if (stride > 1 && o % stride) continue;
+    const f = 4 / (4 + z2); if (f <= 0) continue;
+    if (bucket[i] !== last) { last = bucket[i]; ctx.fillStyle = palette[last]; }
+    const blue = i >= NB;
+    ctx.globalAlpha = Math.max(0.14, Math.min(1, (blue ? 0.95 : 0.6) - z2 * 0.4));
+    const s = base * f * f * (blue ? 1.5 : 1);
+    ctx.fillRect(cx * dpr + x1 * scale * f - s / 2, cyy * dpr + y1 * scale * f - s / 2, s, s);
+  }
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(frame);
+}
+
+/* ── input ── */
+cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; vy = vp = 0; cv.setPointerCapture(e.pointerId); });
+cv.addEventListener('pointermove', e => {
+  if (!drag) return;
+  vy = (e.clientX - drag.x) * 0.006; vp = (e.clientY - drag.y) * 0.006; uy += vy; up += vp; drag.x = e.clientX; drag.y = e.clientY;
+  yaw += vy; pitch = Math.max(-1.1, Math.min(1.1, pitch + vp));
+});
+const end = () => { drag = null; };
+cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { px = e.clientX / innerWidth - 0.5; py = e.clientY / innerHeight - 0.5; } }, { passive: true });
+
+/* ── sections ── */
+const panel = $('panel'), links = [...document.querySelectorAll('.idx a')];
+function fill() {
+  const m = MODES[mode];
+  $('p-tag').textContent = m.tag; const h = $('p-title'); h.className = m.id === 'home' ? 'brand' : '';
+  if (m.id === 'home') h.innerHTML = '<span class="wm"><span>Kai</span><span class="t">Tech</span></span>'; else h.textContent = m.title; $('p-body').textContent = m.body;
+  const ul = $('p-slots'); ul.hidden = !m.slots; ul.textContent = '';
+  (m.slots || []).forEach(([label, val]) => {
+    const li = document.createElement('li'), k = document.createElement('span'), v = document.createElement('span'); k.textContent = label;
+    if (typeof val === 'string') v.textContent = val;
+    else if (val.logos) { v.className = 'logos'; v.innerHTML = LOGOS; }
+    else { v.className = 'raw'; val.forEach(([text, href, copy], n) => {
+      if (n) v.append(' · ');
+      const x = document.createElement('a'); x.href = href; x.textContent = text; v.append(x);
+      if (copy) { const c = document.createElement('button'); c.type = 'button'; c.className = 'copy'; c.textContent = 'Copy';
+        c.addEventListener('click', () => { (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => { c.textContent = 'Copied'; pulse(c); },
+          () => { const g = document.createRange(); g.selectNodeContents(x); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(g); }); });
+        v.append(c); }
+    }); }
+    li.append(k, v); ul.appendChild(li);
+  });
+  const acts = $('p-acts'); acts.textContent = ''; acts.hidden = !m.acts;
+  (m.acts || []).forEach(([text, href, ghost]) => {
+    const form = href.startsWith('#demo:'), shots = href.startsWith('#screens:'), x = document.createElement(form || shots ? 'button' : 'a');
+    x.className = 'cta' + (ghost ? ' ghost' : ''); x.textContent = text;
+    if (form) { x.type = 'button'; x.addEventListener('click', ev => openDemo(href.slice(6), ev.currentTarget)); }
+    else if (shots) { x.type = 'button'; x.addEventListener('click', ev => openShots(href.slice(9), ev.currentTarget)); }
+    else x.href = href;
+    acts.appendChild(x);
+  });
+  $('h-n').textContent = '0' + (mode + 1);
+  links.forEach((a, i) => a.setAttribute('aria-current', i === mode));
+  const ind = document.querySelector('.idx .ind'), on = links[mode];
+  if (ind && on) { ind.style.width = on.offsetWidth + 'px'; ind.style.transform = `translateX(${on.offsetLeft}px)`; }
+  const bar = links[0].parentNode, cur = links[mode];   // phone: keep the current section's name in view
+  if (bar.scrollWidth > bar.clientWidth) bar.scrollTo({ left: cur.offsetLeft - (bar.clientWidth - cur.offsetWidth) / 2, behavior: reduced ? 'auto' : 'smooth' });
+}
+// section change: the old text leaves while the new text arrives (no blank gap), and the new details settle one after another
+let ghost = null;
+function setMode(i, instant) {
+  i = Math.max(0, Math.min(MODES.length - 1, i)); if (i === mode && !instant) return;
+  mode = i;
+  if (instant || reduced || !panel.animate) { fill(); }
+  else {
+    if (ghost) ghost.remove();
+    const host = panel.parentNode.getBoundingClientRect(), r = panel.getBoundingClientRect();
+    ghost = panel.cloneNode(true); ghost.removeAttribute('id'); ghost.setAttribute('aria-hidden', 'true'); ghost.classList.add('leaving');
+    ghost.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+    Object.assign(ghost.style, { left: r.left - host.left + 'px', top: r.top - host.top + 'px', width: r.width + 'px', height: r.height + 'px', overflow: 'hidden' });
+    ghost.scrollTop = panel.scrollTop;
+    panel.parentNode.appendChild(ghost);
+    const g = ghost; g.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-8px)' }], { duration: 210, easing: 'cubic-bezier(.4,0,1,1)', fill: 'forwards' })
+      .finished.then(() => { g.remove(); if (ghost === g) ghost = null; });
+    fill();
+    const parts = [...panel.children].filter(el => !el.hidden).flatMap(el => el.matches('.slots,.acts') ? [...el.children] : [el]);
+    parts.forEach((el, k) => el.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
+      { duration: 280, delay: 60 + k * 30, easing: 'cubic-bezier(.2,.7,.1,1)', fill: 'backwards' }));
+  }
+  if (location.hash.slice(1) !== MODES[i].id) try { history.replaceState(null, '', '#' + MODES[i].id); } catch (e) { location.hash = MODES[i].id; }
+}
+const steps = document.querySelector('.steps'), stepH = () => steps.firstElementChild.offsetHeight || innerHeight;
+function go(i, instant) {
+  i = Math.max(0, Math.min(MODES.length - 1, i));
+  scrollTo({ top: i * stepH(), behavior: instant || reduced ? 'auto' : 'smooth' });
+  if (instant) setMode(i, true);
+}
+addEventListener('scroll', () => setMode(Math.round(scrollY / stepH())), { passive: true });
+
+const LOGOS = '<img src="assets/clients/nafco.png" alt="NAFCO" width="51" height="15">'
+  + '<span class="tp"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x=".75" y=".75" width="22.5" height="22.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 4l8 8-8 8zM20 4l-8 8 8 8z" fill="currentColor"/><path d="M12 7l2.2 5L12 17l-2.2-5z" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>Totoka Pacific</span>';
+
+/* ── dialogs grow out of the button that opened them, and shrink back into it ── */
+function pulse(el) {   // one soft pulse to confirm something worked
+  if (!reduced && el.animate) el.animate([{ transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(76,141,245,.55)' }, { transform: 'scale(1.06)', boxShadow: '0 0 0 10px rgba(76,141,245,0)' }, { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(76,141,245,0)' }], { duration: 520, easing: 'ease-out' });
+}
+const origins = new WeakMap();
+function originFor(d, trigger) {
+  if (!trigger || !trigger.getBoundingClientRect) return '50% 50%';
+  const b = trigger.getBoundingClientRect(), r = d.getBoundingClientRect();
+  return `${b.left + b.width / 2 - r.left}px ${b.top + b.height / 2 - r.top}px`;
+}
+function openDialog(d, trigger) {
+  document.documentElement.classList.add('locked');
+  if (!d.open) d.showModal();
+  if (reduced || !d.animate) return;
+  const o = originFor(d, trigger); origins.set(d, trigger || null); d.style.transformOrigin = o;
+  d.animate([{ opacity: 0, transform: 'scale(.95)' }, { opacity: 1, transform: 'none' }], { duration: 200, easing: 'cubic-bezier(.2,.7,.1,1)' });
+  d.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease-out', pseudoElement: '::backdrop' });
+}
+function closeDialog(d) {
+  if (!d.open || d.dataset.closing) return;
+  if (reduced || !d.animate) return d.close();
+  d.dataset.closing = '1'; d.style.transformOrigin = originFor(d, origins.get(d));
+  d.animate([{ opacity: 0 }], { duration: 160, easing: 'ease-in', pseudoElement: '::backdrop', fill: 'forwards' });
+  d.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.95)' }], { duration: 160, easing: 'cubic-bezier(.4,0,1,1)', fill: 'forwards' })
+    .finished.then(() => { d.close(); d.getAnimations({ subtree: false }).forEach(a => a.cancel()); delete d.dataset.closing; });
+}
+for (const d of document.querySelectorAll('dialog')) d.addEventListener('cancel', e => { e.preventDefault(); closeDialog(d); });   // Escape key
+
+/* ── product screens ── */
+const sd = $('shots'), simg = $('shots-img');
+let sList = [], sAt = 0;
+function showShot(k) {
+  sAt = (k + sList.length) % sList.length; const it = sList[sAt];
+  simg.src = it.src; simg.width = it.w; simg.height = it.h; simg.alt = it.caption;
+  simg.style.maxWidth = it.phone ? 'min(100%, 380px)' : '100%';
+  $('shots-cap').textContent = it.caption; $('shots-n').textContent = (sAt + 1) + ' / ' + sList.length;
+  $('shots-prev').hidden = $('shots-next').hidden = $('shots-n').hidden = sList.length < 2;
+}
+function openShots(id, trigger) {
+  const m = MODES.find(x => x.id === id); if (!m || !m.screens) return;
+  sList = m.screens; $('shots-h').textContent = m.title + ' · screens'; showShot(0);
+  openDialog(sd, trigger);
+}
+$('shots-prev').addEventListener('click', () => showShot(sAt - 1));
+$('shots-next').addEventListener('click', () => showShot(sAt + 1));
+sd.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') showShot(sAt - 1); if (e.key === 'ArrowRight') showShot(sAt + 1); });
+sd.addEventListener('click', e => { if (e.target === sd || e.target.closest('[data-close]')) closeDialog(sd); });
+sd.addEventListener('close', () => document.documentElement.classList.remove('locked'));
+
+/* ── demo request form ── */
+const dlg = $('demo'), form = $('demo-form'), done = $('demo-done'), err = $('demo-err'), sendBtn = $('demo-send');
+const FALLBACK = 'Please email ' + MAIL + ' or call +679 756 9670 instead.';
+let tsReady = null;
+function spamCheck() {   // Cloudflare Turnstile, loaded only if the server has a site key set
+  if (tsReady) return tsReady;
+  tsReady = fetch('api/demo').then(r => r.json()).then(c => {
+    if (!c.turnstile) return;
+    return new Promise(res => {
+      window.onKaiTurnstile = () => { window.turnstile.render('#demo-ts', { sitekey: c.turnstile, theme: 'dark', size: 'flexible' }); res(); };
+      const sc = document.createElement('script'); sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onKaiTurnstile&render=explicit'; sc.async = true;
+      sc.onerror = () => res(); document.head.appendChild(sc);
+    });
+  }).catch(() => {});
+  return tsReady;
+}
+function openDemo(what, trigger) {
+  spamCheck();
+  const pick = $('d-product'); pick.value = [...pick.options].some(o => o.value === what) ? what : 'Not sure yet';
+  form.hidden = false; done.hidden = true; err.hidden = true; sendBtn.disabled = false; sendBtn.textContent = 'Send request';
+  openDialog(dlg, trigger);
+}
+dlg.addEventListener('close', () => {
+  document.documentElement.classList.remove('locked');
+  if (/^#demo/.test(location.hash)) try { history.replaceState(null, '', '#' + MODES[mode].id); } catch (e) {}
+});
+dlg.addEventListener('click', e => { if (e.target === dlg || e.target.closest('[data-close]')) closeDialog(dlg); });
+form.addEventListener('submit', async e => {
+  e.preventDefault(); err.hidden = true; sendBtn.disabled = true; sendBtn.textContent = 'Sending';
+  const data = Object.fromEntries(new FormData(form));
+  let problem = '';
+  try {
+    const res = await fetch('api/demo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    if (!res.ok) { const j = await res.json().catch(() => ({})); problem = (res.status === 400 || res.status === 429) && j.error ? j.error : 'We could not send your request. ' + FALLBACK; }
+  } catch (x) { problem = 'We could not send your request. ' + FALLBACK; }
+  if (problem) { err.textContent = problem; err.hidden = false; sendBtn.disabled = false; sendBtn.textContent = 'Send request'; return; }
+  $('demo-done-p').textContent = 'We have your request for ' + (data.product === 'Not sure yet' ? 'a demo' : 'a ' + data.product + ' demo') + ' and will reply to ' + data.email + '.';
+  form.reset(); if (window.turnstile) try { window.turnstile.reset('#demo-ts'); } catch (x) {}
+  form.hidden = true; done.hidden = false; done.querySelector('[data-close]').focus();
+  if (!reduced && done.animate) { done.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'cubic-bezier(.2,.7,.1,1)' }); pulse(done.querySelector('h2')); }
+});
+const fromHash = () => Math.max(0, MODES.findIndex(m => m.id === location.hash.slice(1)));
+const demoFromHash = () => { const m = MODES.find(x => '#demo-' + x.id === location.hash); return m ? m.product || 'KaiTech' : 'KaiTech'; };
+addEventListener('hashchange', () => { if (/^#demo/.test(location.hash)) openDemo(demoFromHash()); else go(fromHash()); });
+links.forEach((a, i) => a.addEventListener('click', e => { e.preventDefault(); go(i); }));
+document.querySelector('.mark').addEventListener('click', e => { e.preventDefault(); go(0); });
+addEventListener('keydown', e => {
+  if (dlg.open || sd.open || (e.target.closest && e.target.closest('input,textarea,select'))) return;
+  const k = e.key, next = k === 'ArrowDown' || k === 'ArrowRight' || k === 'PageDown' || k === ' ', prev = k === 'ArrowUp' || k === 'ArrowLeft' || k === 'PageUp';
+  if (next || prev) { e.preventDefault(); go(mode + (next ? 1 : -1)); }
+  else if (k >= '1' && k <= '7') go(+k - 1);
+});
+const wantDemo = /^#demo/.test(location.hash) && demoFromHash();   // read before the hash is rewritten to the section's name
+mode = fromHash(); if (mode) pos.set(shapes[mode]);
+setMode(mode, true); requestAnimationFrame(frame);
+if (mode) requestAnimationFrame(() => scrollTo(0, mode * stepH()));
+if (wantDemo) openDemo(wantDemo);
+})();
+</script>

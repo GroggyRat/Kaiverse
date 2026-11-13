@@ -21,7 +21,7 @@ html::-webkit-scrollbar{display:none}
 .steps i{display:block;height:60vh;height:60svh;scroll-snap-align:start;scroll-snap-stop:always}   /* shorter than the screen, so a short swipe is enough */
 body{background:var(--bg0);color:var(--fg);font-family:var(--text);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
 .k{position:fixed;inset:0;overflow:hidden;
-  background:radial-gradient(110% 85% at 62% 42%,var(--bg1) 0%,var(--bg0) 64%);
+  background:radial-gradient(110% 85% at 62% 42%,var(--glow,var(--bg1)) 0%,var(--bg0) 64%);transition:background 2s;
   padding-top:calc(22px + env(safe-area-inset-top,0px));padding-bottom:calc(22px + env(safe-area-inset-bottom,0px));padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px));
   display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr) auto;gap:16px 24px}
 #fx{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y;cursor:grab}
@@ -142,11 +142,29 @@ html.locked{overflow:hidden}
 .idx .ind{display:none}
 @media (max-width:720px){ .idx{position:relative} .idx a[aria-current="true"]{border-top-color:transparent}
   .idx .ind{display:block;position:absolute;left:0;top:-1px;height:2px;width:0;background:var(--accent);transition:transform .38s cubic-bezier(.65,0,.35,1),width .38s cubic-bezier(.65,0,.35,1)} }
+/* picker, your name, toast */
+.pick{display:flex;flex-direction:column;gap:9px}
+.pick p{margin:0;font:400 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--dim)}
+.pick div{display:flex;flex-wrap:wrap;gap:7px}
+.pick button{font:500 14px/1 var(--text);color:var(--fg);background:rgba(3,7,18,.55);border:1px solid var(--line);border-radius:999px;padding:10px 14px;cursor:pointer;
+  transition:border-color .2s,background-color .2s,color .2s,transform .1s ease-out}
+.pick button:hover{border-color:var(--accent)} .pick button:active{transform:scale(.97)}
+.pick button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg0)}
+.yours{display:flex;flex-direction:column;gap:8px;max-width:26rem}
+.yours label{font:400 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--dim)}
+.yours input{font:500 18px/1.2 var(--brand);letter-spacing:-.01em;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(3,7,18,.7);color:var(--fg)}
+.yours input:focus{outline:none;border-color:var(--accent)}
+.toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);z-index:30;opacity:0;pointer-events:none;
+  padding:10px 16px;border-radius:999px;background:var(--fg);color:var(--bg0);font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;
+  transition:opacity .25s,transform .3s cubic-bezier(.2,.7,.1,1)}
+.toast.on{opacity:1;transform:translateX(-50%)}
+@media (max-width:720px){ .pick button{font-size:13px;padding:9px 12px} .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
 <div class="steps" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 
+<p class="toast" id="toast" role="status"></p>
 <div class="k">
   <canvas id="fx" aria-hidden="true"></canvas>
 
@@ -177,7 +195,7 @@ html.locked{overflow:hidden}
 
   <div class="hint" aria-hidden="true">
     <b><span id="h-n">01</span><i> / 07</i></b>
-    Drag sideways to turn<br>Scroll to move on
+    Drag to turn · tap to scatter<br>Scroll to morph
     <span class="legal"><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></span>
   </div>
 </div>
@@ -666,7 +684,9 @@ const shapes = [
 /* colour: blue points take the logo's blue, the rest run from pale blue to white */
 const pos = new Float32Array(shapes[0]), ease = new Float32Array(N), order = new Uint32Array(N);
 const from = new Float32Array(N * 3), dur = new Float32Array(N), lag = new Float32Array(N), bow = new Float32Array(N * 3);
-let moveT = 0, lastTarget = null;
+let ov = null;   // an override shape (picker, your name, bula) shown over the scroll for a while
+const ox = new Float32Array(N), oy = new Float32Array(N), rnd3 = new Float32Array(N * 3), handT = new Float32Array(N);
+let burst = 0, mx = -1e9, my = -1e9, smoothY = scrollY;
 const inOut = x => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 const BUCKETS = 9, palette = [], bucket = new Uint8Array(N);
 {
@@ -678,6 +698,7 @@ const BUCKETS = 9, palette = [], bucket = new Uint8Array(N);
   }
   for (let i = 0; i < N; i++) { bucket[i] = i >= NB ? Math.random() * 3 | 0 : 5 + (Math.random() * 4 | 0); ease[i] = 0.035 + Math.random() * 0.075; order[i] = i; }
   // each point gets its own travel time, start delay and a sideways bow, so moves between forms follow arcs, not straight lines
+  for (let i = 0; i < N; i++) { const b = Math.random() * 6.2832, v = rnd(1), w = Math.sqrt(1 - v * v); rnd3[i * 3] = Math.cos(b) * w; rnd3[i * 3 + 1] = v; rnd3[i * 3 + 2] = Math.sin(b) * w; handT[i] = Math.random(); }
   for (let i = 0; i < N; i++) { dur[i] = 0.85 + (0.11 - ease[i]) / 0.075 * 0.75; lag[i] = Math.random() * 0.22;
     const a = Math.random() * 6.2832, u = rnd(1), q = Math.sqrt(1 - u * u); bow[i * 3] = Math.cos(a) * q * 0.6; bow[i * 3 + 1] = u * 0.6; bow[i * 3 + 2] = (Math.sin(a) * q + (i % 2 ? 1 : -1)) * 0.7; }
   order.sort((p, q) => bucket[p] - bucket[q]);
@@ -689,16 +710,24 @@ function resize() { dpr = Math.min(devicePixelRatio || 1, W < 720 || LOW ? 1.5 :
 new ResizeObserver(resize).observe(cv); resize();
 
 function frame(now) {
-  const t = now / 1000, target = shapes[mode], narrow = W < 720, globe = mode === 6, ground = mode === 4;
+  const t = now / 1000, narrow = W < 720, last6 = shapes.length - 1;
+  // where the scroll is between two sections decides the blend: swipe halfway and the form is halfway to the next one
+  smoothY += (scrollY - smoothY) * (reduced ? 1 : 0.2);
+  const su = Math.max(0, Math.min(last6, smoothY / stepH())), si = Math.min(last6 - 1, Math.floor(su)), f = su - si;
+  const A = shapes[si], B = shapes[si + 1], near = Math.round(su);
+  const globe = !ov && near === 6, ground = !ov && near === 4, held = ov && !ov.back;
   if (!drag) { uy += vy; up += vp; vy *= 0.94; vp *= 0.94; uy *= 0.985; up *= 0.97; }
   if (globe && !reduced) spin += 0.0032; else spin *= 0.94;
-  const sway = reduced || globe ? 0 : Math.sin(t * 0.42) * (ground ? 0.5 : 0.4);
+  const sway = reduced || globe ? 0 : Math.sin(t * 0.42) * (ground ? 0.5 : 0.4) * (held ? 0.35 : 1);
   const ty = uy + spin + sway + px * 0.3, tp = Math.max(-1.1, Math.min(1.1, up + py * 0.22 + (ground ? 0.5 : globe ? -0.25 : 0)));
   if (!drag) { yaw += (ty - yaw) * 0.12; pitch += (tp - pitch) * 0.12; }   // while held, the object follows the pointer directly
-  if (target !== lastTarget) { from.set(pos); moveT = t; lastTarget = target; }
+  if (ov && !ov.back && t > ov.until) release(t);
+  if (ov && ov.back && t - ov.back > 1.7) ov = null;
+  burst *= reduced ? 0 : 0.93;
   const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
   const cx = W * (narrow ? 0.5 : 0.68), cyy = H * (narrow ? 0.3 : 0.42);
   const scale = Math.min(W / (narrow ? 3.6 : 6.4), H / (narrow ? 5.6 : 4)) * dpr, base = dpr * (narrow ? 1.25 : 1.45);
+  const rect = cv.getBoundingClientRect(), pmx = (mx - rect.left) * dpr, pmy = (my - rect.top) * dpr, R = (narrow ? 70 : 120) * dpr;
 
   // if frames keep running long, draw every second point (positions still all move, so forms stay whole)
   if (lastT) { const dt = now - lastT; slow = dt > 28 && dt < 200 ? slow + 1 : Math.max(0, slow - 1); if (slow > 45 && stride === 1) stride = 2; }
@@ -708,33 +737,86 @@ function frame(now) {
   let last = -1;
   for (let o = 0; o < N; o++) {
     const i = order[o], j = i * 3;
-    const k = reduced ? 1 : inOut(Math.min(1, Math.max(0, (t - moveT - lag[i]) / dur[i])));
-    const dx = target[j] - from[j], dy = target[j + 1] - from[j + 1], dz = target[j + 2] - from[j + 2];
-    const arc = Math.sin(Math.PI * k) * Math.sqrt(dx * dx + dy * dy + dz * dz) * 0.32;
-    const x = pos[j] = from[j] + dx * k + bow[j] * arc, y = pos[j + 1] = from[j + 1] + dy * k + bow[j + 1] * arc, z = pos[j + 2] = from[j + 2] + dz * k + bow[j + 2] * arc;
+    // 1. the scroll blend, staggered: halfway, some points have arrived and some have not left
+    const k = reduced ? (f > 0.5 ? 1 : 0) : inOut(Math.min(1, Math.max(0, (f - 0.1 - lag[i] * 2.6) / 0.24)));
+    const dx = B[j] - A[j], dy = B[j + 1] - A[j + 1], dz = B[j + 2] - A[j + 2];
+    const arc = Math.sin(Math.PI * k) * Math.sqrt(dx * dx + dy * dy + dz * dz) * 0.18;
+    let x = A[j] + dx * k + bow[j] * arc, y = A[j + 1] + dy * k + bow[j + 1] * arc, z = A[j + 2] + dz * k + bow[j + 2] * arc;
+    // 2. an override travels to its own shape, and later back to where the scroll says
+    if (ov) {
+      const tgt = ov.back ? null : ov.shape, q = reduced ? 1 : inOut(Math.min(1, Math.max(0, (t - (ov.back || ov.t0) - lag[i]) / dur[i])));
+      const ex = tgt ? tgt[j] : x, ey = tgt ? tgt[j + 1] : y, ez = tgt ? tgt[j + 2] : z, ax = from[j], ay = from[j + 1], az = from[j + 2];
+      const bend = Math.sin(Math.PI * q) * 0.25 * Math.hypot(ex - ax, ey - ay, ez - az);
+      x = ax + (ex - ax) * q + bow[j] * bend; y = ay + (ey - ay) * q + bow[j + 1] * bend; z = az + (ez - az) * q + bow[j + 2] * bend;
+    }
+    pos[j] = x; pos[j + 1] = y; pos[j + 2] = z;
+    // 3. a tap scatters them for a moment
+    const e = burst * (0.8 + lag[i] * 4); x += rnd3[j] * e; y += rnd3[j + 1] * e; z += rnd3[j + 2] * e;
     const x1 = x * cy + z * sy, z1 = -x * sy + z * cy, y1 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
     if (stride > 1 && o % stride) continue;
-    const f = 4 / (4 + z2); if (f <= 0) continue;
+    const fz = 4 / (4 + z2); if (fz <= 0) continue;
+    let X = cx * dpr + x1 * scale * fz, Y = cyy * dpr + y1 * scale * fz;
+    // 4. the pointer pushes points out of its way; they spring back
+    const ddx = X + ox[i] - pmx, ddy = Y + oy[i] - pmy, d2 = ddx * ddx + ddy * ddy; let tx = 0, tyy = 0;
+    if (d2 < R * R && !reduced && !drag) { const d = Math.sqrt(d2) + 0.01, push = (1 - d / R) * (narrow ? 30 : 48) * dpr; tx = ddx / d * push; tyy = ddy / d * push; }
+    ox[i] += (tx - ox[i]) * 0.2; oy[i] += (tyy - oy[i]) * 0.2; X += ox[i]; Y += oy[i];
     if (bucket[i] !== last) { last = bucket[i]; ctx.fillStyle = palette[last]; }
     const blue = i >= NB;
     ctx.globalAlpha = Math.max(0.14, Math.min(1, (blue ? 0.95 : 0.6) - z2 * 0.4));
-    const s = base * f * f * (blue ? 1.5 : 1);
-    ctx.fillRect(cx * dpr + x1 * scale * f - s / 2, cyy * dpr + y1 * scale * f - s / 2, s, s);
+    const sz = base * fz * fz * (blue ? 1.5 : 1);
+    ctx.fillRect(X - sz / 2, Y - sz / 2, sz, sz);
   }
   ctx.globalAlpha = 1;
   requestAnimationFrame(frame);
 }
+function showShape(shape, seconds) { const t = performance.now() / 1000; ov = { shape, t0: t, until: seconds ? t + seconds : Infinity, back: 0 }; from.set(pos); }
+function release(t = performance.now() / 1000) { if (ov && !ov.back) { ov.back = t; from.set(pos); } }
+
+/* ── the real time in Suva: it sets the clock's hands and the colour of the light ── */
+const fijiNow = () => { try { const p = new Intl.DateTimeFormat('en-GB', { timeZone: 'Pacific/Fiji', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(new Date());
+  return { h: +p.find(x => x.type === 'hour').value % 24, m: +p.find(x => x.type === 'minute').value }; } catch (e) { const d = new Date(); return { h: d.getHours(), m: d.getMinutes() }; } };
+let suvaText = '';
+function setClock() {
+  const { h, m } = fijiNow(), clock = shapes[1], hourA = ((h % 12) + m / 60) / 12 * 6.2832, minA = m / 60 * 6.2832;
+  for (let i = NB; i < N; i++) {   // the blue points are the hands: two in five on the hour hand, the rest on the minute hand
+    const hour = i % 5 < 2, a = hour ? hourA : minA, len = hour ? 0.6 : 0.95, tt = handT[i];
+    clock[i * 3] = Math.sin(a) * len * tt + rnd(0.028); clock[i * 3 + 1] = -Math.cos(a) * len * tt + rnd(0.028); clock[i * 3 + 2] = rnd(0.028);
+  }
+  const part = h < 5 ? 'night' : h < 8 ? 'sunrise' : h < 17 ? 'day' : h < 19 ? 'sunset' : 'night';
+  document.documentElement.style.setProperty('--glow', { night: '#0E1F4A', sunrise: '#4E3626', day: '#1D3F86', sunset: '#45284F' }[part]);
+  suvaText = (h % 12 || 12) + ':' + String(m).padStart(2, '0') + (h < 12 ? ' am' : ' pm') + ' · ' + part;
+  const el = document.getElementById('suva-now'); if (el) el.textContent = suvaText;
+}
+setClock(); setInterval(setClock, 20000);
+
+/* ── words in points: your business name, or a hidden greeting ── */
+function textShape(str) {
+  const Wc = 900, Hc = 260, c = document.createElement('canvas'); c.width = Wc; c.height = Hc; const g = c.getContext('2d');
+  let size = 180; g.font = `600 ${size}px Inter, system-ui, sans-serif`; let tw = g.measureText(str).width;
+  if (tw > Wc - 40) { size *= (Wc - 40) / tw; g.font = `600 ${size}px Inter, system-ui, sans-serif`; tw = Wc - 40; }
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText(str, Wc / 2, Hc / 2);
+  const d = g.getImageData(0, 0, Wc, Hc).data, px2 = []; for (let y = 0; y < Hc; y += 2) for (let x = 0; x < Wc; x += 2) if (d[(y * Wc + x) * 4 + 3] > 120) px2.push(x, y);
+  const out = new Float32Array(N * 3), n = px2.length / 2 || 1, k = 3.3 / Math.max(tw, 300);
+  for (let i = 0; i < N; i++) { const j = (i * 7919 % n) * 2; out[i * 3] = ((px2[j] || Wc / 2) - Wc / 2 + rnd(1)) * k; out[i * 3 + 1] = ((px2[j + 1] || Hc / 2) - Hc / 2 + rnd(1)) * k; out[i * 3 + 2] = rnd(0.08); }
+  return out;
+}
+let toastT = 0; function toast(msg) { const el = $('toast'); el.textContent = msg; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('on'), 2400); }
 
 /* ── input ── */
-cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; vy = vp = 0; cv.setPointerCapture(e.pointerId); });
+let press = null;
+cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; press = { x: e.clientX, y: e.clientY, t: performance.now() }; vy = vp = 0; cv.setPointerCapture(e.pointerId); });
 cv.addEventListener('pointermove', e => {
   if (!drag) return;
   vy = (e.clientX - drag.x) * 0.006; vp = (e.clientY - drag.y) * 0.006; uy += vy; up += vp; drag.x = e.clientX; drag.y = e.clientY;
   yaw += vy; pitch = Math.max(-1.1, Math.min(1.1, pitch + vp));
 });
-const end = () => { drag = null; };
+const end = e => { drag = null;
+  if (press && e && e.type === 'pointerup' && Math.hypot(e.clientX - press.x, e.clientY - press.y) < 8 && performance.now() - press.t < 350) burst = 1;   // a tap, not a drag: scatter
+  press = null; };
 cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
-addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { px = e.clientX / innerWidth - 0.5; py = e.clientY / innerHeight - 0.5; } }, { passive: true });
+addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; if (e.pointerType === 'mouse') { px = e.clientX / innerWidth - 0.5; py = e.clientY / innerHeight - 0.5; } }, { passive: true });
+addEventListener('pointerout', e => { if (!e.relatedTarget) { mx = my = -1e9; } });
+addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') { mx = my = -1e9; } });
 
 /* ── sections ── */
 const panel = $('panel'), links = [...document.querySelectorAll('.idx a')];
@@ -766,6 +848,7 @@ function fill() {
     else x.href = href;
     acts.appendChild(x);
   });
+  extras(m);
   $('h-n').textContent = '0' + (mode + 1);
   links.forEach((a, i) => a.setAttribute('aria-current', i === mode));
   const ind = document.querySelector('.idx .ind'), on = links[mode];
@@ -898,6 +981,39 @@ form.addEventListener('submit', async e => {
   if (!reduced && done.animate) { done.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'cubic-bezier(.2,.7,.1,1)' }); pulse(done.querySelector('h2')); }
 });
 const fromHash = () => Math.max(0, MODES.findIndex(m => m.id === location.hash.slice(1)));
+/* ── the interactive bits in the panel ── */
+const PICKS = [['Paying staff', 'workforce'], ['Sending invoices', 'billzilla'], ['Checking cleaning', 'inspect'], ['Getting deliveries out', 'drivo']];
+function extras(m) {
+  const panel = $('panel'); panel.querySelectorAll('.pick,.yours').forEach(el => el.remove());   // only the current section's extras
+  if (m.id === 'home') {   // 1. what is slowing you down? the points become that product, the page goes there, the form is filled in
+    const pk = document.createElement('div'); pk.className = 'pick';
+    pk.innerHTML = '<p>What is slowing your business down?</p><div>' + PICKS.map(([l, id]) => `<button type="button" data-go="${id}">${l}</button>`).join('') + '</div>';
+    pk.addEventListener('click', e => { const b = e.target.closest('button[data-go]'); if (!b) return;
+      const idx = MODES.findIndex(x => x.id === b.dataset.go), prod = MODES[idx].product;
+      b.setAttribute('aria-pressed', 'true'); showShape(shapes[idx], 1.3); $('d-product').value = prod;
+      setTimeout(() => go(idx), 650); toast(prod + ' it is. Your demo form is ready.'); });
+    $('p-acts').before(pk);
+  }
+  if (m.id === 'workforce') {   // 2. the real time in Suva, which the clock's hands show
+    const li = document.createElement('li'); li.innerHTML = '<span>Suva now</span><span id="suva-now"></span>'; $('p-slots').appendChild(li); li.lastChild.textContent = suvaText;
+  }
+  if (m.id === 'contact') {   // 3. your business name, in points
+    const y = document.createElement('div'); y.className = 'yours';
+    y.innerHTML = '<label for="your-name">Type your business name and watch</label><input id="your-name" maxlength="22" autocomplete="organization" placeholder="Nadi Fresh Produce">';
+    $('p-acts').before(y); const inp = y.querySelector('input');
+    inp.addEventListener('input', () => { spell(inp.value); $('d-business').value = inp.value; });
+    inp.addEventListener('blur', () => setTimeout(release, 2500));
+  }
+}
+let nameT = 0;
+function spell(v) { clearTimeout(nameT); v = v.trim().slice(0, 22); if (!v) { release(); return; } nameT = setTimeout(() => showShape(textShape(v), 0), 180); }
+$('d-business').addEventListener('input', e => spell(e.target.value));
+$('d-business').addEventListener('blur', () => setTimeout(release, 1500));
+// type "bula" anywhere outside a box
+let typed = '';
+addEventListener('keydown', e => { if (e.target.closest && e.target.closest('input,textarea,select')) return; typed = (typed + (e.key || '')).slice(-4).toLowerCase();
+  if (typed === 'bula') { showShape(textShape('Bula!'), 2.6); burst = 0.4; toast('Bula vinaka 👋'); typed = ''; } });
+
 const demoFromHash = () => { const m = MODES.find(x => '#demo-' + x.id === location.hash); return m ? m.product || 'KaiTech' : 'KaiTech'; };
 addEventListener('hashchange', () => { if (/^#demo/.test(location.hash)) openDemo(demoFromHash()); else go(fromHash()); });
 links.forEach((a, i) => a.addEventListener('click', e => { e.preventDefault(); go(i); }));
@@ -911,7 +1027,7 @@ addEventListener('keydown', e => {
 const wantDemo = /^#demo/.test(location.hash) && demoFromHash();   // read before the hash is rewritten to the section's name
 mode = fromHash(); if (mode) pos.set(shapes[mode]);
 setMode(mode, true); requestAnimationFrame(frame);
-if (mode) requestAnimationFrame(() => scrollTo(0, mode * stepH()));
+if (mode) requestAnimationFrame(() => { scrollTo(0, mode * stepH()); smoothY = scrollY; });
 if (wantDemo) openDemo(wantDemo);
 })();
 </script>
