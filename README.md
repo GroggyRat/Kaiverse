@@ -35,7 +35,7 @@ Commit the rebuilt files along with the source.
 
 ## Deploy
 
-Import the repository in Vercel with the framework set to "Other" and no build command. The root is served as static files. `api/demo.js` becomes `/api/demo`.
+The live site is the Vercel project `kaiverse`, deployed from the `main` branch: every push to `main` goes live, and other branches get preview addresses. To set it up again, import the repository in Vercel with the framework set to "Other" and no build command. The root is served as static files. `api/demo.js` becomes `/api/demo`.
 
 ## Switch on the demo request form
 
