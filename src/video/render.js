@@ -1,4 +1,4 @@
-// Renders the KaiTech intro film to media/. Run from the repo root: node src/video/render.js [land|port] [fps]
+// Renders the KaiTech intro film to media/. Run from the repo root: python3 src/video/music.py, then node src/video/render.js [land|port] [fps]
 // It reuses the point forms from src/kaitech.html, so the film and the site always match.
 const fs = require('fs'), path = require('path'), { spawn } = require('child_process'), { chromium } = require('playwright');
 const root = path.join(__dirname, '../..'), which = process.argv[2] || 'land', fps = +(process.argv[3] || 30);
@@ -23,5 +23,14 @@ const out = path.join(root, 'media', which === 'port' ? 'kaitech-intro-vertical.
     if (f % (fps * 4) === 0) console.log(`${which}: ${(f / fps).toFixed(0)}s of ${dur}s`);
   }
   ff.stdin.end(); await new Promise(r => ff.on('close', r)); await b.close(); fs.unlinkSync(tmp);
+  // add the music (src/video/music.py writes it) at -16 LUFS, the usual level for social video
+  const music = path.join(root, 'media/kaitech-intro-music.wav');
+  if (fs.existsSync(music)) {
+    const tmpOut = out.replace(/\.mp4$/, '.music.mp4');
+    await new Promise((res, rej) => spawn('ffmpeg', ['-y', '-loglevel', 'error', '-i', out, '-i', music, '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'copy',
+      '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11', '-ar', '48000', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', tmpOut], { stdio: 'inherit' })
+      .on('close', c => c ? rej(new Error('ffmpeg failed')) : res()));
+    fs.renameSync(tmpOut, out);
+  }
   console.log('wrote', path.relative(root, out));
 })();

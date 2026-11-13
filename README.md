@@ -19,7 +19,7 @@ It is a static site plus one small server function for the demo request form. Ve
 | `package.json` | The function's one dependency, nodemailer, for Gmail. Vercel installs it. |
 | `vercel.json` | Clean addresses (`/billzilla` instead of `/billzilla.html`) and caching for images. |
 | `media/` | The 28-second intro film, landscape (1920x1080) and vertical (1080x1920). Not deployed. |
-| `src/video/` | The film's source. `node src/video/render.js land` or `port` re-renders it; it reuses the site's point forms, so the two stay in step. |
+| `src/video/` | The film's source. `python3 src/video/music.py` writes its original music; `node src/video/render.js land` or `port` re-renders the film with it. It reuses the site's point forms, so the two stay in step. |
 | `explorations/` | Earlier design options, kept for reference. Not deployed. |
 
 ## Change something
