@@ -12,7 +12,7 @@ create table if not exists public.demo_requests (
   message     text not null default '' check (char_length(message) <= 2000),
   handled     boolean not null default false   -- tick this in the table editor once you have replied
 );
-comment on table public.demo_requests is 'KaiTech website demo requests (kaiverse repo, api/demo.js). Not part of Drivo.';
+comment on table public.demo_requests is 'KaiTech website demo requests, written by api/demo.js in the kaiverse repo.';
 
 alter table public.demo_requests enable row level security;
 revoke all on public.demo_requests from anon, authenticated;

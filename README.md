@@ -33,7 +33,7 @@ Import the repository in Vercel with the framework set to "Other" and no build c
 
 ## Switch on the demo request form
 
-1. In Supabase, open the SQL editor and run `supabase/demo_requests.sql`. Requests then appear in the `demo_requests` table. The site currently uses the Drivo project's database for this.
+1. In Supabase, open the SQL editor and run `supabase/demo_requests.sql`. Requests then appear in the `demo_requests` table. The site uses the Supabase project named Kaiverse.
 2. In Vercel, under the project's Environment Variables, add:
 
 | Name | Value |
