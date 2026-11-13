@@ -75,9 +75,15 @@ a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:
   .k{grid-template-columns:minmax(0,1fr) auto;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
   .mark{grid-column:1} .read{grid-column:2}
   .read .wide{display:none}
-  .idx{grid-column:1/3;grid-row:3;flex-direction:row;gap:0;justify-content:space-between;border-top:1px solid var(--line);padding-top:6px}
-  .idx a{padding:12px 4px;gap:8px} .idx a::before{display:none}
-  .idx a span{display:none} .idx a[aria-current="true"] span{display:inline} .idx a[aria-current="true"] kbd{color:var(--accent)}
+  /* phone: every section named in one row you can swipe; the current one is marked on the rule above it */
+  .k>.idx{grid-column:1/3;grid-row:3;flex-direction:row;gap:26px;justify-content:flex-start;border-top:1px solid var(--line);font-size:12px;
+    pointer-events:auto;overflow-x:auto;overscroll-behavior-x:contain;touch-action:pan-x;scrollbar-width:none;
+    margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));padding-right:max(16px,env(safe-area-inset-right,0px));
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent)}
+  .idx::-webkit-scrollbar{display:none}
+  .idx a{flex:none;padding:16px 0 14px;margin-top:-1px;border-top:2px solid transparent;white-space:nowrap}
+  .idx a::before,.idx kbd{display:none}
+  .idx a[aria-current="true"]{border-top-color:var(--accent)}
   .panel{grid-column:1/3;grid-row:2;max-width:none;max-height:100%;overflow:auto;gap:10px}
   .hint{display:none}
 }
@@ -315,6 +321,8 @@ function fill() {
   (m.acts || []).forEach(([text, href, ghost]) => { const x = document.createElement('a'); x.className = 'cta' + (ghost ? ' ghost' : ''); x.href = href; x.textContent = text; acts.appendChild(x); });
   $('h-n').textContent = '0' + (mode + 1);
   links.forEach((a, i) => a.setAttribute('aria-current', i === mode));
+  const bar = links[0].parentNode, cur = links[mode];   // phone: keep the current section's name in view
+  if (bar.scrollWidth > bar.clientWidth) bar.scrollTo({ left: cur.offsetLeft - (bar.clientWidth - cur.offsetWidth) / 2, behavior: reduced ? 'auto' : 'smooth' });
 }
 function go(i, instant) {
   i = Math.max(0, Math.min(MODES.length - 1, i)); if (i === mode && !instant) return;
