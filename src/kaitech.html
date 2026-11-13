@@ -2,11 +2,11 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Michroma&display=swap">
 <style>
-/* Layout: one fixed frame, no scroll. A single object made of points holds the centre and re-forms for each part of the site; everything else sits on the frame's edges like instrument markings. */
+/* Layout: one fixed frame, no scroll. A single object made of points holds the centre: first the Kaitech mark, then one form per product. Everything else sits on the frame's edges like instrument markings. */
 :root{
-  /* KaiTech brand: logo royal blue and navy, app accent #0A84FF, app dark neutrals */
-  --bg0:#000208; --bg1:#041B44; --fg:#F5F5F7; --dim:#8E8E93; --line:#2C2C2E; --accent:#0A84FF;
-  --cool:#0057D9; --mid:#0A84FF; --warm:#F5F5F7;
+  /* Kaitech logo: navy bars #14295A, blue bar #2563CC. Blues are lifted where they have to read on the dark ground. */
+  --bg0:#030712; --bg1:#14295A; --fg:#F5F6F9; --dim:#8D97AD; --line:#243049; --accent:#4C8DF5;
+  --cool:#2563CC; --mid:#6FA0F2; --warm:#F5F6F9;
   --display:'Michroma','Eurostile','Arial Black',sans-serif;
   --text:'Inter Tight',system-ui,-apple-system,'Segoe UI',sans-serif;
   --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
@@ -16,7 +16,7 @@
 html,body{height:100%}
 body{background:var(--bg0);color:var(--fg);font-family:var(--text);font-size:16px;line-height:1.5;overflow:hidden;-webkit-font-smoothing:antialiased}
 .k{position:relative;height:100%;min-height:520px;overflow:hidden;
-  background:radial-gradient(120% 90% at 62% 42%,var(--bg1) 0%,var(--bg0) 62%);
+  background:radial-gradient(110% 85% at 62% 42%,var(--bg1) 0%,var(--bg0) 64%);
   padding-block:22px;padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px));
   display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr) auto;gap:16px 24px}
 #fx{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}
@@ -26,7 +26,9 @@ body{background:var(--bg0);color:var(--fg);font-family:var(--text);font-size:16p
 a{color:inherit;text-decoration:none}
 a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:4px}
 
-.mark{grid-column:1/3;grid-row:1;font:400 14px/1 var(--display);letter-spacing:.42em;align-self:start;justify-self:start}
+.mark{grid-column:1/3;grid-row:1;align-self:start;justify-self:start;display:flex;align-items:center;gap:12px;font:400 14px/1 var(--display);letter-spacing:.42em}
+.mark svg{width:26px;height:26px;flex:none}
+.mark .bar{fill:var(--fg)} .mark .bar.b{fill:var(--accent)}
 .read{grid-column:3;grid-row:1;display:grid;grid-template-columns:auto auto;gap:4px 14px;font:400 11px/1.2 var(--mono);color:var(--dim);
   font-variant-numeric:tabular-nums;text-transform:uppercase;letter-spacing:.06em;text-align:right;justify-self:end}
 .read b{font-weight:400;color:var(--fg)}
@@ -39,14 +41,14 @@ a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:
 .idx a[aria-current="true"]::before{width:44px;background:var(--accent)}
 .idx kbd{font:inherit;color:var(--dim)}
 
-.panel{grid-column:1/3;grid-row:3;align-self:end;max-width:34rem;display:flex;flex-direction:column;gap:14px;transition:opacity .35s,transform .5s cubic-bezier(.2,.7,.1,1)}
+.panel{grid-column:1/3;grid-row:3;align-self:end;max-width:min(40rem,46vw);display:flex;flex-direction:column;gap:14px;transition:opacity .35s,transform .5s cubic-bezier(.2,.7,.1,1)}
 .panel.out{opacity:0;transform:translateY(10px)}
 .tag{margin:0;font:400 11px/1 var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.14em}
-.panel h1{margin:0;font:400 clamp(30px,5.6vw,84px)/1 var(--display);letter-spacing:.02em;text-transform:uppercase;text-wrap:balance}
-.panel p.body{margin:0;max-width:30rem;font-size:clamp(15px,1.25vw,18px);color:var(--dim);text-wrap:pretty}
-.slots{list-style:none;margin:4px 0 0;padding:0;border-top:1px solid var(--line);font:400 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.08em}
-.slots li{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--line)}
-.slots span:last-child{color:var(--dim)}
+.panel h1{margin:0;font:400 clamp(27px,4.6vw,64px)/1.05 var(--display);letter-spacing:.02em;text-transform:uppercase}
+.panel p.body{margin:0;max-width:34rem;font-size:clamp(15px,1.25vw,18px);color:var(--dim);text-wrap:pretty}
+.slots{list-style:none;margin:4px 0 0;padding:0;max-width:34rem;border-top:1px solid var(--line);font:400 12px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.08em}
+.slots li{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid var(--line)}
+.slots span:last-child{color:var(--dim);text-align:right}
 
 .hint{grid-column:3;grid-row:3;align-self:end;justify-self:end;text-align:right;font:400 11px/1.6 var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
 .hint b{display:block;font:400 clamp(22px,2.6vw,36px)/1 var(--display);color:var(--fg);letter-spacing:.04em;margin-bottom:10px;font-variant-numeric:tabular-nums}
@@ -58,8 +60,9 @@ a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:
   .mark{grid-column:1} .read{grid-column:2}
   .read .wide{display:none}
   .idx{grid-column:1/3;grid-row:3;flex-direction:row;gap:0;justify-content:space-between;border-top:1px solid var(--line);padding-top:6px}
-  .idx a{padding:12px 0;gap:8px} .idx a::before{width:0} .idx a[aria-current="true"]::before{width:14px} .idx kbd{display:none}
-  .panel{grid-column:1/3;grid-row:2}
+  .idx a{padding:12px 4px;gap:8px} .idx a::before{display:none}
+  .idx a span{display:none} .idx a[aria-current="true"] span{display:inline} .idx a[aria-current="true"] kbd{color:var(--accent)}
+  .panel{grid-column:1/3;grid-row:2;max-width:none}
   .hint{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -68,7 +71,10 @@ a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:
 <div class="k">
   <canvas id="fx" aria-hidden="true"></canvas>
 
-  <a class="mark" href="#home">KAITECH</a>
+  <a class="mark" href="#home" aria-label="Kaitech">
+    <svg viewBox="0 0 26 26" aria-hidden="true"><rect class="bar" x="0" y="1" width="26" height="6" rx="3"/><rect class="bar b" x="6.5" y="10" width="13" height="6" rx="3"/><rect class="bar" x="0" y="19" width="26" height="6" rx="3"/></svg>
+    KAITECH
+  </a>
 
   <div class="read" aria-hidden="true">
     <span>Yaw</span><b id="r-yaw">+000.0°</b>
@@ -78,10 +84,12 @@ a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:
   </div>
 
   <nav class="idx" aria-label="Sections">
-    <a href="#home"><kbd>1</kbd>Kaitech</a>
-    <a href="#work"><kbd>2</kbd>Work</a>
-    <a href="#about"><kbd>3</kbd>About</a>
-    <a href="#contact"><kbd>4</kbd>Contact</a>
+    <a href="#home"><kbd>1</kbd><span>Kaitech</span></a>
+    <a href="#workforce"><kbd>2</kbd><span>KaiWorkforce</span></a>
+    <a href="#billzilla"><kbd>3</kbd><span>BillZilla</span></a>
+    <a href="#inspect"><kbd>4</kbd><span>KaiInspect</span></a>
+    <a href="#drivo"><kbd>5</kbd><span>Drivo</span></a>
+    <a href="#contact"><kbd>6</kbd><span>Contact</span></a>
   </nav>
 
   <section class="panel" id="panel" aria-live="polite">
@@ -92,7 +100,7 @@ a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:
   </section>
 
   <div class="hint" aria-hidden="true">
-    <b><span id="h-n">01</span><i> / 04</i></b>
+    <b><span id="h-n">01</span><i> / 06</i></b>
     Drag to turn<br>Scroll or ↑ ↓ to move on
   </div>
 </div>
@@ -102,73 +110,80 @@ a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:
 const $ = id => document.getElementById(id);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const cv = $('fx'), ctx = cv.getContext('2d');
-const N = Math.min(innerWidth, innerHeight) < 600 ? 4200 : 8000;
+const N = Math.min(innerWidth, innerHeight) < 600 ? 4500 : 8000;
+const NB = N * 0.8 | 0;            // points 0..NB are the white ones; NB..N are the blue ones, used for the part of each form that matters
 
 const MODES = [
-  { id: 'home', tag: 'Form 01 · the name', title: 'Kaitech',
-    body: 'A new name in technology. Turn the object, then move through the site and watch it re-form.' },
-  { id: 'work', tag: 'Form 02 · structure', title: 'Work',
-    body: 'Each project gets this frame to itself, one at a time, with a form of its own.',
-    slots: [['Slot 01', 'Open'], ['Slot 02', 'Open'], ['Slot 03', 'Open']] },
-  { id: 'about', tag: 'Form 03 · whole', title: 'About',
-    body: 'One name and one standard: nothing leaves until it is right.' },
-  { id: 'contact', tag: 'Form 04 · loop', title: 'Contact',
-    body: 'Start a conversation.',
-    slots: [['Email', 'To be added'], ['Based', 'To be added']] },
+  { id: 'home', tag: 'The company', title: 'Kaitech',
+    body: 'Software for the way Fiji businesses run: paying people, sending invoices, checking the work and getting deliveries out. Four products, each one useful on its own.' },
+  { id: 'workforce', tag: 'Product 1 of 4 · payroll and HR', title: 'KaiWorkforce',
+    body: 'Payroll and HR for staffing agencies. FNPF and PAYE are worked out for you, staff clock in at their work site, and payslips go out by email.',
+    slots: [['Payroll', 'FNPF · PAYE · payslips'], ['Attendance', 'Clock-in by work site'], ['People', 'Leave · timesheets · org chart']] },
+  { id: 'billzilla', tag: 'Product 2 of 4 · invoicing', title: 'BillZilla',
+    body: 'Invoicing for Fiji businesses. Quotes become invoices with gap-free numbers, stock moves when you finalise, and customers get statements and reminders.',
+    slots: [['Documents', 'Quotes · invoices · credit notes'], ['Payments', 'Bank · cash · M-PAiSA · MyCash'], ['Currency', 'FJD or the customer’s own']] },
+  { id: 'inspect', tag: 'Product 3 of 4 · quality control', title: 'KaiInspect',
+    body: 'Cleaning quality control for facility services companies. An auditor marks each room Pass or Fail, every Fail needs a photo, and the cleaner sends back a photo of the fix.',
+    slots: [['Inspect', 'Saves with no signal'], ['Fix', 'WhatsApp link, no account'], ['Report', 'Customer and internal']] },
+  { id: 'drivo', tag: 'Product 4 of 4 · delivery', title: 'Drivo',
+    body: 'Delivery routing and fleet tracking for distribution companies. Dispatchers plan routes from confirmed invoices, drivers navigate in the app, and every vehicle shows live.',
+    slots: [['Routes', 'From confirmed invoices'], ['Drivers', 'Navigation · proof of delivery'], ['Works with', 'BillZilla · KaiWorkforce']] },
+  { id: 'contact', tag: 'Get in touch', title: 'Contact',
+    body: 'Tell us what your business runs on today.',
+    slots: [['Email', 'To be added'], ['Phone', 'To be added']] },
 ];
 
-/* ── shapes: every form is the same N points, rearranged ── */
-const rnd = (a = 1) => (Math.random() - 0.5) * 2 * a;
-function shapeText(str) {
-  const W = 720, H = 240, c = document.createElement('canvas'); c.width = W; c.height = H;
-  const g = c.getContext('2d');
-  g.font = `400 170px Michroma, "Arial Black", Impact, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
-  let size = 170, tw = g.measureText(str).width; if (tw > W - 40) { size *= (W - 40) / tw; g.font = `400 ${size}px Michroma, "Arial Black", Impact, sans-serif`; tw = W - 40; }
-  const k = 3.4 / (tw || W);
-  g.fillStyle = g.strokeStyle = '#fff'; g.lineWidth = 5; g.lineJoin = 'round';
-  g.fillText(str, W / 2, H / 2); g.strokeText(str, W / 2, H / 2);
-  const d = g.getImageData(0, 0, W, H).data, px = [];
-  for (let y = 0; y < H; y += 2) for (let x = 0; x < W; x += 2) if (d[(y * W + x) * 4 + 3] > 128) px.push(x, y);
-  const out = new Float32Array(N * 3), n = px.length / 2 || 1;
-  for (let i = 0; i < N; i++) {
-    const j = (Math.random() * n | 0) * 2;
-    out[i * 3] = ((px[j] || W / 2) + rnd(1) - W / 2) * k;
-    out[i * 3 + 1] = ((px[j + 1] || H / 2) + rnd(1) - H / 2) * k;
-    out[i * 3 + 2] = rnd(0.16);
-  }
-  return out;
-}
-function shapeLattice() {
-  const out = new Float32Array(N * 3), node = () => (Math.random() * 4 | 0) / 1.5 - 1;
-  for (let i = 0; i < N; i++) {
-    const p = [node(), node(), node()]; p[Math.random() * 3 | 0] = rnd(1);
-    out[i * 3] = p[0] * 0.82 + rnd(0.006); out[i * 3 + 1] = p[1] * 0.82 + rnd(0.006); out[i * 3 + 2] = p[2] * 0.82 + rnd(0.006);
-  }
-  return out;
-}
-function shapeSphere() {
-  const out = new Float32Array(N * 3), ring = N * 0.16 | 0, n = N - ring;
-  for (let i = 0; i < n; i++) {
-    const y = 1 - 2 * (i + 0.5) / n, r = Math.sqrt(1 - y * y), a = i * 2.39996323;
-    out[i * 3] = Math.cos(a) * r * 1.08; out[i * 3 + 1] = y * 1.08; out[i * 3 + 2] = Math.sin(a) * r * 1.08;
-  }
-  for (let i = n; i < N; i++) {
-    const a = Math.random() * 6.2832, r = 1.5 + rnd(0.07), x = Math.cos(a) * r, z = Math.sin(a) * r;
-    out[i * 3] = x; out[i * 3 + 1] = x * 0.32 + rnd(0.012); out[i * 3 + 2] = z;
-  }
-  return out;
-}
-function shapeKnot() {
-  const out = new Float32Array(N * 3);
-  for (let i = 0; i < N; i++) {
-    const t = Math.random() * 6.2832, r = 2 + Math.cos(3 * t), j = 0.07;
-    out[i * 3] = r * Math.cos(2 * t) * 0.44 + rnd(j); out[i * 3 + 1] = r * Math.sin(2 * t) * 0.44 + rnd(j); out[i * 3 + 2] = Math.sin(3 * t) * 0.62 + rnd(j);
-  }
-  return out;
-}
-const shapes = [shapeText('KAI'), shapeLattice(), shapeSphere(), shapeKnot()];
+/* ── forms: every one is the same N points, rearranged ── */
+const rnd = (a = 1) => (Math.random() - 0.5) * 2 * a, TAU = 6.2832;
+const make = fill => { const o = new Float32Array(N * 3); for (let i = 0; i < N; i++) { const p = fill(i, i >= NB); o[i * 3] = p[0]; o[i * 3 + 1] = p[1]; o[i * 3 + 2] = p[2] || 0; } return o; };
+const seg = (ax, ay, az, bx, by, bz, j = 0.02) => { const t = Math.random(); return [ax + (bx - ax) * t + rnd(j), ay + (by - ay) * t + rnd(j), az + (bz - az) * t + rnd(j)]; };
+const ring = (r, j = 0.025) => { const a = Math.random() * TAU; return [Math.cos(a) * r + rnd(j), Math.sin(a) * r + rnd(j), rnd(j)]; };
+const pill = (half, y, r) => { // a rounded bar: the logo's shape
+  const a = Math.random() * TAU, u = rnd(1), s = Math.sqrt(1 - u * u), d = r * (0.72 + 0.28 * Math.random());
+  return [rnd(half - r) + Math.cos(a) * s * d, y + Math.sin(a) * s * d, u * d];
+};
+const shapes = [
+  // the Kaitech mark: two long bars, one short blue bar between them
+  make((i, blue) => blue ? pill(0.66, 0, 0.3) : pill(1.32, i % 2 ? -0.92 : 0.92, 0.3)),
+  // KaiWorkforce: a clock face at ten past ten
+  make((i, blue) => {
+    if (blue) return i % 5 < 2 ? seg(0, 0, 0, -0.52, -0.3, 0, 0.03) : seg(0, 0, 0, 0.8, -0.47, 0, 0.025);
+    if (i % 5 < 3) return ring(1.3);
+    const h = (Math.random() * 12 | 0) / 12 * TAU, c = Math.cos(h), s = Math.sin(h), big = Math.round(h / TAU * 12) % 3 === 0;
+    return seg(c * (big ? 0.92 : 1.05), s * (big ? 0.92 : 1.05), 0, c * 1.17, s * 1.17, 0, 0.018);
+  }),
+  // BillZilla: three sheets, the front one with a header and a total
+  make((i, blue) => {
+    if (blue) return i % 3 ? seg(0.1, 0.72, -0.4, 0.62, 0.72, -0.4, 0.035) : seg(-0.62, -0.78, -0.4, -0.2, -0.78, -0.4, 0.035);
+    const k = i % 3, z = -0.4 + k * 0.4, ox = k * 0.16, oy = -k * 0.13, w = 0.8, h = 1.05, e = Math.random() * 4 | 0;
+    if (i % 5 < 3) return e === 0 ? seg(ox - w, oy - h, z, ox + w, oy - h, z, 0.008) : e === 1 ? seg(ox - w, oy + h, z, ox + w, oy + h, z, 0.008)
+      : e === 2 ? seg(ox - w, oy - h, z, ox - w, oy + h, z, 0.008) : seg(ox + w, oy - h, z, ox + w, oy + h, z, 0.008);
+    const row = -0.42 + (Math.random() * 5 | 0) * 0.21;
+    return seg(ox - 0.62, oy + row, z, ox + 0.62, oy + row, z, 0.008);
+  }),
+  // KaiInspect: a pass mark inside its ring
+  make((i, blue) => blue ? (i % 3 ? seg(-0.2, 0.48, 0, 0.7, -0.5, 0, 0.06) : seg(-0.66, 0.02, 0, -0.2, 0.48, 0, 0.06)) : ring(1.3, 0.04)),
+  // Drivo: a route with four stops over a street grid
+  (() => {
+    const path = t => [-1.4 + 2.8 * t, 0.45, 0.85 * Math.sin(t * 5.4) * (0.4 + 0.6 * t)], stops = [0.04, 0.33, 0.66, 0.96];
+    return make((i, blue) => {
+      if (!blue) { const l = ((Math.random() * 7 | 0) - 3) * 0.48; return Math.random() < 0.5 ? seg(l, 0.47, -1.44, l, 0.47, 1.44, 0.006) : seg(-1.44, 0.47, l, 1.44, 0.47, l, 0.006); }
+      if (i % 5 < 3) { const p = path(Math.random()); return [p[0] + rnd(0.02), p[1] + rnd(0.02), p[2] + rnd(0.02)]; }
+      const p = path(stops[Math.random() * 4 | 0]);
+      if (Math.random() < 0.4) return seg(p[0], 0.45, p[2], p[0], -0.2, p[2], 0.012);
+      const a = Math.random() * TAU, u = rnd(1), s = Math.sqrt(1 - u * u);
+      return [p[0] + Math.cos(a) * s * 0.13, -0.3 + u * 0.13, p[2] + Math.sin(a) * s * 0.13];
+    });
+  })(),
+  // Contact: a globe with one orbit
+  make((i, blue) => {
+    if (blue) { const a = Math.random() * TAU, r = 1.55 + rnd(0.06), x = Math.cos(a) * r; return [x, x * 0.32 + rnd(0.012), Math.sin(a) * r]; }
+    const y = 1 - 2 * (i + 0.5) / NB, r = Math.sqrt(1 - y * y), a = i * 2.39996323;
+    return [Math.cos(a) * r * 1.1, y * 1.1, Math.sin(a) * r * 1.1];
+  }),
+];
 
-/* points keep one colour for life, set by where they sit in the name: cool on the left, warm on the right */
+/* colour: blue points take the logo's blue, the rest run from pale blue to white */
 const pos = new Float32Array(shapes[0]), ease = new Float32Array(N), order = new Uint32Array(N);
 const BUCKETS = 9, palette = [], bucket = new Uint8Array(N);
 {
@@ -178,38 +193,25 @@ const BUCKETS = 9, palette = [], bucket = new Uint8Array(N);
     const t = k / (BUCKETS - 1), u = t < 0.5 ? t * 2 : (t - 0.5) * 2, p = t < 0.5 ? a : w, q = t < 0.5 ? w : b;
     palette.push(`rgb(${p.map((v, j) => Math.round(v + (q[j] - v) * u)).join(',')})`);
   }
-}
-function colourise() {
-  for (let i = 0; i < N; i++) {
-    const t = Math.min(0.999, Math.max(0, shapes[0][i * 3] / 3.4 + 0.5 + rnd(0.07)));
-    bucket[i] = t * BUCKETS | 0; ease[i] = 0.035 + Math.random() * 0.075; order[i] = i;
-  }
+  for (let i = 0; i < N; i++) { bucket[i] = i >= NB ? Math.random() * 3 | 0 : 5 + (Math.random() * 4 | 0); ease[i] = 0.035 + Math.random() * 0.075; order[i] = i; }
   order.sort((p, q) => bucket[p] - bucket[q]);
 }
-colourise();
-if (document.fonts && document.fonts.load) document.fonts.load('170px Michroma').then(() => {
-  shapes[0] = shapeText('KAI'); colourise(); if (reduced && mode === 0) pos.set(shapes[0]);
-}).catch(() => {});
 
 /* ── view ── */
-let W = 0, H = 0, dpr = 1, mode = 0, yaw = 0, pitch = 0, uy = 0, up = 0, vy = 0, vp = 0, px = 0, py = 0, spin = 0, drag = null;
-function resize() {
-  dpr = Math.min(devicePixelRatio || 1, 2); W = cv.clientWidth; H = cv.clientHeight;
-  cv.width = W * dpr; cv.height = H * dpr;
-}
+let W = 0, H = 0, dpr = 1, mode = 0, yaw = 0, pitch = 0, uy = 0, up = 0, vy = 0, vp = 0, px = 0, py = 0, spin = 0, drag = null, readTick = 0;
+function resize() { dpr = Math.min(devicePixelRatio || 1, 2); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; }
 new ResizeObserver(resize).observe(cv); resize();
 
 function frame(now) {
-  const t = now / 1000, target = shapes[mode], narrow = W < 720;
+  const t = now / 1000, target = shapes[mode], narrow = W < 720, globe = mode === 5, ground = mode === 4;
   if (!drag) { uy += vy; up += vp; vy *= 0.94; vp *= 0.94; uy *= 0.985; up *= 0.97; }
-  if (!reduced) spin += mode === 0 ? 0 : 0.0032;
-  const sway = reduced ? 0 : mode === 0 ? Math.sin(t * 0.42) * 0.38 : 0;
-  if (mode === 0) spin *= 0.94;
-  const ty = uy + spin + sway + px * 0.3, tp = Math.max(-1.1, Math.min(1.1, up + py * 0.22 + (mode === 0 ? 0 : 0.28)));
+  if (globe && !reduced) spin += 0.0032; else spin *= 0.94;
+  const sway = reduced || globe ? 0 : Math.sin(t * 0.42) * (ground ? 0.5 : 0.4);
+  const ty = uy + spin + sway + px * 0.3, tp = Math.max(-1.1, Math.min(1.1, up + py * 0.22 + (ground ? 0.5 : globe ? -0.25 : 0)));
   yaw += (ty - yaw) * 0.12; pitch += (tp - pitch) * 0.12;
   const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
-  const cx = W * (narrow ? 0.5 : 0.6), cyy = H * (narrow ? 0.34 : 0.46);
-  const scale = Math.min(W / (narrow ? 4.1 : 5.2), H / (narrow ? 5.2 : 3.6)) * dpr, base = dpr * (narrow ? 1.25 : 1.45);
+  const cx = W * (narrow ? 0.5 : 0.68), cyy = H * (narrow ? 0.3 : 0.42);
+  const scale = Math.min(W / (narrow ? 3.6 : 6.4), H / (narrow ? 5.6 : 4)) * dpr, base = dpr * (narrow ? 1.25 : 1.45);
 
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
   ctx.globalCompositeOperation = 'lighter';
@@ -220,26 +222,22 @@ function frame(now) {
     const x1 = x * cy + z * sy, z1 = -x * sy + z * cy, y1 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
     const f = 4 / (4 + z2); if (f <= 0) continue;
     if (bucket[i] !== last) { last = bucket[i]; ctx.fillStyle = palette[last]; }
-    ctx.globalAlpha = Math.max(0.12, Math.min(1, 0.62 - z2 * 0.42));
-    const s = base * f * f;
+    const blue = i >= NB;
+    ctx.globalAlpha = Math.max(0.14, Math.min(1, (blue ? 0.95 : 0.6) - z2 * 0.4));
+    const s = base * f * f * (blue ? 1.5 : 1);
     ctx.fillRect(cx * dpr + x1 * scale * f - s / 2, cyy * dpr + y1 * scale * f - s / 2, s, s);
   }
   ctx.globalAlpha = 1;
   if ((now / 100 | 0) !== readTick) { readTick = now / 100 | 0; readout(); }
   requestAnimationFrame(frame);
 }
-let readTick = 0;
-const deg = r => { let d = ((r * 57.2958 + 180) % 360 + 360) % 360 - 180; return (d < 0 ? '−' : '+') + Math.abs(d).toFixed(1).padStart(5, '0') + '°'; };
-function readout() {
-  $('r-yaw').textContent = deg(yaw); $('r-pit').textContent = deg(pitch);
-  $('r-time').textContent = new Date().toTimeString().slice(0, 8);
-}
+const deg = r => { const d = ((r * 57.2958 + 180) % 360 + 360) % 360 - 180; return (d < 0 ? '−' : '+') + Math.abs(d).toFixed(1).padStart(5, '0') + '°'; };
+function readout() { $('r-yaw').textContent = deg(yaw); $('r-pit').textContent = deg(pitch); $('r-time').textContent = new Date().toTimeString().slice(0, 8); }
 $('r-pts').textContent = N.toLocaleString('en-US');
 
 /* ── input ── */
 cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; vy = vp = 0; cv.setPointerCapture(e.pointerId); });
 cv.addEventListener('pointermove', e => {
-  px = e.clientX / W - 0.5; py = e.clientY / H - 0.5;
   if (!drag) return;
   vy = (e.clientX - drag.x) * 0.006; vp = (e.clientY - drag.y) * 0.006; uy += vy; up += vp; drag.x = e.clientX; drag.y = e.clientY;
 });
@@ -277,7 +275,7 @@ addEventListener('wheel', e => {
 addEventListener('keydown', e => {
   if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown') go(mode + 1);
   else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') go(mode - 1);
-  else if (e.key >= '1' && e.key <= '4') go(+e.key - 1);
+  else if (e.key >= '1' && e.key <= '6') go(+e.key - 1);
 });
 mode = fromHash(); if (mode) pos.set(shapes[mode]);
 go(mode, true); requestAnimationFrame(frame);
