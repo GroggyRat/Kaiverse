@@ -163,8 +163,8 @@ paths = [''] + [p['id'] for p in products] + ['about', 'privacy', 'terms']
 print('built', ', '.join(['index'] + [p['id'] for p in products] + [f.stem for f in sorted((root / "src/pages").glob("*.html"))]), '+ sitemap.xml, robots.txt for', SITE)
 
 # ── 6. the one-page version (an alternative layout, at /onepage) ──
-def onepage():
-    tpl = (root / 'src/onepage.html').read_text()
+def onepage(name='onepage'):
+    tpl = (root / f'src/{name}.html').read_text()
     site_src = (root / 'src/kaitech.html').read_text()
     forms = site_src[site_src.index('/* ── forms'):site_src.index('/* colour')]
     rv = lambda h: h.replace('<p class="tag">', '<p class="tag rv">').replace('<h2>', '<h2 class="rv">')
@@ -185,6 +185,7 @@ def onepage():
         secs.append(f'''<section id="{p["id"]}">
   <p class="tag rv">Product {i} of {len(products)} · {e(p["kind"])} · live</p>
   <h2 class="rv">{e(p["product"])}</h2>
+  <p class="hook rv">{e(p.get("hook", ""))}</p>
   <p class="lead rv">{e(p["body"])}</p>
   <dl class="rv">{"".join(f"<dt>{e(a)}</dt><dd>{e(b)}</dd>" for a, b in p["slots"])}</dl>
   {sh}
@@ -221,9 +222,9 @@ def onepage():
 </section>''')
     nav = ''.join(f'<a href="#{p["id"]}">{e(p["product"])}</a>' for p in products) + '<a href="#about">About</a><a href="#contact">Contact</a>'
     body = tpl.replace('<!--SECTIONS-->', '\n'.join(secs)).replace('<!--NAV-->', nav).replace('/*FORMS*/', forms)
-    (root / 'src/.onepage-preview.html').write_text(body)   # body only, for previews
+    (root / f'src/.{name}-preview.html').write_text(body)   # body only, for previews
     body = re.sub(r'<title>.*?</title>\n', '', body, count=1)
-    (root / 'onepage.html').write_text(head('KaiTech · ' + site['tagline'], sections[0]['body'], 'onepage', '<meta name="robots" content="noindex">\n<style>body{margin:0}[hidden]{display:none!important}</style>\n')
+    (root / f'{name}.html').write_text(head('KaiTech · ' + site['tagline'], sections[0]['body'], name, '<meta name="robots" content="noindex">\n<style>body{margin:0}[hidden]{display:none!important}</style>\n')
         + '</head>\n<body>\n' + body + '</body>\n</html>\n')
-onepage()
-print('built onepage')
+onepage(); onepage('hyper')
+print('built onepage, hyper')
