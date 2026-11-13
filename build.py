@@ -62,7 +62,7 @@ org = json.dumps({"@context": "https://schema.org", "@type": "Organization", "na
     + src + '</body>\n</html>\n')
 
 # ── 2. shared look for the plain pages ──
-FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Michroma&display=swap">'
+FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&family=Inter+Tight:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Michroma&display=swap">'
 PAGE_CSS = '''<style>
 :root{--bg0:#030712;--bg1:#14295A;--fg:#F5F6F9;--dim:#A3ACC0;--line:#243049;--accent:#4C8DF5;color-scheme:dark;
   --display:'Michroma','Eurostile','Arial Black',sans-serif;--text:'Inter Tight',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
@@ -72,7 +72,8 @@ body{margin:0;background:var(--bg0) radial-gradient(90% 60% at 80% 0%,var(--bg1)
 a{color:inherit;text-underline-offset:3px}
 a:focus-visible{outline:1px solid var(--fg);outline-offset:4px}
 header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:clamp(48px,10vh,110px)}
-.mark{display:flex;align-items:center;gap:12px;font:400 14px/1 var(--display);letter-spacing:.42em;text-decoration:none}
+.mark{display:flex;align-items:center;gap:11px;font:500 21px/1 'Inter',system-ui,sans-serif;letter-spacing:-.01em;text-decoration:none}
+.wm .t{color:var(--accent)}
 .mark svg{width:26px;height:26px}
 .back,.tag,footer{font:400 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--dim)}
 .tag{margin:0 0 18px}
@@ -126,7 +127,7 @@ FOUNDER = ('<div class="founder">' + (f'<img src="assets/founder.jpg" alt="{e(si
 def page(name, title, desc, body):
     (root / f'{name}.html').write_text(
         head(title, desc, name) + f'{FONTS}\n{PAGE_CSS}\n</head>\n<body>\n<div class="w">\n'
-        f'<header><a class="mark" href="index.html" aria-label="KaiTech home">{MARK}KAITECH</a><a class="back" href="index.html">Back to site</a></header>\n<main>\n'
+        f'<header><a class="mark" href="index.html" aria-label="KaiTech home">{MARK}<span class="wm"><span>Kai</span><span class="t">Tech</span></span></a><a class="back" href="index.html">Back to site</a></header>\n<main>\n'
         + body + f'</main>\n{FOOT}\n</div>\n</body>\n</html>\n')
 
 # ── 3. one page per product ──

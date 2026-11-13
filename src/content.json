@@ -7,7 +7,7 @@
     "founder": "Kartik Nand"
   },
   "sections": [
-    { "id": "home", "tag": "KaiTech · Fiji", "title": "Kaitech",
+    { "id": "home", "tag": "KaiTech · Fiji", "title": "KaiTech",
       "body": "Software that keeps Fiji business moving. Four live products for paying people, sending invoices, checking the work and getting deliveries out.",
       "slots": [["Products", "Four, all live"], ["Clients", { "logos": true }]],
       "acts": [["Book a demo", "#demo:KaiTech"], ["Our story", "about.html", 1]] },

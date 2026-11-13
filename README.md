@@ -13,7 +13,7 @@ It is a static site plus one small server function for the demo request form. Ve
 | `src/pages/` | About, Privacy and Terms, as plain HTML content. |
 | `src/og.html`, `src/og.js` | The link preview image. Run `node src/og.js` to redraw `assets/og.jpg`. |
 | `build.py` | Builds `index.html`, one page per product (`workforce`, `billzilla`, `inspect`, `drivo`), About, Privacy, Terms, `sitemap.xml` and `robots.txt`. |
-| `assets/` | Favicon, preview image, client logos and product screens (shown with sample data). |
+| `assets/` | Favicon, preview image, client logos and product screens (shown with sample data). `assets/brand/` holds the KaiTech logo, plus a version for dark backgrounds. |
 | `api/demo.js` | The server function behind the demo request form: checks the request, saves it to Supabase, emails KaiTech and the visitor through Gmail. |
 | `supabase/demo_requests.sql` | Creates the table the requests are saved in. |
 | `package.json` | The function's one dependency, nodemailer, for Gmail. Vercel installs it. |
