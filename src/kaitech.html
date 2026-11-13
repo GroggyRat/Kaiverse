@@ -13,13 +13,17 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html,body{height:100%}
-body{background:var(--bg0);color:var(--fg);font-family:var(--text);font-size:16px;line-height:1.5;overflow:hidden;-webkit-font-smoothing:antialiased}
-.k{position:relative;height:100%;min-height:520px;overflow:hidden;
+/* the page really scrolls: seven screen-high steps snap past a fixed frame, and the step in view picks the section */
+html{scroll-snap-type:y mandatory;scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+.steps{padding-bottom:40vh;padding-bottom:40svh}
+.steps i{display:block;height:60vh;height:60svh;scroll-snap-align:start;scroll-snap-stop:always}   /* shorter than the screen, so a short swipe is enough */
+body{background:var(--bg0);color:var(--fg);font-family:var(--text);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.k{position:fixed;inset:0;overflow:hidden;
   background:radial-gradient(110% 85% at 62% 42%,var(--bg1) 0%,var(--bg0) 64%);
-  padding-block:22px;padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px));
+  padding-top:calc(22px + env(safe-area-inset-top,0px));padding-bottom:calc(22px + env(safe-area-inset-bottom,0px));padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px));
   display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr) auto;gap:16px 24px}
-#fx{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}
+#fx{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y;cursor:grab}
 #fx:active{cursor:grabbing}
 .k>*:not(#fx){position:relative;pointer-events:none}
 .k a,.k button{pointer-events:auto}
@@ -72,7 +76,7 @@ a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:
 .hint a:hover{color:var(--fg)}
 
 @media (max-width:720px){
-  .k{grid-template-columns:minmax(0,1fr) auto;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .k{grid-template-columns:minmax(0,1fr) auto;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
   .mark{grid-column:1} .read{grid-column:2}
   .read .wide{display:none}
   /* phone: every section named in one row you can swipe; the current one is marked on the rule above it */
@@ -89,6 +93,8 @@ a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+
+<div class="steps" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 
 <div class="k">
   <canvas id="fx" aria-hidden="true"></canvas>
@@ -125,7 +131,7 @@ a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:
 
   <div class="hint" aria-hidden="true">
     <b><span id="h-n">01</span><i> / 07</i></b>
-    Drag to turn<br>Scroll or ↑ ↓ to move on
+    Drag sideways to turn<br>Scroll to move on
     <span class="legal"><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></span>
   </div>
 </div>
@@ -324,28 +330,32 @@ function fill() {
   const bar = links[0].parentNode, cur = links[mode];   // phone: keep the current section's name in view
   if (bar.scrollWidth > bar.clientWidth) bar.scrollTo({ left: cur.offsetLeft - (bar.clientWidth - cur.offsetWidth) / 2, behavior: reduced ? 'auto' : 'smooth' });
 }
-function go(i, instant) {
+function setMode(i, instant) {
   i = Math.max(0, Math.min(MODES.length - 1, i)); if (i === mode && !instant) return;
   mode = i; clearTimeout(swap);
   if (instant || reduced) { fill(); panel.classList.remove('out'); }
   else { panel.classList.add('out'); swap = setTimeout(() => { fill(); panel.classList.remove('out'); }, 320); }
   if (location.hash.slice(1) !== MODES[i].id) try { history.replaceState(null, '', '#' + MODES[i].id); } catch (e) { location.hash = MODES[i].id; }
 }
+const steps = document.querySelector('.steps'), stepH = () => steps.firstElementChild.offsetHeight || innerHeight;
+function go(i, instant) {
+  i = Math.max(0, Math.min(MODES.length - 1, i));
+  scrollTo({ top: i * stepH(), behavior: instant || reduced ? 'auto' : 'smooth' });
+  if (instant) setMode(i, true);
+}
+addEventListener('scroll', () => setMode(Math.round(scrollY / stepH())), { passive: true });
 const fromHash = () => Math.max(0, MODES.findIndex(m => m.id === location.hash.slice(1)));
 addEventListener('hashchange', () => go(fromHash()));
 links.forEach((a, i) => a.addEventListener('click', e => { e.preventDefault(); go(i); }));
 document.querySelector('.mark').addEventListener('click', e => { e.preventDefault(); go(0); });
-let cool = 0;
-addEventListener('wheel', e => {
-  const now = performance.now(); if (Math.abs(e.deltaY) < 12 || now < cool) return;
-  cool = now + 750; go(mode + (e.deltaY > 0 ? 1 : -1));
-}, { passive: true });
 addEventListener('keydown', e => {
-  if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown') go(mode + 1);
-  else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') go(mode - 1);
-  else if (e.key >= '1' && e.key <= '7') go(+e.key - 1);
+  if (e.target.closest && e.target.closest('input,textarea')) return;
+  const k = e.key, next = k === 'ArrowDown' || k === 'ArrowRight' || k === 'PageDown' || k === ' ', prev = k === 'ArrowUp' || k === 'ArrowLeft' || k === 'PageUp';
+  if (next || prev) { e.preventDefault(); go(mode + (next ? 1 : -1)); }
+  else if (k >= '1' && k <= '7') go(+k - 1);
 });
 mode = fromHash(); if (mode) pos.set(shapes[mode]);
-go(mode, true); requestAnimationFrame(frame);
+setMode(mode, true); requestAnimationFrame(frame);
+if (mode) requestAnimationFrame(() => scrollTo(0, mode * stepH()));
 })();
 </script>
