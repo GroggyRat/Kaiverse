@@ -32,13 +32,13 @@ Import the repository in Vercel with the framework set to "Other" and no build c
 
 ## Switch on the demo request form
 
-1. In Supabase, open the SQL editor and run `supabase/demo_requests.sql`. Requests then appear in the `demo_requests` table.
+1. In Supabase, open the SQL editor and run `supabase/demo_requests.sql`. Requests then appear in the `demo_requests` table. The site currently uses the Drivo project's database for this.
 2. In Vercel, under the project's Environment Variables, add:
 
 | Name | Value |
 |---|---|
 | `SUPABASE_URL` | The project URL from Supabase, Settings, API |
-| `SUPABASE_SERVICE_ROLE_KEY` | The service role key from the same page. Keep it secret; it is only ever used on the server. |
+| `SUPABASE_KEY` | The publishable (public) key from the same page. The SQL above lets this key add demo requests and nothing else; it cannot read them. |
 | `RESEND_API_KEY` | Optional. A Resend API key, to get an email for each request. |
 | `DEMO_FROM_EMAIL` | Optional. The sender, on a domain verified in Resend, for example `KaiTech <demo@kaitech.com.fj>`. |
 | `DEMO_NOTIFY_EMAIL` | Optional. Where the notification goes, for example `kaitechfj@gmail.com`. |
