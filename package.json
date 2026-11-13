@@ -1,0 +1,9 @@
+{
+  "name": "kaiverse",
+  "private": true,
+  "description": "KaiTech website. Static pages plus api/demo.js for the demo request form.",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "nodemailer": "6.9.16"
+  }
+}

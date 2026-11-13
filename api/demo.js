@@ -1,7 +1,9 @@
 // POST /api/demo — saves a demo request and tells KaiTech about it.
 // Runs as a Vercel function. Needs SUPABASE_URL and SUPABASE_KEY (the project's publishable key:
 // supabase/demo_requests.sql lets that key add requests and nothing else).
-// Optional, for the notification email: RESEND_API_KEY, DEMO_FROM_EMAIL, DEMO_NOTIFY_EMAIL.
+// Optional, for a notification email per request, either
+//   GMAIL_USER and GMAIL_APP_PASSWORD (sends through that Gmail account), or
+//   RESEND_API_KEY, DEMO_FROM_EMAIL and DEMO_NOTIFY_EMAIL (sends through Resend).
 const PRODUCTS = ['KaiWorkforce', 'BillZilla', 'KaiInspect', 'Drivo', 'Not sure yet'];
 const clean = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
@@ -38,17 +40,26 @@ module.exports = async function handler(req, res) {
   } catch (e) { console.error('demo: Supabase unreachable', e); return send(502, { error: 'We could not save your request.' }); }
 
   // The request is saved. The email is a courtesy to KaiTech, so a failure here does not fail the request.
-  const resend = process.env.RESEND_API_KEY, from = process.env.DEMO_FROM_EMAIL, to = process.env.DEMO_NOTIFY_EMAIL;
-  if (resend && from && to) {
+  const mail = {
+    subject: 'Demo request: ' + row.product + ' (' + row.business + ')',
+    text: ['Name: ' + row.name, 'Business: ' + row.business, 'Email: ' + row.email, 'Phone: ' + (row.phone || 'not given'),
+      'Product: ' + row.product, '', row.message || '(no message)', '', 'Reply to this email to answer ' + row.name + ' directly.'].join('\n'),
+  };
+  const gmailUser = process.env.GMAIL_USER, gmailPass = process.env.GMAIL_APP_PASSWORD;
+  const resend = process.env.RESEND_API_KEY, from = process.env.DEMO_FROM_EMAIL;
+  if (gmailUser && gmailPass) {
+    // Through the Gmail account itself: sent from that address to DEMO_NOTIFY_EMAIL, or to itself.
+    try {
+      const nodemailer = require('nodemailer');
+      const t = nodemailer.createTransport({ service: 'gmail', auth: { user: gmailUser, pass: gmailPass.replace(/\s+/g, '') } });
+      await t.sendMail({ from: 'KaiTech website <' + gmailUser + '>', to: process.env.DEMO_NOTIFY_EMAIL || gmailUser, replyTo: row.name + ' <' + row.email + '>', ...mail });
+    } catch (e) { console.error('demo: Gmail could not send', e && e.message); }
+  } else if (resend && from && process.env.DEMO_NOTIFY_EMAIL) {
     try {
       const r = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: { Authorization: 'Bearer ' + resend, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          from, to: [to], reply_to: row.email, subject: 'Demo request: ' + row.product + ' (' + row.business + ')',
-          text: ['Name: ' + row.name, 'Business: ' + row.business, 'Email: ' + row.email, 'Phone: ' + (row.phone || 'not given'),
-            'Product: ' + row.product, '', row.message || '(no message)'].join('\n'),
-        }),
+        body: JSON.stringify({ from, to: [process.env.DEMO_NOTIFY_EMAIL], reply_to: row.email, ...mail }),
       });
       if (!r.ok) console.error('demo: Resend said', r.status, await r.text());
     } catch (e) { console.error('demo: Resend unreachable', e); }
