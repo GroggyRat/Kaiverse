@@ -18,8 +18,9 @@ It is a static site plus one small server function for the demo request form. Ve
 | `supabase/demo_requests.sql` | Creates the table the requests are saved in. |
 | `package.json` | The function's one dependency, nodemailer, for Gmail. Vercel installs it. |
 | `vercel.json` | Clean addresses (`/billzilla` instead of `/billzilla.html`) and caching for images. |
-| `media/` | The 28-second intro film, landscape (1920x1080) and vertical (1080x1920). Not deployed. |
+| `media/` | The 28-second intro film (landscape and vertical) and the brain rot cut. Not deployed. |
 | `src/video/` | The film's source. `python3 src/video/music.py` writes its original music; `node src/video/render.js land` or `port` re-renders the film with it. It reuses the site's point forms, so the two stay in step. |
+| `src/video/rot*` | The brain rot cut (vertical, 33 s): `python3 src/video/rot_voice.py <piper voice .onnx>` makes the narrator (Piper, en_US-amy-medium), then `node src/video/render.js port 30 rot` renders the split screen, builds the beat and effects to match it, and mixes everything. |
 | `explorations/` | Earlier design options, kept for reference. Not deployed. |
 
 ## Change something

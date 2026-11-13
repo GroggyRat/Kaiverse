@@ -1,0 +1,172 @@
+<!doctype html>
+<!-- KaiTech brain rot cut: vertical split screen, narrator-led. Built by: python3 src/video/rot_voice.py <voice>, then node src/video/render.js port 30 rot -->
+<html lang="en"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@500;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{--bg0:#030712;--bg1:#14295A;--fg:#F5F6F9;--accent:#4C8DF5;--hot:#FFE14D}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+body{-webkit-font-smoothing:antialiased;font-family:'Inter','Noto Color Emoji',sans-serif;color:var(--fg)}
+#top,#bot{position:absolute;left:0;right:0;overflow:hidden}
+#top{top:0;height:50%} #bot{top:50%;height:50%;background:#0b0b14}
+#topIn{position:absolute;inset:0;transform-origin:50% 50%}
+#bg{position:absolute;inset:-10%;background:radial-gradient(70% 70% at 50% 50%,var(--bg1) 0%,var(--bg0) 72%)}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+.shot{position:absolute;left:50%;top:50%;opacity:0;border-radius:2vw;box-shadow:0 2vw 7vw rgba(0,0,0,.7),0 0 0 .6vw var(--fg)}
+#s-bz{width:88vw} #s-dr{width:30vw}
+#tag{position:absolute;left:0;right:0;top:13%;text-align:center;font:500 3.3vw/1 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;opacity:0;text-shadow:0 0 2vw #000}
+#wm{position:absolute;left:4vw;top:3.2%;font:500 5vw/1 'Inter',sans-serif;letter-spacing:-.02em}
+#wm .t,.big .t{color:var(--accent)}
+.big{position:absolute;left:0;right:0;top:50%;text-align:center;font:800 21vw/1 'Inter',sans-serif;letter-spacing:-.05em;opacity:0}
+#cta{position:absolute;left:50%;top:78%;padding:2.6vw 6vw;border-radius:999px;background:var(--accent);color:var(--bg0);font:500 4.4vw/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;opacity:0;white-space:nowrap}
+#seam{position:absolute;left:0;right:0;top:50%;height:.5vw;margin-top:-.25vw;background:var(--accent);box-shadow:0 0 3vw var(--accent)}
+#cap{position:absolute;left:4vw;right:4vw;top:50%;transform:translateY(-50%);text-align:center;font:400 9.4vw/1.04 'Archivo Black','Noto Color Emoji',sans-serif;text-transform:uppercase;
+  paint-order:stroke fill;-webkit-text-stroke:2.1vw #000}
+#cap span{display:inline-block;margin:0 .12em;opacity:0}
+#cap span.on{opacity:1} #cap span.now{color:var(--hot)}
+#flash{position:absolute;inset:0;background:#fff;opacity:0}
+</style></head>
+<body>
+<div id="top"><div id="topIn">
+  <div id="bg"></div><canvas id="fx"></canvas>
+  <img class="shot" id="s-bz" src="../../assets/screens/billzilla-invoice.webp" alt="">
+  <img class="shot" id="s-dr" src="../../assets/screens/drivo-plan.webp" alt="">
+  <div class="big" id="big"><span>Kai</span><span class="t">Tech</span></div>
+  <div id="cta">Book a demo</div>
+  <div id="tag"></div>
+  <div id="wm"><span>Kai</span><span class="t">Tech</span></div>
+</div></div>
+<div id="bot"><canvas id="game"></canvas></div>
+<div id="seam"></div>
+<div id="cap"></div>
+<div id="flash"></div>
+<script>
+let seed = 4242; Math.random = () => ((seed = Math.imul(seed ^ (seed >>> 15), 2246822507) + 0x6D2B79F5 | 0) >>> 0) / 4294967296;
+const TL = /*TIMELINE*/null;
+const N = 6000, NB = N * 0.8 | 0;
+/*FORMS*/
+const chaos = (() => { const o = new Float32Array(N * 3); for (let i = 0; i < N; i++) { o[i * 3] = rnd(2.6); o[i * 3 + 1] = rnd(1.5); o[i * 3 + 2] = rnd(1); } return o; })();
+const DURATION = TL.duration;
+const SCENE_FORM = { excel: 'chaos', logo: 0, workforce: 1, billzilla: 2, inspect: 3, drivo: 4, fiji: 5, end: 0 };
+const TAG = { workforce: 'KaiWorkforce · payroll and HR', billzilla: 'BillZilla · invoicing', inspect: 'KaiInspect · quality control', drivo: 'Drivo · delivery', fiji: 'Four products · one company' };
+// scene starts: the first line of each scene
+const SCENES = []; for (const l of TL.lines) if (!SCENES.length || SCENES[SCENES.length - 1].scene !== l.scene) SCENES.push({ scene: l.scene, t: l.start - 0.12 });
+// punchlines get the big hit
+const PUNCH = TL.lines.filter(l => /over|NEVER|economy|so back|pulled up|aura/.test(l.caption)).map(l => l.end - 0.25);
+const HITS = []; for (const l of TL.lines) for (const [, wt] of l.words) HITS.push(wt);
+window.EVENTS = { punch: PUNCH, scenes: SCENES.map(s => s.t), pops: [], bounces: [] };
+
+const FORMS = { chaos, 0: shapes[0], 1: shapes[1], 2: shapes[2], 3: shapes[3], 4: shapes[4], 5: shapes[5] };
+const delay = new Float32Array(N); for (let i = 0; i < N; i++) delay[i] = Math.random() * 0.2;
+const $ = id => document.getElementById(id);
+const W = innerWidth, H = innerHeight, HH = H / 2;
+const cv = $('fx'), ctx = cv.getContext('2d'); cv.width = W; cv.height = HH;
+const pal = ['#2563CC', '#3D78DB', '#5A8EEA', '#6FA0F2', '#A9C6F6', '#D2E1FA', '#E8EFFB', '#F5F6F9'];
+const col = new Uint8Array(N); for (let i = 0; i < N; i++) col[i] = i >= NB ? Math.random() * 3 | 0 : 4 + (Math.random() * 4 | 0);
+const order = [...Array(N).keys()].sort((a, b) => col[a] - col[b]);
+const pos = new Float32Array(N * 3);
+const outBack = x => x <= 0 ? 0 : x >= 1 ? 1 : 1 + 2.7 * Math.pow(x - 1, 3) + 1.7 * Math.pow(x - 1, 2);
+const decay = (t, at, len) => t < at ? 0 : Math.exp(-(t - at) / len);
+const hash = (k, s = 1) => { const v = Math.sin(k * 12.9898 + s * 78.233) * 43758.5453; return v - Math.floor(v); };
+
+/* ── the satisfying bit: a ball in spinning rings, simulated step by step ── */
+const gv = $('game'), g = gv.getContext('2d'); gv.width = W; gv.height = HH;
+const GX = W / 2, GY = HH * 0.5, GR = Math.min(W, HH) * 0.46;
+let rings, ball, trail = [], bursts = [], simT = 0, hue = 200, round = 0;
+function newRings() { rings = []; for (let k = 0; k < 9; k++) rings.push({ r: GR * (0.3 + k * 0.085), gap: 0.95 - k * 0.03, a: hash(k + round * 9, 4) * 6.28, w: (k % 2 ? 1 : -1) * (0.9 + k * 0.12), hit: 0 }); round++; }
+function reset() { newRings(); ball = { x: GX, y: GY - GR * 0.1, vx: W * 0.26, vy: -W * 0.05, r: W * 0.022 }; trail = []; bursts = []; simT = 0; }
+reset();
+function step(dt) {
+  simT += dt; ball.vy += W * 0.55 * dt; ball.x += ball.vx * dt; ball.y += ball.vy * dt;
+  for (const r of rings) { r.a += r.w * dt; r.hit = Math.max(0, r.hit - dt * 4); }
+  const inner = rings[0];
+  if (inner) {
+    const dx = ball.x - GX, dy = ball.y - GY, d = Math.hypot(dx, dy);
+    if (d + ball.r >= inner.r) {
+      let ang = Math.atan2(dy, dx) - inner.a; ang = ((ang % 6.2832) + 6.2832) % 6.2832;
+      if (ang < inner.gap) {   // through the gap: pop the ring
+        if (d - ball.r > inner.r) { rings.shift(); EVENTS.pops.push(+simT.toFixed(3));
+          for (let k = 0; k < 40; k++) { const a = k / 40 * 6.2832; bursts.push({ x: GX + Math.cos(a) * inner.r, y: GY + Math.sin(a) * inner.r, vx: Math.cos(a) * W * 0.3 * (0.5 + hash(k, 7)), vy: Math.sin(a) * W * 0.3 * (0.5 + hash(k, 8)), life: 1, h: hue }); }
+          hue = (hue + 47) % 360; if (!rings.length) newRings(); }
+      } else {   // bounce, with a little extra energy so it never settles
+        const nx = dx / d, ny = dy / d, dot = ball.vx * nx + ball.vy * ny;
+        if (dot > 0) { ball.vx -= 2 * dot * nx; ball.vy -= 2 * dot * ny; const sp = Math.hypot(ball.vx, ball.vy), want = Math.min(W * 1.25, sp * 1.035 + W * 0.02);
+          ball.vx *= want / sp; ball.vy *= want / sp; inner.hit = 1; EVENTS.bounces.push(+simT.toFixed(3)); hue = (hue + 9) % 360; }
+        ball.x = GX + nx * (inner.r - ball.r); ball.y = GY + ny * (inner.r - ball.r);
+      }
+    }
+    if (Math.hypot(ball.x - GX, ball.y - GY) > GR * 1.4) { ball.x = GX; ball.y = GY; }
+  }
+  trail.push([ball.x, ball.y, hue]); if (trail.length > 36) trail.shift();
+  for (const b of bursts) { b.x += b.vx * dt; b.y += b.vy * dt; b.vy += W * 0.4 * dt; b.life -= dt * 1.4; }
+  bursts = bursts.filter(b => b.life > 0);
+}
+function drawGame() {
+  g.fillStyle = 'rgba(11,11,20,1)'; g.fillRect(0, 0, W, HH);
+  g.lineCap = 'round';
+  rings.forEach((r, k) => { g.strokeStyle = `hsl(${(hue + k * 28) % 360} 95% ${58 + r.hit * 30}%)`; g.lineWidth = W * 0.012 + r.hit * W * 0.01;
+    g.shadowColor = g.strokeStyle; g.shadowBlur = 18 + r.hit * 30; g.beginPath(); g.arc(GX, GY, r.r, r.a + r.gap, r.a + 6.2832); g.stroke(); });
+  g.shadowBlur = 0;
+  trail.forEach(([x, y, h], k) => { g.fillStyle = `hsla(${h} 100% 60% / ${k / trail.length * 0.45})`; g.beginPath(); g.arc(x, y, ball.r * (0.2 + 0.6 * k / trail.length), 0, 6.2832); g.fill(); });
+  for (const b of bursts) { g.fillStyle = `hsla(${b.h} 100% 65% / ${b.life})`; g.fillRect(b.x - 4, b.y - 4, 8, 8); }
+  g.fillStyle = '#fff'; g.shadowColor = `hsl(${hue} 100% 60%)`; g.shadowBlur = 30; g.beginPath(); g.arc(ball.x, ball.y, ball.r, 0, 6.2832); g.fill(); g.shadowBlur = 0;
+}
+
+window.renderAt = t => {
+  if (t < simT - 1e-6) reset();
+  while (simT + 1 / 240 <= t) step(1 / 240);
+  drawGame();
+
+  // top half: the points
+  let si = 0; for (let i = 0; i < SCENES.length; i++) if (t >= SCENES[i].t) si = i;
+  const sc = SCENES[si], f = SCENE_FORM[sc.scene], from = FORMS[si ? SCENE_FORM[SCENES[si - 1].scene] : 'chaos'], to = FORMS[f], t0 = sc.t;
+  for (let i = 0; i < N; i++) { const p = outBack((t - t0 - delay[i]) / 0.32), j = i * 3; for (let a = 0; a < 3; a++) pos[j + a] = from[j + a] + (to[j + a] - from[j + a]) * p; }
+  if (f === 'chaos') for (let i = 0; i < N; i++) { pos[i * 3] += Math.sin(t * 11 + i) * 0.035; pos[i * 3 + 1] += Math.cos(t * 9 + i * 1.3) * 0.035; }
+  let hit = 0, big = 0; for (const h of HITS) hit = Math.max(hit, decay(t, h, 0.07)); for (const b of PUNCH) big = Math.max(big, decay(t, b, 0.14));
+  for (const s of SCENES) big = Math.max(big, decay(t, s.t, 0.1) * 0.8);
+  const spin = { 1: 2.2, 2: 1.3, 3: 2.0, 4: 1.0, 5: 0.7 }[f] || 0;
+  const yaw = (t - t0) * spin + Math.sin(t * 1.9) * 0.3, pitch = (f === 4 ? 0.6 : f === 5 ? 0.2 : 0) + Math.sin(t * 2.6) * 0.08;
+  const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const scale = HH / (f === 4 || f === 5 ? 4.6 : 3.9) * (1 + hit * 0.1 + big * 0.22);
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, HH); ctx.globalCompositeOperation = 'lighter';
+  let lc = -1; const redden = f === 'chaos';
+  for (const i of order) {
+    const j = i * 3, x = pos[j], y = pos[j + 1], z = pos[j + 2];
+    const x1 = x * cy + z * sy, z1 = -x * sy + z * cy, y1 = y * cp - z1 * sp, z2 = y * sp + z1 * cp, fz = 4 / (4 + z2); if (fz <= 0) continue;
+    const c = redden ? 99 : col[i]; if (c !== lc) { lc = c; ctx.fillStyle = redden ? '#FF5A4D' : pal[c]; }
+    ctx.globalAlpha = Math.max(0.15, Math.min(1, (i >= NB ? 1 : 0.72) - z2 * 0.35));
+    const s = Math.min(6, 2.2 * fz * fz * (i >= NB ? 1.5 : 1));
+    ctx.fillRect(W / 2 + x1 * scale * fz - s / 2, HH * 0.54 + y1 * scale * fz - s / 2, s, s);
+  }
+  const k30 = Math.floor(t * 30), sh = hit * 10 + big * 30;
+  $('topIn').style.transform = `translate(${(hash(k30, 2) - 0.5) * sh}px,${(hash(k30, 3) - 0.5) * sh}px) rotate(${(hash(k30) - 0.5) * (hit + big * 3)}deg) scale(${1 + hit * 0.03 + big * 0.08})`;
+  $('bg').style.filter = `hue-rotate(${big * 150}deg) brightness(${1 + hit * 0.5})`;
+  $('flash').style.opacity = (big * 0.55).toFixed(3);
+
+  // screens
+  const show = (id, scene, frac, rot) => { const el = $(id), l = TL.lines.filter(x => x.scene === scene), a = l.length ? l[0].start + (l[l.length - 1].end - l[0].start) * frac : 1e9, b = l.length ? l[l.length - 1].end + 0.1 : 0;
+    if (t < a || t >= b) { el.style.opacity = 0; return; } const p = outBack(Math.min(1, (t - a) / 0.2));
+    el.style.opacity = 1; el.style.transform = `translate(-50%,-50%) rotate(${rot * (1 - p) * 4 + rot * 0.4}deg) scale(${(2.1 - 1.1 * p + (t - a) * 0.02).toFixed(3)})`; };
+  show('s-bz', 'billzilla', 0.55, -4); show('s-dr', 'drivo', 0.45, 5);
+  $('tag').style.opacity = TAG[sc.scene] ? 1 : 0; if (TAG[sc.scene]) $('tag').textContent = TAG[sc.scene];
+  $('wm').style.opacity = sc.scene === 'end' || sc.scene === 'logo' ? 0 : 1;
+  const bp = sc.scene === 'logo' || sc.scene === 'end' ? outBack(Math.min(1, (t - t0) / 0.18)) : -1;
+  $('big').style.opacity = bp >= 0 ? 1 : 0; if (bp >= 0) $('big').style.transform = `translateY(-50%) scale(${(2.3 - 1.3 * bp).toFixed(3)}) rotate(${((1 - bp) * -8).toFixed(2)}deg)`;
+  const cp2 = sc.scene === 'end' ? outBack(Math.min(1, (t - t0 - 0.5) / 0.2)) : 0;
+  $('cta').style.opacity = cp2 > 0 ? 1 : 0; $('cta').style.transform = `translateX(-50%) scale(${(0.3 + 0.7 * Math.max(0, cp2)).toFixed(3)})`;
+
+  // captions: the current line, word by word, the word being said in yellow
+  const line = TL.lines.find(l => t >= l.start - 0.05 && t < l.end + 0.12) || null, cap = $('cap');
+  if (!line) { cap.style.opacity = 0; }
+  else {
+    if (cap.dataset.l !== line.caption) { cap.dataset.l = line.caption; cap.innerHTML = line.words.map(([w]) => `<span>${w.replace(/</g, '&lt;')}</span>`).join(' '); }
+    const spans = cap.children; let now = -1; line.words.forEach(([, wt], k) => { if (t >= wt) now = k; });
+    for (let k = 0; k < spans.length; k++) { const on = k <= now; spans[k].className = on ? (k === now ? 'on now' : 'on') : '';
+      const p = k === now ? Math.min(1, (t - line.words[k][1]) / 0.09) : 1; spans[k].style.transform = k === now ? `scale(${(1.35 - 0.35 * outBack(p)).toFixed(3)}) rotate(${((hash(k, 9) - 0.5) * 8).toFixed(1)}deg)` : ''; }
+    cap.style.opacity = 1;
+    cap.style.filter = `drop-shadow(${(hit * 1.1).toFixed(2)}vw 0 0 rgba(255,40,80,.9)) drop-shadow(${(-hit * 1.1).toFixed(2)}vw 0 0 rgba(40,220,255,.9))`;
+  }
+};
+window.DURATION = DURATION;
+if (!navigator.webdriver) { const s = performance.now(); const loop = n => { renderAt(((n - s) / 1000) % DURATION); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>
