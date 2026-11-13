@@ -1,0 +1,262 @@
+<title>Kaitech UI Options</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Michroma&family=Sora:wght@600;700&display=swap">
+<style>
+/* Layout: three one-screen sites behind a picker in the header. 1 Stack turns the logo's bars into the navigation. 2 Map draws the products as a system. 3 Day runs them along a working day. */
+:root{
+  /* Kaitech logo colours: navy #14295A, blue #2563CC, on cool white */
+  --navy:#14295A; --blue:#2563CC; --paper:#F4F6FB; --white:#FFFFFF; --ink:#0D1730; --dim:#5C6A89; --line:#CBD3E2; --sky:#DCE8FB; --pale:#B9C9EC;
+  --display:'Sora','Avenir Next','Segoe UI',sans-serif;
+  --text:'Inter Tight',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--text);font-size:16px;line-height:1.5;overflow:hidden;-webkit-font-smoothing:antialiased}
+.app{height:100%;min-height:520px;display:grid;grid-template-rows:auto minmax(0,1fr);gap:14px;
+  padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.mark{display:flex;align-items:center;gap:10px;font:400 13px/1 'Michroma',var(--display);letter-spacing:.36em;color:var(--navy);text-decoration:none}
+.mark svg{width:24px;height:24px;flex:none}
+.pick{display:flex;gap:2px;padding:4px;border-radius:999px;background:var(--navy);font:400 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.1em}
+.pick button{border:0;background:transparent;color:var(--pale);padding:9px 13px;border-radius:999px;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;white-space:nowrap}
+.pick button[aria-pressed="true"]{background:var(--white);color:var(--navy)}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.view{height:100%;min-height:0}
+.kd{margin:0;font:400 11px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.14em}
+dl.facts{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:0;font:400 12px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.06em}
+dl.facts dt,dl.facts dd{margin:0;padding:9px 0;border-top:1px solid currentColor;border-color:color-mix(in srgb,currentColor 28%,transparent)}
+dl.facts dt{padding-right:20px}
+dl.facts dd{text-align:right}
+
+/* ───── 1 Stack ───── */
+.stack{display:flex;flex-direction:column;gap:8px}
+.bar{flex:0 0 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden;background:var(--navy);color:var(--white);border-radius:32px;
+  transition:flex-grow .55s cubic-bezier(.3,.8,.2,1),background-color .35s}
+.bar.on{flex:1 1 0;background:var(--blue)}
+.bar-head{flex:none;width:100%;height:clamp(50px,8.4vh,66px);display:flex;align-items:center;gap:16px;padding:0 clamp(18px,2.4vw,30px);border:0;background:none;color:inherit;text-align:left}
+.bar-head .n{font:400 12px/1 var(--mono);opacity:.7}
+.bar-head .nm{font:600 clamp(16px,1.7vw,21px)/1 var(--display);letter-spacing:-.01em}
+.bar-head .kd{margin-left:auto;opacity:.75}
+.bar-head .go{width:22px;height:22px;flex:none;transition:transform .4s}
+.bar.on .bar-head .go{transform:rotate(45deg)}
+.bar.on .bar-head .nm{opacity:0}
+.bar:not(.on):hover{background:color-mix(in srgb,var(--navy) 82%,var(--blue))}
+.bar-body{flex:1;min-height:0;overflow:auto;display:none;grid-template-columns:minmax(0,1fr) auto;gap:16px clamp(20px,5vw,80px);align-items:end;padding:0 clamp(18px,2.4vw,30px) clamp(18px,2.4vw,30px)}
+.bar.on .bar-body{display:grid}
+.bar-body h2{margin:0 0 12px;font:700 clamp(34px,7vw,104px)/.95 var(--display);letter-spacing:-.04em}
+.bar-body p{margin:0 0 18px;max-width:34rem;font-size:clamp(15px,1.3vw,19px);opacity:.92}
+.bar-body dl{max-width:34rem}
+.glyph{width:clamp(110px,20vw,260px);height:auto;align-self:center;fill:none;stroke:var(--white);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:720px){.bar{border-radius:26px}.bar-head .kd{display:none}.bar.on .bar-head .kd{display:block}.bar-body{grid-template-columns:1fr}.glyph{display:none}}
+
+/* ───── 2 Map ───── */
+.map{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,360px);gap:14px}
+.map svg{width:100%;height:100%;display:block;background-color:var(--white);border-radius:24px;
+  background-image:linear-gradient(var(--sky) 1px,transparent 1px),linear-gradient(90deg,var(--sky) 1px,transparent 1px);background-size:32px 32px}
+.edge{stroke:var(--line);stroke-width:1.5;fill:none;transition:stroke .3s}
+.edge.link{stroke:var(--pale);stroke-dasharray:3 9;stroke-linecap:round;stroke-width:3;animation:flow 1.6s linear infinite}
+.edge.hot{stroke:var(--blue)}
+@keyframes flow{to{stroke-dashoffset:-24}}
+.elabel{font:400 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;fill:var(--dim);paint-order:stroke;stroke:var(--white);stroke-width:8px;text-anchor:middle;transition:fill .3s}
+.elabel.hot{fill:var(--blue)}
+.node{cursor:pointer;outline:none}
+.node rect{fill:var(--navy);transition:fill .3s}
+.node.on rect{fill:var(--blue)}
+.node .halo{fill:none;stroke:var(--blue);stroke-width:1.5;opacity:0;transition:opacity .3s}
+.node.on .halo{opacity:1}
+.node text{fill:var(--white);text-anchor:middle;font:600 19px var(--display);letter-spacing:-.01em;pointer-events:none}
+.node:focus-visible{outline:none}.node:focus-visible .halo{opacity:1}
+.sheet{background:var(--navy);color:var(--white);border-radius:24px;padding:clamp(18px,2vw,26px);display:flex;flex-direction:column;gap:14px;overflow:auto;min-height:0}
+.sheet .kd{color:var(--pale)}
+.sheet h2{margin:0;font:700 clamp(28px,3.2vw,44px)/1 var(--display);letter-spacing:-.035em}
+.sheet p{margin:0;color:var(--sky)}
+.sheet .facts{margin-top:auto}
+.sheet .tip{font:400 11px/1.5 var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--pale)}
+@media (max-width:820px){.map{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}.sheet{max-height:44vh}.sheet .tip{display:none}}
+
+/* ───── 3 Day ───── */
+.day{position:relative;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px;border-radius:24px;overflow:hidden;background:var(--white);padding:clamp(16px,2.4vw,30px)}
+.sun{position:absolute;left:0;top:0;width:clamp(120px,18vw,240px);aspect-ratio:1;border-radius:50%;background:var(--sky);pointer-events:none;will-change:transform}
+.day>*:not(.sun){position:relative}
+.d-place{display:flex;justify-content:space-between;gap:16px;color:var(--dim)}
+.d-mid{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(20px,5vw,80px);align-items:end;align-self:end}
+.d-time{font:700 clamp(84px,21vw,300px)/.8 var(--display);letter-spacing:-.06em;color:var(--navy);font-variant-numeric:tabular-nums}
+.d-ev{display:flex;flex-direction:column;gap:10px;padding-bottom:.6vw;max-width:30rem}
+.d-ev .kd{color:var(--blue)}
+.d-ev h2{margin:0;font:700 clamp(26px,3.4vw,48px)/1 var(--display);letter-spacing:-.035em;color:var(--navy)}
+.d-ev p{margin:0;font-size:clamp(15px,1.3vw,19px);color:var(--dim)}
+.d-track{display:grid;gap:8px;padding-top:10px}
+.d-marks{position:relative;height:34px;margin:0 11px}
+.d-marks button{position:absolute;bottom:0;transform:translateX(-50%);border:0;background:none;padding:0 0 12px;color:var(--dim);font:400 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
+.d-marks button::after{content:"";position:absolute;left:50%;bottom:0;width:1px;height:8px;background:currentColor}
+.d-marks button.on{color:var(--blue)}
+.d-marks button:first-child{transform:none}.d-marks button:first-child::after{left:0}
+#d-range{-webkit-appearance:none;appearance:none;width:100%;height:22px;margin:0;background:transparent;cursor:ew-resize}
+#d-range::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--blue) var(--p,0%),var(--line) var(--p,0%))}
+#d-range::-moz-range-track{height:6px;border-radius:3px;background:var(--line)}
+#d-range::-moz-range-progress{height:6px;border-radius:3px;background:var(--blue)}
+#d-range::-webkit-slider-thumb{-webkit-appearance:none;width:44px;height:22px;margin-top:-8px;border-radius:11px;background:var(--navy);border:0}
+#d-range::-moz-range-thumb{width:44px;height:22px;border-radius:11px;background:var(--navy);border:0}
+.d-hours{display:flex;justify-content:space-between;margin:0 11px;font:400 11px/1 var(--mono);color:var(--dim);font-variant-numeric:tabular-nums}
+@media (max-width:720px){.d-mid{grid-template-columns:1fr;gap:16px}.d-marks button span,.d-marks button:first-child{display:none}}
+@media (max-width:480px){.mark{letter-spacing:.2em;gap:8px}.pick button{padding:9px 9px}.top{gap:8px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <a class="mark" href="#stack" aria-label="Kaitech">
+      <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="0" y="1" width="26" height="6" rx="3" fill="#14295A"/><rect x="6.5" y="10" width="13" height="6" rx="3" fill="#2563CC"/><rect x="0" y="19" width="26" height="6" rx="3" fill="#14295A"/></svg>
+      KAITECH
+    </a>
+    <nav class="pick" aria-label="UI options">
+      <button type="button" data-v="stack" aria-pressed="true">1 Stack</button>
+      <button type="button" data-v="map" aria-pressed="false">2 Map</button>
+      <button type="button" data-v="day" aria-pressed="false">3 Day</button>
+    </nav>
+  </header>
+
+  <main class="view">
+    <section class="view stack" id="v-stack" aria-label="Stack"></section>
+
+    <section class="view map" id="v-map" aria-label="Map" hidden>
+      <svg id="m-svg" role="group" aria-label="How Kaitech's products connect"></svg>
+      <aside class="sheet" id="m-sheet" aria-live="polite"></aside>
+    </section>
+
+    <section class="view day" id="v-day" aria-label="Day" hidden>
+      <div class="sun" id="d-sun"></div>
+      <div class="d-place kd"><span>One working day in Fiji</span><span id="d-live"></span></div>
+      <div class="d-mid">
+        <div class="d-time" id="d-time">06:00</div>
+        <div class="d-ev" aria-live="polite"><p class="kd" id="d-kd"></p><h2 id="d-nm"></h2><p id="d-tx"></p></div>
+      </div>
+      <div class="d-track">
+        <div class="d-marks" id="d-marks"></div>
+        <label class="kd" for="d-range" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">Time of day</label>
+        <input id="d-range" type="range" min="360" max="1080" step="5" value="360">
+        <div class="d-hours"><span>06:00</span><span>09:00</span><span>12:00</span><span>15:00</span><span>18:00</span></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const P = [
+  { id: 'kaitech', name: 'Kaitech', kind: 'The company',
+    body: 'Software for the way Fiji businesses run: paying people, sending invoices, checking the work and getting deliveries out.',
+    facts: [['Products', 'Four'], ['Made for', 'Businesses in Fiji'], ['Each one', 'Works on its own']],
+    glyph: '<rect x="20" y="30" width="120" height="26" rx="13"/><rect x="50" y="67" width="60" height="26" rx="13"/><rect x="20" y="104" width="120" height="26" rx="13"/>' },
+  { id: 'workforce', name: 'KaiWorkforce', kind: 'Payroll and HR',
+    body: 'Payroll and HR for staffing agencies. FNPF and PAYE are worked out for you, staff clock in at their work site, and payslips go out by email.',
+    facts: [['Payroll', 'FNPF · PAYE · payslips'], ['Attendance', 'Clock-in by work site'], ['People', 'Leave · timesheets · org chart']],
+    glyph: '<circle cx="80" cy="80" r="62"/><path d="M80 80 52 62M80 80l40-24M80 26v8M80 126v8M26 80h8M126 80h8"/>' },
+  { id: 'billzilla', name: 'BillZilla', kind: 'Invoicing',
+    body: 'Invoicing for Fiji businesses. Quotes become invoices with gap-free numbers, stock moves when you finalise, and customers get statements and reminders.',
+    facts: [['Documents', 'Quotes · invoices · credit notes'], ['Payments', 'Bank · cash · M-PAiSA · MyCash'], ['Currency', 'FJD or the customer’s own']],
+    glyph: '<path d="M52 18h70v112H52z"/><path d="M40 30v112h70M66 40h26M66 66h42M66 82h42M66 98h42M92 116h16"/>' },
+  { id: 'inspect', name: 'KaiInspect', kind: 'Quality control',
+    body: 'Cleaning quality control for facility services companies. An auditor marks each room Pass or Fail, every Fail needs a photo, and the cleaner sends back a photo of the fix.',
+    facts: [['Inspect', 'Saves with no signal'], ['Fix', 'WhatsApp link, no account'], ['Report', 'Customer and internal']],
+    glyph: '<circle cx="80" cy="80" r="62"/><path d="M50 82l22 24 40-50"/>' },
+  { id: 'drivo', name: 'Drivo', kind: 'Delivery',
+    body: 'Delivery routing and fleet tracking for distribution companies. Dispatchers plan routes from confirmed invoices, drivers navigate in the app, and every vehicle shows live.',
+    facts: [['Routes', 'From confirmed invoices'], ['Drivers', 'Navigation · proof of delivery'], ['Works with', 'BillZilla · KaiWorkforce']],
+    glyph: '<path d="M22 124c30 0 30-40 58-40s28-40 58-40"/><circle cx="22" cy="124" r="9"/><circle cx="80" cy="84" r="9"/><circle cx="138" cy="44" r="9"/>' },
+];
+const facts = f => '<dl class="facts">' + f.map(([a, b]) => `<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join('') + '</dl>';
+
+/* ───── 1 Stack: the logo's bars are the navigation ───── */
+const stack = $('v-stack');
+stack.innerHTML = P.map((p, i) => `<article class="bar${i ? '' : ' on'}">
+  <button class="bar-head" type="button" aria-expanded="${!i}"><span class="n">${i + 1}</span><span class="nm">${esc(p.name)}</span><span class="kd">${esc(p.kind)}</span>
+    <svg class="go" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M11 4v14M4 11h14"/></svg></button>
+  <div class="bar-body"><div><h2>${esc(p.name)}</h2><p>${esc(p.body)}</p>${facts(p.facts)}</div>
+    <svg class="glyph" viewBox="0 0 160 160" aria-hidden="true">${p.glyph}</svg></div></article>`).join('');
+const bars = [...stack.children];
+function openBar(i) { bars.forEach((b, j) => { b.classList.toggle('on', i === j); b.firstElementChild.setAttribute('aria-expanded', i === j); }); }
+bars.forEach((b, i) => b.firstElementChild.addEventListener('click', () => openBar(i)));
+
+/* ───── 2 Map: products as a system, real links drawn between them ───── */
+const svg = $('m-svg'), sheet = $('m-sheet');
+const LINKS = [['drivo', 'billzilla', 'Invoices become routes'], ['drivo', 'workforce', 'Drivers clock in']];
+let sel = 'kaitech', tall = null;
+function drawMap() {
+  const r = svg.getBoundingClientRect(); if (!r.width) return;
+  const t = r.width < 700; if (t === tall) return; tall = t;
+  const pos = t ? { kaitech: [290, 260], inspect: [140, 70], billzilla: [460, 120], workforce: [160, 450], drivo: [460, 400] }
+                : { kaitech: [450, 320], inspect: [190, 120], billzilla: [800, 110], workforce: [230, 520], drivo: [800, 470] };
+  svg.setAttribute('viewBox', t ? '0 0 600 520' : '0 0 1000 640');
+  let h = '';
+  P.slice(1).forEach(p => { h += `<line class="edge" data-a="kaitech" data-b="${p.id}" x1="${pos.kaitech[0]}" y1="${pos.kaitech[1]}" x2="${pos[p.id][0]}" y2="${pos[p.id][1]}"/>`; });
+  LINKS.forEach(([a, b, label]) => {
+    const [x1, y1] = pos[a], [x2, y2] = pos[b];
+    h += `<line class="edge link" data-a="${a}" data-b="${b}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/><text class="elabel" data-a="${a}" data-b="${b}" x="${(x1 + x2) / 2}" y="${(y1 + y2) / 2 + 4}">${esc(label)}</text>`;
+  });
+  P.forEach(p => {
+    const w = p.name.length * 12.5 + 64, [x, y] = pos[p.id];
+    h += `<g class="node" data-id="${p.id}" tabindex="0" role="button" aria-label="${esc(p.name)}, ${esc(p.kind)}" transform="translate(${x} ${y})">
+      <rect class="halo" x="${-w / 2 - 8}" y="-38" width="${w + 16}" height="76" rx="38"/><rect x="${-w / 2}" y="-30" width="${w}" height="60" rx="30"/><text y="7">${esc(p.name)}</text></g>`;
+  });
+  svg.innerHTML = h; pickNode(sel);
+}
+function pickNode(id) {
+  sel = id; const p = P.find(q => q.id === id);
+  svg.querySelectorAll('.node').forEach(n => n.classList.toggle('on', n.dataset.id === id));
+  svg.querySelectorAll('.edge,.elabel').forEach(e => e.classList.toggle('hot', e.dataset.a === id || e.dataset.b === id));
+  const mates = LINKS.filter(l => l[0] === id || l[1] === id).map(l => P.find(q => q.id === (l[0] === id ? l[1] : l[0])).name);
+  sheet.innerHTML = `<p class="kd">${esc(p.kind)}</p><h2>${esc(p.name)}</h2><p>${esc(p.body)}</p>
+    ${facts(id === 'kaitech' ? p.facts : p.facts.slice(0, 2).concat([['Connects to', mates.length ? mates.join(' · ') : 'Runs on its own']]))}
+    <p class="tip">Pick a product on the map. Dotted lines are live connections between products.</p>`;
+}
+svg.addEventListener('click', e => { const n = e.target.closest('.node'); if (n) pickNode(n.dataset.id); });
+svg.addEventListener('keydown', e => { const n = e.target.closest('.node'); if (n && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pickNode(n.dataset.id); n.focus(); } });
+new ResizeObserver(drawMap).observe(svg);
+
+/* ───── 3 Day: the products in the order a business meets them ───── */
+const DAY = [
+  [360, 'Start', 'kaitech', 'Before work', 'Follow one business through its day. Drag the time, or pick a moment on the line.'],
+  [420, 'Clock-in', 'workforce', 'Staff arrive', 'Staff clock in at their work site. The hours they work are the hours payroll will use.'],
+  [570, 'Invoices', 'billzilla', 'Orders confirmed', 'The morning’s quotes become invoices, each with the next number and no gaps. Stock comes off the shelf.'],
+  [660, 'Routes', 'drivo', 'Trucks loaded', 'Those confirmed invoices become delivery routes. Drivers follow them in the app and record proof at each stop.'],
+  [870, 'Inspection', 'inspect', 'Site check', 'An auditor walks the site room by room. A failed item gets a photo, and the cleaner sends back a photo of the fix.'],
+  [1020, 'Clock-out', 'workforce', 'Day closed', 'Staff clock out. Timesheets are ready, and FNPF and PAYE are worked out when the pay period runs.'],
+];
+const range = $('d-range'), marks = $('d-marks'), sun = $('d-sun'), dayEl = $('v-day');
+const hhmm = m => String(m / 60 | 0).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+marks.innerHTML = DAY.map(d => `<button type="button" data-m="${d[0]}" style="left:${(d[0] - 360) / 7.2}%">${d[0] === 360 ? esc(d[1]) : hhmm(d[0]) + '<span> ' + esc(d[1]) + '</span>'}</button>`).join('');
+const markBtns = [...marks.children];
+function setTime(m) {
+  m = Math.max(360, Math.min(1080, m)); range.value = m;
+  const t = (m - 360) / 720; let k = 0; DAY.forEach((d, i) => { if (m >= d[0]) k = i; });
+  const d = DAY[k], p = P.find(q => q.id === d[2]);
+  $('d-time').textContent = hhmm(m); $('d-kd').textContent = d[3] + ' · ' + p.kind; $('d-nm').textContent = p.name; $('d-tx').textContent = d[4];
+  range.style.setProperty('--p', t * 100 + '%');
+  markBtns.forEach((b, i) => b.classList.toggle('on', i === k));
+  const W = dayEl.clientWidth, H = dayEl.clientHeight, s = sun.offsetWidth;
+  sun.style.transform = `translate(${(W - s) * (0.04 + 0.92 * t)}px,${H * 0.5 - Math.sin(Math.PI * t) * H * 0.48 - s * 0.2}px)`;
+}
+range.addEventListener('input', () => setTime(+range.value));
+markBtns.forEach(b => b.addEventListener('click', () => setTime(+b.dataset.m)));
+new ResizeObserver(() => setTime(+range.value)).observe(dayEl);
+function live() { try { $('d-live').textContent = 'Suva now ' + new Intl.DateTimeFormat('en-GB', { timeZone: 'Pacific/Fiji', hour: '2-digit', minute: '2-digit' }).format(new Date()); } catch (e) {} }
+live(); setInterval(live, 20000);
+
+/* ───── picker ───── */
+const views = ['stack', 'map', 'day'], picks = [...document.querySelectorAll('.pick button')];
+function show() {
+  let v = location.hash.slice(1); if (!views.includes(v)) v = 'stack';
+  views.forEach(n => { $('v-' + n).hidden = n !== v; });
+  picks.forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
+  if (v === 'map') { tall = null; drawMap(); } if (v === 'day') setTime(+range.value);
+}
+picks.forEach(b => b.addEventListener('click', () => { try { history.replaceState(null, '', '#' + b.dataset.v); } catch (e) { location.hash = b.dataset.v; } show(); }));
+addEventListener('hashchange', show); show();
+})();
+</script>
