@@ -46,9 +46,6 @@ a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:
 .mark{grid-column:1/3;grid-row:1;align-self:start;justify-self:start;display:flex;align-items:center;gap:12px;font:400 14px/1 var(--display);letter-spacing:.42em}
 .mark svg{width:26px;height:26px;flex:none}
 .mark .bar{fill:var(--fg)} .mark .bar.b{fill:var(--accent)}
-.read{grid-column:3;grid-row:1;display:grid;grid-template-columns:auto auto;gap:4px 14px;font:400 11px/1.2 var(--mono);color:var(--dim);
-  font-variant-numeric:tabular-nums;text-transform:uppercase;letter-spacing:.06em;text-align:right;justify-self:end}
-.read b{font-weight:400;color:var(--fg)}
 
 .idx{grid-column:1;grid-row:2;align-self:center;display:flex;flex-direction:column;gap:2px;font:400 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.14em}
 .idx a{display:flex;align-items:center;gap:12px;padding:10px 0;color:var(--dim);transition:color .3s}
@@ -116,8 +113,7 @@ html.locked{overflow:hidden}
 
 @media (max-width:720px){
   .k{grid-template-columns:minmax(0,1fr) auto;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-  .mark{grid-column:1} .read{grid-column:2}
-  .read .wide{display:none}
+  .mark{grid-column:1/3}
   /* phone: every section named in one row you can swipe; the current one is marked on the rule above it */
   .k>.idx{grid-column:1/3;grid-row:3;flex-direction:row;gap:26px;justify-content:flex-start;border-top:1px solid var(--line);font-size:12px;
     pointer-events:auto;overflow-x:auto;overscroll-behavior-x:contain;touch-action:pan-x;scrollbar-width:none;
@@ -143,12 +139,6 @@ html.locked{overflow:hidden}
     KAITECH
   </a>
 
-  <div class="read" aria-hidden="true">
-    <span>Yaw</span><b id="r-yaw">+000.0°</b>
-    <span>Pitch</span><b id="r-pit">+000.0°</b>
-    <span class="wide">Points</span><b class="wide" id="r-pts">0</b>
-    <span class="wide">Local</span><b class="wide" id="r-time">00:00:00</b>
-  </div>
 
   <nav class="idx" aria-label="Sections">
     <a href="#home"><kbd>1</kbd><span>Kaitech</span></a>
@@ -321,7 +311,7 @@ const BUCKETS = 9, palette = [], bucket = new Uint8Array(N);
 }
 
 /* ── view ── */
-let W = 0, H = 0, dpr = 1, mode = 0, yaw = 0, pitch = 0, uy = 0, up = 0, vy = 0, vp = 0, px = 0, py = 0, spin = 0, drag = null, readTick = 0;
+let W = 0, H = 0, dpr = 1, mode = 0, yaw = 0, pitch = 0, uy = 0, up = 0, vy = 0, vp = 0, px = 0, py = 0, spin = 0, drag = null;
 function resize() { dpr = Math.min(devicePixelRatio || 1, 2); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; }
 new ResizeObserver(resize).observe(cv); resize();
 
@@ -351,12 +341,8 @@ function frame(now) {
     ctx.fillRect(cx * dpr + x1 * scale * f - s / 2, cyy * dpr + y1 * scale * f - s / 2, s, s);
   }
   ctx.globalAlpha = 1;
-  if ((now / 100 | 0) !== readTick) { readTick = now / 100 | 0; readout(); }
   requestAnimationFrame(frame);
 }
-const deg = r => { const d = ((r * 57.2958 + 180) % 360 + 360) % 360 - 180; return (d < 0 ? '−' : '+') + Math.abs(d).toFixed(1).padStart(5, '0') + '°'; };
-function readout() { $('r-yaw').textContent = deg(yaw); $('r-pit').textContent = deg(pitch); $('r-time').textContent = new Date().toTimeString().slice(0, 8); }
-$('r-pts').textContent = N.toLocaleString('en-US');
 
 /* ── input ── */
 cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; vy = vp = 0; cv.setPointerCapture(e.pointerId); });
