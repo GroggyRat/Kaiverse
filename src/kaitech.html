@@ -4,8 +4,9 @@
 <style>
 /* Layout: one fixed frame, no scroll. A single object made of points holds the centre and re-forms for each part of the site; everything else sits on the frame's edges like instrument markings. */
 :root{
-  --bg0:#040507; --bg1:#10141A; --fg:#EEF0F3; --dim:#7F8894; --line:#2A3038;
-  --cool:#8FCBFF; --warm:#FFC48A;
+  /* KaiTech brand: logo royal blue and navy, app accent #0A84FF, app dark neutrals */
+  --bg0:#000208; --bg1:#041B44; --fg:#F5F5F7; --dim:#8E8E93; --line:#2C2C2E; --accent:#0A84FF;
+  --cool:#0057D9; --mid:#0A84FF; --warm:#F5F5F7;
   --display:'Michroma','Eurostile','Arial Black',sans-serif;
   --text:'Inter Tight',system-ui,-apple-system,'Segoe UI',sans-serif;
   --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
@@ -35,7 +36,7 @@ a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:
 .idx a::before{content:"";width:14px;height:1px;background:currentColor;transition:width .45s cubic-bezier(.2,.7,.1,1)}
 .idx a:hover{color:var(--fg)}
 .idx a[aria-current="true"]{color:var(--fg)}
-.idx a[aria-current="true"]::before{width:44px}
+.idx a[aria-current="true"]::before{width:44px;background:var(--accent)}
 .idx kbd{font:inherit;color:var(--dim)}
 
 .panel{grid-column:1/3;grid-row:3;align-self:end;max-width:34rem;display:flex;flex-direction:column;gap:14px;transition:opacity .35s,transform .5s cubic-bezier(.2,.7,.1,1)}
@@ -50,6 +51,7 @@ a:focus-visible,button:focus-visible{outline:1px solid var(--fg);outline-offset:
 .hint{grid-column:3;grid-row:3;align-self:end;justify-self:end;text-align:right;font:400 11px/1.6 var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
 .hint b{display:block;font:400 clamp(22px,2.6vw,36px)/1 var(--display);color:var(--fg);letter-spacing:.04em;margin-bottom:10px;font-variant-numeric:tabular-nums}
 .hint b i{font-style:normal;color:var(--dim)}
+.hint b span{color:var(--accent)}
 
 @media (max-width:720px){
   .k{grid-template-columns:minmax(0,1fr) auto;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -171,7 +173,7 @@ const pos = new Float32Array(shapes[0]), ease = new Float32Array(N), order = new
 const BUCKETS = 9, palette = [], bucket = new Uint8Array(N);
 {
   const cs = getComputedStyle(document.documentElement), hex = n => { const h = cs.getPropertyValue(n).trim().slice(1); return [0, 2, 4].map(k => parseInt(h.substr(k, 2), 16)); };
-  const a = hex('--cool'), w = [244, 246, 250], b = hex('--warm');
+  const a = hex('--cool'), w = hex('--mid'), b = hex('--warm');
   for (let k = 0; k < BUCKETS; k++) {
     const t = k / (BUCKETS - 1), u = t < 0.5 ? t * 2 : (t - 0.5) * 2, p = t < 0.5 ? a : w, q = t < 0.5 ? w : b;
     palette.push(`rgb(${p.map((v, j) => Math.round(v + (q[j] - v) * u)).join(',')})`);
