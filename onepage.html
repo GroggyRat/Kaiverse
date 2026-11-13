@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KaiTech · Software that keeps Fiji business moving</title>
+<meta name="description" content="Software that keeps Fiji business moving. Four live products for paying people, sending invoices, checking the work and getting deliveries out.">
+<link rel="canonical" href="https://kaitechfj.vercel.app/onepage">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="KaiTech">
+<meta property="og:title" content="KaiTech · Software that keeps Fiji business moving">
+<meta property="og:description" content="Software that keeps Fiji business moving. Four live products for paying people, sending invoices, checking the work and getting deliveries out.">
+<meta property="og:url" content="https://kaitechfj.vercel.app/onepage">
+<meta property="og:image" content="https://kaitechfj.vercel.app/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#030712">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta name="robots" content="noindex">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&family=Inter+Tight:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Michroma&display=swap">
+<style>
+/* Layout: a classic one-page site. Content scrolls freely on the left; the point object is pinned on the right and changes form for the section in view. On phones it sits faint behind the text. */
+:root{
+  --bg0:#030712; --bg1:#14295A; --fg:#F5F6F9; --dim:#9AA4BA; --line:#243049; --accent:#4C8DF5;
+  --cool:#2563CC; --mid:#6FA0F2; --warm:#F5F6F9; --scrim:rgba(3,7,18,.72);
+  --brand:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --display:'Michroma','Eurostile','Arial Black',sans-serif;
+  --text:'Inter Tight',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg0);color:var(--fg);font:17px/1.6 var(--text);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:1px solid var(--fg);outline-offset:4px}
+.wrap{padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+
+/* top bar */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg0)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;display:flex;align-items:center;justify-content:space-between;gap:20px;padding-block:16px;
+  background:linear-gradient(var(--bg0) 55%,transparent)}
+.mark{display:flex;align-items:center;gap:11px;font:500 21px/1 var(--brand);letter-spacing:-.01em;text-decoration:none}
+.mark svg{width:26px;height:26px}
+.wm .t{color:var(--accent)}
+.bar nav{display:flex;gap:clamp(14px,2.2vw,28px);font:400 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.14em}
+.bar nav a{text-decoration:none;color:var(--dim);padding:8px 0;border-bottom:1px solid transparent;transition:color .25s,border-color .25s}
+.bar nav a:hover{color:var(--fg)} .bar nav a.on{color:var(--fg);border-color:var(--accent)}
+.bar .cta{padding:10px 16px}
+
+/* the pinned object */
+.stage{position:fixed;top:0;right:0;width:50vw;height:100vh;height:100dvh;pointer-events:none;
+  background:radial-gradient(70% 60% at 55% 50%,var(--bg1) 0%,transparent 70%)}
+canvas{width:100%;height:100%;display:block}
+
+/* sections */
+main{position:relative;z-index:1}
+section{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;justify-content:center;gap:16px;padding-block:96px;max-width:min(36rem,46vw)}
+.tag{margin:0;font:400 11px/1.4 var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.14em}
+h1,h2{margin:0;font:400 clamp(30px,4.4vw,62px)/1.06 var(--display);letter-spacing:.02em;text-transform:uppercase;text-wrap:balance}
+#about h2{font-size:clamp(28px,3.4vw,48px)}
+h1.brand{font:500 clamp(54px,8vw,120px)/.95 var(--brand);letter-spacing:-.03em;text-transform:none}
+h3{margin:22px 0 4px;font:500 19px/1.3 var(--text)}
+p{margin:0;color:var(--dim);text-wrap:pretty}
+.lead{font-size:clamp(18px,1.6vw,22px);line-height:1.5;color:var(--fg)}
+dl{margin:6px 0 0;display:grid;grid-template-columns:auto minmax(0,1fr);font:400 12px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.06em}
+dt,dd{margin:0;padding:11px 0;border-top:1px solid var(--line)} dt{padding-right:20px} dd{text-align:right;color:var(--dim)}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.cta{display:inline-flex;align-items:center;padding:13px 22px;border-radius:999px;background:var(--accent);color:var(--bg0);border:1px solid var(--accent);text-decoration:none;
+  font:500 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.12em;cursor:pointer;transition:background-color .25s,border-color .25s,transform .1s ease-out}
+.cta:hover{background:var(--fg);border-color:var(--fg)} .cta:active{transform:scale(.97)}
+.cta.ghost{background:transparent;color:var(--fg);border-color:var(--line)} .cta.ghost:hover{border-color:var(--fg)}
+.shots{display:grid;gap:14px;margin-top:10px}
+.shots.phone{grid-template-columns:1fr 1fr}
+.shots figure{margin:0;background:var(--bg1);border-radius:14px;padding:10px}
+.shots img{display:block;width:100%;height:auto;border-radius:8px}
+.shots figcaption{margin-top:8px;font-size:13px;color:var(--dim)}
+.clients{display:flex;gap:26px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.clients img{height:20px;width:auto}
+.clients .tp{display:inline-flex;align-items:center;gap:9px;font:400 12px/1 var(--display);letter-spacing:.14em}
+.clients .tp svg{width:18px;height:18px}
+.founder{display:flex;align-items:center;gap:16px}
+.founder img{width:72px;height:72px;border-radius:50%;object-fit:cover;border:1px solid var(--line)}
+.founder b{display:block;font:500 17px/1.3 var(--text)} .founder span{font:400 11px/1.5 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--dim)}
+.scrollcue{display:flex;align-items:center;gap:10px;margin-top:18px;font:400 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--dim)}
+.scrollcue i{width:1px;height:34px;background:linear-gradient(var(--accent),transparent);animation:cue 1.8s ease-in-out infinite}
+@keyframes cue{0%,100%{transform:scaleY(.4);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}}
+
+/* form */
+form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+label{display:flex;flex-direction:column;gap:6px;min-width:0;font:400 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--dim)}
+label.wide{grid-column:1/-1}
+input,select,textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:rgba(3,7,18,.7);color:var(--fg);font:400 16px/1.3 var(--text);letter-spacing:0;text-transform:none}
+textarea{min-height:84px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+.hp{position:absolute;left:-9999px}
+.note{grid-column:1/-1;margin:0;font-size:15px} .note.err{color:#FF9A8A} .note.ok{color:var(--fg)}
+footer{position:relative;z-index:1;display:flex;gap:8px 22px;flex-wrap:wrap;padding-block:22px 40px;border-top:1px solid var(--line);font:400 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--dim)}
+footer a{text-decoration:none} footer a:hover{color:var(--fg)}
+
+/* reveal as sections come into view: visible by default, only animated once the script runs */
+.js .rv{opacity:0;transform:translateY(14px);transition:opacity .5s cubic-bezier(.2,.7,.1,1),transform .6s cubic-bezier(.2,.7,.1,1)}
+.js .in .rv{opacity:1;transform:none}
+
+@media (max-width:860px){
+  .stage{width:100vw;opacity:.32}
+  section{max-width:none;min-height:auto;padding-block:72px}
+  section:first-of-type{min-height:88vh;min-height:88dvh}
+  .bar nav{display:none}
+  form{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="stage" aria-hidden="true"><canvas id="fx"></canvas></div>
+
+<header class="bar wrap">
+  <a class="mark" href="#top" aria-label="KaiTech"><svg viewBox="0 0 26 26" aria-hidden="true"><rect x="0" y="1" width="26" height="6" rx="3" fill="#F5F6F9"/><rect x="6.5" y="10" width="13" height="6" rx="3" fill="#4C8DF5"/><rect x="0" y="19" width="26" height="6" rx="3" fill="#F5F6F9"/></svg><span class="wm"><span>Kai</span><span class="t">Tech</span></span></a>
+  <nav aria-label="Sections"><a href="#workforce">KaiWorkforce</a><a href="#billzilla">BillZilla</a><a href="#inspect">KaiInspect</a><a href="#drivo">Drivo</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
+  <a class="cta" href="#contact">Book a demo</a>
+</header>
+
+<main class="wrap" id="top">
+<section id="top">
+  <p class="tag rv">KaiTech · Fiji</p>
+  <h1 class="brand rv"><span class="wm"><span>Kai</span><span class="t">Tech</span></span></h1>
+  <p class="lead rv">Software that keeps Fiji business moving. Four live products for paying people, sending invoices, checking the work and getting deliveries out.</p>
+  <div class="acts rv"><a class="cta" href="#contact">Book a demo</a><a class="cta ghost" href="#workforce">See the products</a></div>
+  <div class="clients rv"><img src="assets/clients/nafco.png" alt="NAFCO" width="75" height="22"><span class="tp"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x=".75" y=".75" width="22.5" height="22.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 4l8 8-8 8zM20 4l-8 8 8 8z" fill="currentColor"/><path d="M12 7l2.2 5L12 17l-2.2-5z" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>Totoka Pacific</span></div>
+  <div class="scrollcue rv"><i></i>Scroll</div>
+</section>
+<section id="workforce">
+  <p class="tag rv">Product 1 of 4 · Payroll and HR · live</p>
+  <h2 class="rv">KaiWorkforce</h2>
+  <p class="lead rv">Payroll and HR for staffing agencies. FNPF and PAYE are worked out for you, staff clock in at their work site, and payslips go out by email.</p>
+  <dl class="rv"><dt>Payroll</dt><dd>FNPF · PAYE · payslips</dd><dt>Attendance</dt><dd>Clock-in by work site</dd><dt>People</dt><dd>Leave · timesheets · org chart</dd></dl>
+  
+  <div class="rv"><h3>Payroll that knows Fiji</h3><p>FNPF and PAYE are calculated from your configured rates every pay run. Bonuses, allowances, rate changes, tax adjustments and termination pay are handled in the same run.</p><h3>Clock-in where the work is</h3><p>Staff clock in and out at their work site. Supervisors see who is on site on a live map, and the hours flow straight into timesheets.</p></div>
+  <div class="acts rv"><a class="cta" href="#contact" data-product="KaiWorkforce">Book a demo</a><a class="cta ghost" href="workforce.html">All about KaiWorkforce</a></div>
+</section>
+<section id="billzilla">
+  <p class="tag rv">Product 2 of 4 · Invoicing · live</p>
+  <h2 class="rv">BillZilla</h2>
+  <p class="lead rv">Invoicing for Fiji businesses. Quotes become invoices with gap-free numbers, stock moves when you finalise, and customers get statements and reminders.</p>
+  <dl class="rv"><dt>Documents</dt><dd>Quotes · invoices · credit notes</dd><dt>Payments</dt><dd>Bank · cash · M-PAiSA · MyCash</dd><dt>Currency</dt><dd>FJD or the customer’s own</dd></dl>
+  <div class="shots rv"><figure><img src="assets/screens/billzilla-invoice.webp" alt="An invoice with its payments, credit note and reminders" width="1440" height="900" loading="lazy"><figcaption>An invoice with its payments, credit note and reminders</figcaption></figure><figure><img src="assets/screens/billzilla-dashboard.webp" alt="The dashboard: what is outstanding, overdue and waiting for approval" width="1440" height="900" loading="lazy"><figcaption>The dashboard: what is outstanding, overdue and waiting for approval</figcaption></figure></div>
+  <div class="rv"><h3>Quotes to invoices, in order</h3><p>A quote becomes an invoice in one step. Numbers are given when you finalise, so there are never gaps, and every invoice uses one of seven A4 layouts with your logo.</p><h3>Paid the way Fiji pays</h3><p>Record bank transfers, cash, cash on delivery, cheques, M-PAiSA and MyCash, including part payments.</p></div>
+  <div class="acts rv"><a class="cta" href="#contact" data-product="BillZilla">Book a demo</a><a class="cta ghost" href="billzilla.html">All about BillZilla</a></div>
+</section>
+<section id="inspect">
+  <p class="tag rv">Product 3 of 4 · Quality control · live</p>
+  <h2 class="rv">KaiInspect</h2>
+  <p class="lead rv">Cleaning quality control for facility services companies. An auditor marks each room Pass or Fail, every Fail needs a photo, and the cleaner sends back a photo of the fix.</p>
+  <dl class="rv"><dt>Inspect</dt><dd>Saves with no signal</dd><dt>Fix</dt><dd>WhatsApp link, no account</dd><dt>Report</dt><dd>Customer and internal</dd></dl>
+  
+  <div class="rv"><h3>Room by room</h3><p>An auditor walks the site and marks each checklist item Pass or Fail. Every Fail needs a photo and becomes a problem with a due date.</p><h3>Works with no signal</h3><p>The inspection saves on the phone after every tap and sends when the signal comes back.</p></div>
+  <div class="acts rv"><a class="cta" href="#contact" data-product="KaiInspect">Book a demo</a><a class="cta ghost" href="inspect.html">All about KaiInspect</a></div>
+</section>
+<section id="drivo">
+  <p class="tag rv">Product 4 of 4 · Delivery · live</p>
+  <h2 class="rv">Drivo</h2>
+  <p class="lead rv">Delivery routing and fleet tracking for distribution companies. Dispatchers plan routes from confirmed invoices, drivers navigate in the app, and every vehicle shows live.</p>
+  <dl class="rv"><dt>Routes</dt><dd>From confirmed invoices</dd><dt>Drivers</dt><dd>Navigation · proof of delivery</dd><dt>Works with</dt><dd>BillZilla · KaiWorkforce</dd></dl>
+  <div class="shots rv phone"><figure><img src="assets/screens/drivo-plan.webp" alt="Planning a route from invoices ready for delivery" width="780" height="1328" loading="lazy"><figcaption>Planning a route from invoices ready for delivery</figcaption></figure><figure><img src="assets/screens/drivo-settings.webp" alt="Route settings: depot, vehicle and what to optimise for" width="780" height="1328" loading="lazy"><figcaption>Route settings: depot, vehicle and what to optimise for</figcaption></figure></div>
+  <div class="rv"><h3>Routes from invoices</h3><p>Choose confirmed invoices, compare three route options, then assign a driver and vehicle. Optimise for fuel, time or distance.</p><h3>Drivers stay in one app</h3><p>Drivers navigate inside Drivo, record proof of delivery and drop pins for new shops.</p></div>
+  <div class="acts rv"><a class="cta" href="#contact" data-product="Drivo">Book a demo</a><a class="cta ghost" href="drivo.html">All about Drivo</a></div>
+</section>
+<section id="about">
+  <p class="tag rv">About</p>
+  <h2 class="rv">Software Fiji businesses can afford</h2>
+  <div class="founder rv"><img src="assets/founder.jpg" alt="Kartik Nand" width="72" height="72"><div><b>Kartik Nand</b><span>Founder, KaiTech</span></div></div>
+  <p class="lead rv">I'm Kartik Nand. I started KaiTech to make software that a business in Fiji can afford, and that fits the way work is done here.</p>
+  <p class="rv">Most business software is built somewhere else, for somewhere else. It is priced for bigger markets. It assumes fast internet in every room and on every road. It has never heard of FNPF, of PAYE the way Fiji does it, or of a customer who pays by M-PAiSA.</p>
+  <div class="acts rv"><a class="cta ghost" href="about.html">Read the story</a></div>
+</section>
+<section id="contact">
+  <p class="tag rv">Get in touch</p>
+  <h2 class="rv">Book a demo</h2>
+  <p class="lead rv">Tell us what your business runs on today, and we will show you the product that fits.</p>
+  <form id="demo-form" class="rv">
+    <label for="d-name">Your name<input id="d-name" name="name" required maxlength="120" autocomplete="name"></label>
+    <label for="d-business">Business<input id="d-business" name="business" required maxlength="160" autocomplete="organization"></label>
+    <label for="d-email">Email<input id="d-email" name="email" type="email" required maxlength="200" autocomplete="email"></label>
+    <label for="d-phone">Phone (optional)<input id="d-phone" name="phone" type="tel" maxlength="40" autocomplete="tel"></label>
+    <label class="wide" for="d-product">Product<select id="d-product" name="product"><option>KaiWorkforce</option><option>BillZilla</option><option>KaiInspect</option><option>Drivo</option><option>Not sure yet</option></select></label>
+    <label class="wide" for="d-message">Anything we should know (optional)<textarea id="d-message" name="message" maxlength="2000"></textarea></label>
+    <div class="hp" aria-hidden="true"><label for="d-website">Website<input id="d-website" name="website" tabindex="-1" autocomplete="off"></label></div>
+    <p class="note" id="demo-note" role="status" hidden></p>
+    <div class="acts"><button class="cta" type="submit">Send request</button></div>
+  </form>
+  <dl class="rv"><dt>Email</dt><dd><a href="mailto:kaitechfj@gmail.com">kaitechfj@gmail.com</a></dd><dt>Phone</dt><dd><a href="tel:+6797569670">+679 756 9670</a> · <a href="tel:+6799991115">+679 999 1115</a></dd></dl>
+</section>
+</main>
+<footer class="wrap"><span>KaiTech · Fiji</span><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><span>kaitechfj@gmail.com</span></footer>
+
+<script>
+(() => {
+document.documentElement.classList.add('js');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LOW = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 3 || !!(navigator.connection && navigator.connection.saveData);
+const N = innerWidth < 860 ? (LOW ? 2400 : 3600) : (LOW ? 4500 : 7000), NB = N * 0.8 | 0;
+/* ── forms: every one is the same N points, rearranged ── */
+const rnd = (a = 1) => (Math.random() - 0.5) * 2 * a, TAU = 6.2832;
+const make = fill => { const o = new Float32Array(N * 3); for (let i = 0; i < N; i++) { const p = fill(i, i >= NB); o[i * 3] = p[0]; o[i * 3 + 1] = p[1]; o[i * 3 + 2] = p[2] || 0; } return o; };
+const seg = (ax, ay, az, bx, by, bz, j = 0.02) => { const t = Math.random(); return [ax + (bx - ax) * t + rnd(j), ay + (by - ay) * t + rnd(j), az + (bz - az) * t + rnd(j)]; };
+const ring = (r, j = 0.025) => { const a = Math.random() * TAU; return [Math.cos(a) * r + rnd(j), Math.sin(a) * r + rnd(j), rnd(j)]; };
+const pill = (half, y, r) => { // a rounded bar: the logo's shape
+  const a = Math.random() * TAU, u = rnd(1), s = Math.sqrt(1 - u * u), d = r * (0.72 + 0.28 * Math.random());
+  return [rnd(half - r) + Math.cos(a) * s * d, y + Math.sin(a) * s * d, u * d];
+};
+const shapes = [
+  // the KaiTech mark: two long bars, one short blue bar between them
+  make((i, blue) => blue ? pill(0.66, 0, 0.3) : pill(1.32, i % 2 ? -0.92 : 0.92, 0.3)),
+  // KaiWorkforce: a clock face at ten past ten
+  make((i, blue) => {
+    if (blue) return i % 5 < 2 ? seg(0, 0, 0, -0.52, -0.3, 0, 0.03) : seg(0, 0, 0, 0.8, -0.47, 0, 0.025);
+    if (i % 5 < 3) return ring(1.3);
+    const h = (Math.random() * 12 | 0) / 12 * TAU, c = Math.cos(h), s = Math.sin(h), big = Math.round(h / TAU * 12) % 3 === 0;
+    return seg(c * (big ? 0.92 : 1.05), s * (big ? 0.92 : 1.05), 0, c * 1.17, s * 1.17, 0, 0.018);
+  }),
+  // BillZilla: three sheets, the front one with a header and a total
+  make((i, blue) => {
+    if (blue) return i % 3 ? seg(0.1, 0.72, -0.4, 0.62, 0.72, -0.4, 0.035) : seg(-0.62, -0.78, -0.4, -0.2, -0.78, -0.4, 0.035);
+    const k = i % 3, z = -0.4 + k * 0.4, ox = k * 0.16, oy = -k * 0.13, w = 0.8, h = 1.05, e = Math.random() * 4 | 0;
+    if (i % 5 < 3) return e === 0 ? seg(ox - w, oy - h, z, ox + w, oy - h, z, 0.008) : e === 1 ? seg(ox - w, oy + h, z, ox + w, oy + h, z, 0.008)
+      : e === 2 ? seg(ox - w, oy - h, z, ox - w, oy + h, z, 0.008) : seg(ox + w, oy - h, z, ox + w, oy + h, z, 0.008);
+    const row = -0.42 + (Math.random() * 5 | 0) * 0.21;
+    return seg(ox - 0.62, oy + row, z, ox + 0.62, oy + row, z, 0.008);
+  }),
+  // KaiInspect: a pass mark inside its ring
+  make((i, blue) => blue ? (i % 3 ? seg(-0.2, 0.48, 0, 0.7, -0.5, 0, 0.06) : seg(-0.66, 0.02, 0, -0.2, 0.48, 0, 0.06)) : ring(1.3, 0.04)),
+  // Drivo: a route with four stops over a street grid
+  (() => {
+    const path = t => [-1.4 + 2.8 * t, 0.45, 0.85 * Math.sin(t * 5.4) * (0.4 + 0.6 * t)], stops = [0.04, 0.33, 0.66, 0.96];
+    return make((i, blue) => {
+      if (!blue) { const l = ((Math.random() * 7 | 0) - 3) * 0.48; return Math.random() < 0.5 ? seg(l, 0.47, -1.44, l, 0.47, 1.44, 0.006) : seg(-1.44, 0.47, l, 1.44, 0.47, l, 0.006); }
+      if (i % 5 < 3) { const p = path(Math.random()); return [p[0] + rnd(0.02), p[1] + rnd(0.02), p[2] + rnd(0.02)]; }
+      const p = path(stops[Math.random() * 4 | 0]);
+      if (Math.random() < 0.4) return seg(p[0], 0.45, p[2], p[0], -0.2, p[2], 0.012);
+      const a = Math.random() * TAU, u = rnd(1), s = Math.sqrt(1 - u * u);
+      return [p[0] + Math.cos(a) * s * 0.13, -0.3 + u * 0.13, p[2] + Math.sin(a) * s * 0.13];
+    });
+  })(),
+  // About: the Fiji group from above. The two main islands in white, the outer chains in blue
+  (() => {
+    const isl = [[-0.7, 0.25, 0.74, 0.5, 0.1, 50], [0.52, -0.62, 0.7, 0.17, -0.5, 24], [1.2, -0.32, 0.09, 0.25, 0.5, 4], [-0.35, 1.1, 0.3, 0.06, -0.35, 5], [0.12, 0.3, 0.07, 0.05, 0, 2], [-0.08, -0.1, 0.05, 0.08, 0, 2]];
+    const total = isl.reduce((n, v) => n + v[5], 0), dots = [];
+    for (let k = 0; k < 11; k++) dots.push([1.45 + 0.16 * Math.sin(k * 1.7), -0.45 + k * 0.16]);
+    for (let k = 0; k < 7; k++) dots.push([-1.5 + k * 0.055, -0.1 - k * 0.11]);
+    return make((i, blue) => {
+      if (blue) { const d = dots[Math.random() * dots.length | 0], a = Math.random() * TAU, q = Math.sqrt(Math.random()) * 0.04; return [d[0] + Math.cos(a) * q, d[1] + Math.sin(a) * q, rnd(0.01)]; }
+      let pick = Math.random() * total, v = isl[0]; for (const c of isl) { if ((pick -= c[5]) < 0) { v = c; break; } }
+      const a = Math.random() * TAU, q = (Math.random() < 0.3 ? 1 : Math.sqrt(Math.random())) * (1 + 0.09 * Math.sin(3 * a + v[0] * 9) + 0.05 * Math.sin(7 * a));
+      const x = Math.cos(a) * q * v[2], y = Math.sin(a) * q * v[3], c = Math.cos(v[4]), n = Math.sin(v[4]);
+      return [v[0] + x * c - y * n, v[1] + x * n + y * c, rnd(0.015)];
+    });
+  })(),
+  // Contact: a globe with one orbit
+  make((i, blue) => {
+    if (blue) { const a = Math.random() * TAU, r = 1.55 + rnd(0.06), x = Math.cos(a) * r; return [x, x * 0.32 + rnd(0.012), Math.sin(a) * r]; }
+    const y = 1 - 2 * (i + 0.5) / NB, r = Math.sqrt(1 - y * y), a = i * 2.39996323;
+    return [Math.cos(a) * r * 1.1, y * 1.1, Math.sin(a) * r * 1.1];
+  }),
+];
+
+
+// section id -> form: mark, clock, invoices, tick, route, islands, globe
+const FORM = { top: 0, workforce: 1, billzilla: 2, inspect: 3, drivo: 4, about: 5, contact: 6 };
+
+/* ── the pinned object ── */
+const cv = document.getElementById('fx'), ctx = cv.getContext('2d');
+const pal = ['#2563CC', '#3D78DB', '#5A8EEA', '#6FA0F2', '#A9C6F6', '#D2E1FA', '#E8EFFB', '#F5F6F9'];
+const col = new Uint8Array(N), dur = new Float32Array(N), lag = new Float32Array(N), bow = new Float32Array(N * 3);
+for (let i = 0; i < N; i++) { col[i] = i >= NB ? Math.random() * 3 | 0 : 4 + (Math.random() * 4 | 0); dur[i] = 0.8 + Math.random() * 0.7; lag[i] = Math.random() * 0.2;
+  const a = Math.random() * 6.2832, u = rnd(1), q = Math.sqrt(1 - u * u); bow[i * 3] = Math.cos(a) * q * 0.6; bow[i * 3 + 1] = u * 0.6; bow[i * 3 + 2] = (Math.sin(a) * q + (i % 2 ? 1 : -1)) * 0.7; }
+const order = [...Array(N).keys()].sort((a, b) => col[a] - col[b]);
+const pos = new Float32Array(shapes[0]), from = new Float32Array(N * 3);
+const inOut = x => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+let form = 0, moveT = 0, W = 0, H = 0, dpr = 1, yaw = 0, pitch = 0, px = 0, py = 0, spin = 0;
+function resize() { dpr = Math.min(devicePixelRatio || 1, innerWidth < 860 || LOW ? 1.5 : 2); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; }
+new ResizeObserver(resize).observe(cv); resize();
+function setForm(f) { if (f === form) return; from.set(pos); form = f; moveT = performance.now() / 1000; }
+addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { px = e.clientX / innerWidth - 0.5; py = e.clientY / innerHeight - 0.5; } }, { passive: true });
+
+function frame(now) {
+  const t = now / 1000, target = shapes[form], globe = form === 6, ground = form === 4;
+  // scroll gives a slow extra turn, so the object reacts while you read
+  const scrollTurn = (scrollY / Math.max(1, innerHeight)) * 0.35;
+  if (globe && !reduced) spin += 0.003; else spin *= 0.94;
+  const ty = spin + (reduced || globe ? 0 : Math.sin(t * 0.42) * 0.38) + px * 0.3 + scrollTurn, tp = py * 0.2 + (ground ? 0.5 : globe ? -0.25 : 0);
+  yaw += (ty - yaw) * 0.08; pitch += (tp - pitch) * 0.08;
+  const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const scale = Math.min(W / 3.9, H / 4.2) * dpr, base = dpr * 1.45, cx = W * 0.5 * dpr, cyy = H * 0.5 * dpr;
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height); ctx.globalCompositeOperation = 'lighter';
+  let last = -1;
+  for (const i of order) {
+    const j = i * 3, k = reduced ? 1 : inOut(Math.min(1, Math.max(0, (t - moveT - lag[i]) / dur[i])));
+    const dx = target[j] - from[j], dy = target[j + 1] - from[j + 1], dz = target[j + 2] - from[j + 2];
+    const arc = Math.sin(Math.PI * k) * Math.sqrt(dx * dx + dy * dy + dz * dz) * 0.32;
+    const x = pos[j] = from[j] + dx * k + bow[j] * arc, y = pos[j + 1] = from[j + 1] + dy * k + bow[j + 1] * arc, z = pos[j + 2] = from[j + 2] + dz * k + bow[j + 2] * arc;
+    const x1 = x * cy + z * sy, z1 = -x * sy + z * cy, y1 = y * cp - z1 * sp, z2 = y * sp + z1 * cp, f = 4 / (4 + z2); if (f <= 0) continue;
+    if (col[i] !== last) { last = col[i]; ctx.fillStyle = pal[last]; }
+    ctx.globalAlpha = Math.max(0.14, Math.min(1, (i >= NB ? 0.95 : 0.6) - z2 * 0.4));
+    const s = base * f * f * (i >= NB ? 1.5 : 1);
+    ctx.fillRect(cx + x1 * scale * f - s / 2, cyy + y1 * scale * f - s / 2, s, s);
+  }
+  requestAnimationFrame(frame);
+}
+from.set(pos); requestAnimationFrame(frame);
+
+/* ── which section is in view: changes the form, lights the nav, reveals the text ── */
+const secs = [...document.querySelectorAll('main > section')], navs = [...document.querySelectorAll('.bar nav a')];
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }), { threshold: 0.15 });
+secs.forEach(s => io.observe(s));
+function current() {
+  const mid = innerHeight * 0.45; let best = secs[0];
+  for (const s of secs) if (s.getBoundingClientRect().top <= mid) best = s;
+  setForm(FORM[best.id] ?? 0);
+  navs.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + best.id));
+}
+addEventListener('scroll', current, { passive: true }); current();
+
+/* ── demo form ── */
+const fm = document.getElementById('demo-form'), note = document.getElementById('demo-note'), btn = fm.querySelector('button');
+document.querySelectorAll('[data-product]').forEach(a => a.addEventListener('click', () => { document.getElementById('d-product').value = a.dataset.product; }));
+fm.addEventListener('submit', async e => {
+  e.preventDefault(); btn.disabled = true; btn.textContent = 'Sending'; note.hidden = true;
+  const data = Object.fromEntries(new FormData(fm)); let problem = '';
+  try { const r = await fetch('api/demo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    if (!r.ok) { const j = await r.json().catch(() => ({})); problem = (r.status === 400 || r.status === 429) && j.error ? j.error : 'We could not send your request. Please email kaitechfj@gmail.com or call +679 756 9670 instead.'; } }
+  catch (x) { problem = 'We could not send your request. Please email kaitechfj@gmail.com or call +679 756 9670 instead.'; }
+  note.hidden = false; note.className = 'note ' + (problem ? 'err' : 'ok');
+  note.textContent = problem || 'Thank you. We have your request and will reply to ' + data.email + '.';
+  btn.disabled = false; btn.textContent = 'Send request'; if (!problem) fm.reset();
+});
+})();
+</script>
+</body>
+</html>

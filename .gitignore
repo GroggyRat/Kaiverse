@@ -1,3 +1,4 @@
 node_modules
 src/video/.intro-built.html
 src/video/.*-built.html
+src/.onepage-preview.html

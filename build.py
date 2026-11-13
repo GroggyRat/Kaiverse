@@ -161,3 +161,69 @@ paths = [''] + [p['id'] for p in products] + ['about', 'privacy', 'terms']
     + ''.join(f'  <url><loc>{SITE}/{p}</loc></url>\n' for p in paths) + '</urlset>\n')
 (root / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: {SITE}/sitemap.xml\n')
 print('built', ', '.join(['index'] + [p['id'] for p in products] + [f.stem for f in sorted((root / "src/pages").glob("*.html"))]), '+ sitemap.xml, robots.txt for', SITE)
+
+# ── 6. the one-page version (an alternative layout, at /onepage) ──
+def onepage():
+    tpl = (root / 'src/onepage.html').read_text()
+    site_src = (root / 'src/kaitech.html').read_text()
+    forms = site_src[site_src.index('/* ── forms'):site_src.index('/* colour')]
+    rv = lambda h: h.replace('<p class="tag">', '<p class="tag rv">').replace('<h2>', '<h2 class="rv">')
+    secs = [f'''<section id="top">
+  <p class="tag rv">KaiTech · Fiji</p>
+  <h1 class="brand rv"><span class="wm"><span>Kai</span><span class="t">Tech</span></span></h1>
+  <p class="lead rv">{e(sections[0]["body"])}</p>
+  <div class="acts rv"><a class="cta" href="#contact">Book a demo</a><a class="cta ghost" href="#workforce">See the products</a></div>
+  <div class="clients rv">{CLIENTS[len('<div class="clients">'):-len('</div>')]}</div>
+  <div class="scrollcue rv"><i></i>Scroll</div>
+</section>''']
+    for i, p in enumerate(products, 1):
+        shots = p.get('screens') or []
+        phone = shots and all(s.get('phone') for s in shots)
+        sh = (f'<div class="shots rv{" phone" if phone else ""}">' + ''.join(
+            f'<figure><img src="{e(s["src"])}" alt="{e(s["caption"])}" width="{s["w"]}" height="{s["h"]}" loading="lazy"><figcaption>{e(s["caption"])}</figcaption></figure>'
+            for s in shots) + '</div>') if shots else ''
+        secs.append(f'''<section id="{p["id"]}">
+  <p class="tag rv">Product {i} of {len(products)} · {e(p["kind"])} · live</p>
+  <h2 class="rv">{e(p["product"])}</h2>
+  <p class="lead rv">{e(p["body"])}</p>
+  <dl class="rv">{"".join(f"<dt>{e(a)}</dt><dd>{e(b)}</dd>" for a, b in p["slots"])}</dl>
+  {sh}
+  <div class="rv">{"".join(f"<h3>{e(h)}</h3><p>{e(t)}</p>" for h, t in p["points"][:2])}</div>
+  <div class="acts rv"><a class="cta" href="#contact" data-product="{e(p["product"])}">Book a demo</a><a class="cta ghost" href="{p["id"]}.html">All about {e(p["product"])}</a></div>
+</section>''')
+    about = (root / 'src/pages/about.html').read_text()
+    story = re.findall(r'<h2>The problem</h2>\s*<p>(.*?)</p>', about, re.S)
+    secs.append(f'''<section id="about">
+  <p class="tag rv">About</p>
+  <h2 class="rv">Software Fiji businesses can afford</h2>
+  <div class="founder rv">{('<img src="assets/founder.jpg" alt="' + e(site["founder"]) + '" width="72" height="72">') if photo.exists() else ''}<div><b>{e(site["founder"])}</b><span>Founder, KaiTech</span></div></div>
+  <p class="lead rv">I'm {e(site["founder"])}. I started KaiTech to make software that a business in Fiji can afford, and that fits the way work is done here.</p>
+  <p class="rv">{story[0] if story else ""}</p>
+  <div class="acts rv"><a class="cta ghost" href="about.html">Read the story</a></div>
+</section>''')
+    opts = ''.join(f'<option>{e(p["product"])}</option>' for p in products) + '<option>Not sure yet</option>'
+    secs.append(f'''<section id="contact">
+  <p class="tag rv">Get in touch</p>
+  <h2 class="rv">Book a demo</h2>
+  <p class="lead rv">Tell us what your business runs on today, and we will show you the product that fits.</p>
+  <form id="demo-form" class="rv">
+    <label for="d-name">Your name<input id="d-name" name="name" required maxlength="120" autocomplete="name"></label>
+    <label for="d-business">Business<input id="d-business" name="business" required maxlength="160" autocomplete="organization"></label>
+    <label for="d-email">Email<input id="d-email" name="email" type="email" required maxlength="200" autocomplete="email"></label>
+    <label for="d-phone">Phone (optional)<input id="d-phone" name="phone" type="tel" maxlength="40" autocomplete="tel"></label>
+    <label class="wide" for="d-product">Product<select id="d-product" name="product">{opts}</select></label>
+    <label class="wide" for="d-message">Anything we should know (optional)<textarea id="d-message" name="message" maxlength="2000"></textarea></label>
+    <div class="hp" aria-hidden="true"><label for="d-website">Website<input id="d-website" name="website" tabindex="-1" autocomplete="off"></label></div>
+    <p class="note" id="demo-note" role="status" hidden></p>
+    <div class="acts"><button class="cta" type="submit">Send request</button></div>
+  </form>
+  <dl class="rv"><dt>Email</dt><dd><a href="mailto:{e(site["email"])}">{e(site["email"])}</a></dd><dt>Phone</dt><dd>{" · ".join(f'<a href="tel:{n}">{e(d)}</a>' for d, n in site["phones"])}</dd></dl>
+</section>''')
+    nav = ''.join(f'<a href="#{p["id"]}">{e(p["product"])}</a>' for p in products) + '<a href="#about">About</a><a href="#contact">Contact</a>'
+    body = tpl.replace('<!--SECTIONS-->', '\n'.join(secs)).replace('<!--NAV-->', nav).replace('/*FORMS*/', forms)
+    (root / 'src/.onepage-preview.html').write_text(body)   # body only, for previews
+    body = re.sub(r'<title>.*?</title>\n', '', body, count=1)
+    (root / 'onepage.html').write_text(head('KaiTech · ' + site['tagline'], sections[0]['body'], 'onepage', '<meta name="robots" content="noindex">\n<style>body{margin:0}[hidden]{display:none!important}</style>\n')
+        + '</head>\n<body>\n' + body + '</body>\n</html>\n')
+onepage()
+print('built onepage')
