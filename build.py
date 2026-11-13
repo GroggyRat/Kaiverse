@@ -226,5 +226,5 @@ def onepage(name='onepage'):
     body = re.sub(r'<title>.*?</title>\n', '', body, count=1)
     (root / f'{name}.html').write_text(head('KaiTech · ' + site['tagline'], sections[0]['body'], name, '<meta name="robots" content="noindex">\n<style>body{margin:0}[hidden]{display:none!important}</style>\n')
         + '</head>\n<body>\n' + body + '</body>\n</html>\n')
-onepage(); onepage('hyper')
-print('built onepage, hyper')
+onepage(); onepage('hyper'); onepage('next')
+print('built onepage, hyper, next')
