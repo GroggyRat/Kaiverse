@@ -1,0 +1,123 @@
+<!doctype html>
+<!-- The KaiTech intro film. Rendered frame by frame by src/video/render.js; open it in a browser to preview (it plays in real time). -->
+<html lang="en"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&family=Inter+Tight:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Michroma&display=swap">
+<style>
+:root{--bg0:#030712;--bg1:#14295A;--fg:#F5F6F9;--dim:#A3ACC0;--accent:#4C8DF5;
+  --brand:'Inter',sans-serif;--display:'Michroma',sans-serif;--mono:'JetBrains Mono',monospace;--text:'Inter Tight',sans-serif}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg0)}
+body{color:var(--fg);-webkit-font-smoothing:antialiased;font-family:var(--text)}
+#bg{position:absolute;inset:0;background:radial-gradient(90% 80% at var(--gx,62%) 46%,var(--bg1) 0%,var(--bg0) 66%)}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+.layer{position:absolute;opacity:0;will-change:opacity,transform}
+.wm{font:500 1em/1 var(--brand);letter-spacing:-.025em;white-space:nowrap}
+.wm .t{color:var(--accent)}
+.kicker{font:400 .26em/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.line{font:400 1em/1.08 var(--display);text-transform:uppercase;letter-spacing:.01em}
+.prod{font:500 .5em/1 var(--brand);letter-spacing:-.01em;color:var(--accent)}
+.url{font:500 .3em/1 var(--mono);letter-spacing:.06em;color:var(--fg)}
+.cta{display:inline-block;padding:.5em 1em;border-radius:999px;background:var(--accent);color:var(--bg0);font:500 .22em/1 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+
+/* landscape */
+body.land #cap{left:7vw;bottom:12vh;font-size:4.6vw;width:42vw}
+body.land #brand{left:7vw;top:50%;font-size:9vw;transform:translateY(-50%)}
+body.land #tag{left:7.3vw;top:calc(50% + 6.4vw);font-size:1.25vw}
+body.land #end{left:7vw;top:50%;transform:translateY(-50%);font-size:9vw}
+/* portrait */
+body.port #cap{left:7vw;right:7vw;bottom:15vh;font-size:9.5vw}
+body.port #cap .kicker{font-size:.3em}
+body.port #brand{left:0;right:0;text-align:center;top:60vh;font-size:17vw}
+body.port #tag{left:6vw;right:6vw;text-align:center;top:calc(60vh + 15vw);font-size:3vw;line-height:1.7}
+body.port #end{left:0;right:0;text-align:center;top:56vh;font-size:17vw}
+#cap .kicker{margin-bottom:.9em} #cap .prod{margin-top:.55em}
+#end .row{display:flex;gap:.25em;align-items:center;margin-top:.32em}
+body.port #end .row{justify-content:center;flex-direction:column;gap:.18em}
+</style></head>
+<body>
+<div id="bg"></div>
+<canvas id="fx"></canvas>
+<div class="layer" id="brand"><div class="wm"><span>Kai</span><span class="t">Tech</span></div></div>
+<div class="layer kicker" id="tag" style="color:var(--fg)">Software that keeps Fiji business moving</div>
+<div class="layer" id="cap"><div class="kicker" id="cap-k"></div><div class="line" id="cap-l"></div><div class="prod" id="cap-p"></div></div>
+<div class="layer" id="end"><div class="wm"><span>Kai</span><span class="t">Tech</span></div>
+  <div class="row"><span class="url">kaitechfj.vercel.app</span><span class="cta">Book a demo</span></div></div>
+<script>
+// deterministic randomness, so every render of the film is identical
+let seed = 20261113; Math.random = () => ((seed = Math.imul(seed ^ (seed >>> 15), 2246822507) + 0x6D2B79F5 | 0) >>> 0) / 4294967296;
+const PORT = innerHeight > innerWidth; document.body.className = PORT ? 'port' : 'land';
+const N = 9000, NB = N * 0.8 | 0;
+/*FORMS*/
+// shapes: 0 mark, 1 clock, 2 invoices, 3 inspect, 4 route, 5 islands, 6 globe
+const cloud = (() => { const o = new Float32Array(N * 3); for (let i = 0; i < N; i++) { const a = Math.random() * TAU, u = rnd(1), r = 1.8 + Math.random() * 1.8, q = Math.sqrt(1 - u * u);
+  o[i * 3] = Math.cos(a) * q * r * 1.5; o[i * 3 + 1] = u * r * 0.6; o[i * 3 + 2] = Math.sin(a) * q * Math.min(r, 1.6); } return o; })();
+
+// ── the script: [start second, form, caption kicker, caption line, product] ──
+const SCENES = [
+  [0.0,  'cloud'], [0.6, 0], [6.0, 1, 'Payroll and HR', 'Paying people', 'KaiWorkforce'],
+  [9.2, 2, 'Invoicing', 'Sending invoices', 'BillZilla'], [12.4, 3, 'Quality control', 'Checking the work', 'KaiInspect'],
+  [15.6, 4, 'Delivery', 'Getting deliveries out', 'Drivo'], [18.8, 5, 'Four products, one company', 'Made for Fiji', ''],
+  [22.4, 0]];
+const DURATION = 28;
+const FORMS = { cloud, 0: shapes[0], 1: shapes[1], 2: shapes[2], 3: shapes[3], 4: shapes[4], 5: shapes[5] };
+const delay = new Float32Array(N), speed = new Float32Array(N);
+for (let i = 0; i < N; i++) { delay[i] = Math.random() * 0.55; speed[i] = 1.1 + Math.random() * 0.9; }
+
+const cv = document.getElementById('fx'), ctx = cv.getContext('2d');
+const W = innerWidth, H = innerHeight; cv.width = W; cv.height = H;
+const pal = ['#2563CC', '#3D78DB', '#5A8EEA', '#6FA0F2', '#A9C6F6', '#D2E1FA', '#E8EFFB', '#F5F6F9'];
+const col = new Uint8Array(N); for (let i = 0; i < N; i++) col[i] = i >= NB ? Math.random() * 3 | 0 : 4 + (Math.random() * 4 | 0);
+const order = [...Array(N).keys()].sort((a, b) => col[a] - col[b]);
+const ease = x => x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.pow(1 - x, 3);
+const smooth = (a, b, x) => { x = Math.min(1, Math.max(0, (x - a) / (b - a))); return x * x * (3 - 2 * x); };
+const pos = new Float32Array(N * 3);
+
+function sceneAt(t) { let k = 0; for (let i = 0; i < SCENES.length; i++) if (t >= SCENES[i][0]) k = i; return k; }
+function setLayer(id, o, dy = 0) { const el = document.getElementById(id); el.style.opacity = o.toFixed(3);
+  el.style.transform = (id === 'brand' || id === 'end') && !PORT ? `translateY(calc(-50% + ${dy}px))` : `translateY(${dy}px)`; }
+
+window.renderAt = t => {
+  const k = sceneAt(t), [t0, f] = SCENES[k], from = FORMS[k ? SCENES[k - 1][1] : 'cloud'], to = FORMS[f];
+  const local = t - t0;
+  for (let i = 0; i < N; i++) { const p = ease((local - delay[i]) / speed[i]), j = i * 3;
+    pos[j] = from[j] + (to[j] - from[j]) * p; pos[j + 1] = from[j + 1] + (to[j + 1] - from[j + 1]) * p; pos[j + 2] = from[j + 2] + (to[j + 2] - from[j + 2]) * p; }
+
+  // camera: a slow turn for depth; the route and islands are seen from above
+  const top = f === 4 ? 0.55 : f === 5 ? 0.15 : 0, flat = f === 0 || f === 5;
+  const yaw = Math.sin(t * 0.45) * (flat ? 0.28 : 0.42) + (f === 'cloud' ? t * 0.3 : 0), pitch = top + Math.sin(t * 0.31) * 0.06;
+  const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const zoom = 1 + t * 0.006;
+  const wide = f === 4 || f === 5, cx = PORT ? W * 0.5 : W * (f === 4 ? 0.7 : 0.66), cyy = PORT ? H * 0.33 : H * (f === 4 ? 0.4 : 0.47);
+  const scale = (PORT ? W / 3.6 : Math.min(W / 6.2, H / 3.8)) * zoom * (wide ? (PORT ? 0.74 : f === 4 ? 0.76 : 0.86) : 1), base = Math.max(1.4, W / 1100);
+  document.getElementById('bg').style.setProperty('--gx', PORT ? '50%' : '64%');
+
+  // global fade in and out
+  const fade = smooth(0, 1.2, t) * (1 - smooth(DURATION - 1.2, DURATION, t));
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, H); ctx.globalCompositeOperation = 'lighter';
+  let last = -1;
+  for (const i of order) {
+    const j = i * 3, x = pos[j], y = pos[j + 1], z = pos[j + 2];
+    const x1 = x * cy + z * sy, z1 = -x * sy + z * cy, y1 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
+    const fz = 4 / (4 + z2); if (fz <= 0) continue;
+    if (col[i] !== last) { last = col[i]; ctx.fillStyle = pal[last]; }
+    const blue = i >= NB;
+    ctx.globalAlpha = fade * Math.max(0.12, Math.min(1, (blue ? 0.95 : 0.62) - z2 * 0.4));
+    const s = Math.min(base * 3, base * fz * fz * (blue ? 1.5 : 1));
+    ctx.fillRect(cx + x1 * scale * fz - s / 2, cyy + y1 * scale * fz - s / 2, s, s);
+  }
+
+  // words
+  const lift = x => (1 - x) * (PORT ? 30 : 24);
+  const bIn = smooth(2.4, 3.4, t), bOut = 1 - smooth(5.2, 5.9, t);
+  setLayer('brand', bIn * bOut, lift(bIn)); setLayer('tag', smooth(3.2, 4.2, t) * bOut, lift(smooth(3.2, 4.2, t)));
+  const sc = SCENES[k], capOn = sc.length > 2;
+  if (capOn) {
+    const a = smooth(t0 + 0.5, t0 + 1.2, t) * (1 - smooth((SCENES[k + 1] || [DURATION])[0] - 0.55, (SCENES[k + 1] || [DURATION])[0] - 0.05, t));
+    document.getElementById('cap-k').textContent = sc[2]; document.getElementById('cap-l').textContent = sc[3]; document.getElementById('cap-p').textContent = sc[4];
+    setLayer('cap', a, lift(a));
+  } else setLayer('cap', 0);
+  const eIn = smooth(23.6, 24.6, t); setLayer('end', eIn * (1 - smooth(DURATION - 1.2, DURATION, t)), lift(eIn));
+};
+window.DURATION = DURATION;
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = n => { renderAt(((n - t0) / 1000) % DURATION); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>
