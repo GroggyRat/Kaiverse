@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Kaitech UI Directions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&family=Unbounded:wght@800&display=swap">
+<style>
+/* Layout: three complete homepages behind one fixed picker. Each hero is a toy built from the name itself. */
+:root{
+  /* 1 Loose letters: a tabletop with seven painted blocks */
+  --a-bg:#E8EBF0; --a-ink:#14161C; --a-table:#DADFE7; --a-mute:#566074;
+  --a-c1:#2B59E8; --a-c2:#EE4E36; --a-c3:#F2B600; --a-c4:#0C8A5E; --a-c5:#E77DB6; --a-c6:#14161C; --a-c7:#7657EC;
+  --a-on:#FFFFFF; --a-on-dark:#14161C; --a-on6:#E8EBF0;
+  /* 2 Tide: air above, sea below */
+  --b-bg:#EDF3F4; --b-ink:#0C2430; --b-mute:#4C6470; --b-flip:#FFFFFF; --b-sea:#0B4FD8; --b-mode:screen;
+  /* 3 Flip-dot: a transit sign */
+  --c-bg:#E3E4DF; --c-ink:#171814; --c-mute:#5E6058; --c-rule:#B4B6AC; --c-panel:#0E0F0C; --c-off:#2A2C25; --c-on:#F4D51C;
+  /* picker */
+  --sw-bg:#14161C; --sw-fg:#C9CDD6; --sw-act:#F2F3F5; --sw-act-fg:#14161C;
+  --sans:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'DM Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --page:var(--a-bg);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --a-bg:#121419; --a-ink:#E8EBF0; --a-table:#1C2029; --a-mute:#9AA2B4; --a-c6:#E8EBF0; --a-on6:#14161C;
+  --b-bg:#08141B; --b-ink:#E3EEF0; --b-mute:#8FA6B0; --b-sea:#58D6DC; --b-mode:multiply;
+  --c-bg:#121310; --c-ink:#E6E7E1; --c-mute:#9A9C92; --c-rule:#3A3C34; --c-panel:#050604; --c-off:#23251F;
+  --sw-bg:#F2F3F5; --sw-fg:#4A4F5C; --sw-act:#14161C; --sw-act-fg:#F2F3F5;
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --a-bg:#121419; --a-ink:#E8EBF0; --a-table:#1C2029; --a-mute:#9AA2B4; --a-c6:#E8EBF0; --a-on6:#14161C;
+  --b-bg:#08141B; --b-ink:#E3EEF0; --b-mute:#8FA6B0; --b-sea:#58D6DC; --b-mode:multiply;
+  --c-bg:#121310; --c-ink:#E6E7E1; --c-mute:#9A9C92; --c-rule:#3A3C34; --c-panel:#050604; --c-off:#23251F;
+  --sw-bg:#F2F3F5; --sw-fg:#4A4F5C; --sw-act:#14161C; --sw-act-fg:#F2F3F5;
+  color-scheme:dark }
+:root[data-dir="tide"]{--page:var(--b-bg)}
+:root[data-dir="flipdot"]{--page:var(--c-bg)}
+
+*{box-sizing:border-box}
+body{background:var(--page);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.wrap{max-width:1280px;margin:0 auto;padding-block:20px 120px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column}
+.nav{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.nav nav{display:flex;gap:clamp(14px,3vw,32px)}
+.nav a{color:inherit;text-decoration:none}
+.nav nav a:hover{text-decoration:underline;text-underline-offset:4px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+button{font:inherit;cursor:pointer}
+.hello{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.hello input{font:inherit;min-width:0;flex:1 1 200px}
+.hello output{flex-basis:100%;min-height:1.5em;font-size:14px}
+
+/* picker */
+.pick{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;justify-content:center;pointer-events:none;
+  padding:0 max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.pick div{pointer-events:auto;display:flex;align-items:center;gap:2px;background:var(--sw-bg);color:var(--sw-fg);
+  padding:5px;border-radius:999px;font:500 13px/1 var(--mono)}
+.pick span{padding:0 10px 0 12px}
+.pick a{color:inherit;text-decoration:none;padding:10px 14px;border-radius:999px;white-space:nowrap}
+.pick a:hover{color:var(--sw-act)}
+.pick a[aria-current="true"]{background:var(--sw-act);color:var(--sw-act-fg)}
+@media (max-width:520px){.pick span{display:none}.pick a{padding:10px 11px}}
+
+/* ───────── 1 Loose letters ───────── */
+.a{background:var(--a-bg);color:var(--a-ink)}
+.a .wrap{gap:clamp(20px,3vw,36px)}
+.a .logo{font:800 15px/1 'Unbounded',var(--sans)}
+.a-stage{position:relative;height:clamp(260px,50vh,520px);background:var(--a-table);overflow:hidden;touch-action:pan-y}
+.a-note{position:absolute;left:14px;top:12px;font:500 12px/1 var(--mono);color:var(--a-mute);letter-spacing:.04em;text-transform:uppercase}
+.a-tile{position:absolute;left:0;top:0;display:grid;place-items:center;border-radius:18%;
+  font-family:'Unbounded','Arial Black',var(--sans);font-weight:800;line-height:1;color:var(--a-on);
+  cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;will-change:transform}
+.a-tile:active{cursor:grabbing}
+.a-tile.t1{background:var(--a-c1)} .a-tile.t2{background:var(--a-c2)}
+.a-tile.t3{background:var(--a-c3);color:var(--a-on-dark)} .a-tile.t4{background:var(--a-c4)}
+.a-tile.t5{background:var(--a-c5);color:var(--a-on-dark)} .a-tile.t6{background:var(--a-c6);color:var(--a-on6)}
+.a-tile.t7{background:var(--a-c7)}
+.a-row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.a-lede{margin:0;max-width:22ch;font-weight:500;font-size:clamp(26px,3.6vw,48px);line-height:1.08;letter-spacing:-.02em;text-wrap:balance}
+.a-btns{display:flex;gap:8px}
+.a-btn{border:2px solid var(--a-ink);background:var(--a-ink);color:var(--a-bg);padding:14px 22px;border-radius:14px;font-weight:600;
+  transition:transform .12s}
+.a-btn:hover{transform:rotate(-2deg) scale(1.03)}
+.a-btn.ghost{background:transparent;color:var(--a-ink)}
+.a-links{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.a-links a{display:flex;flex-direction:column;justify-content:space-between;gap:36px;height:100%;padding:18px;border-radius:22px;
+  color:var(--a-on);text-decoration:none;transition:transform .15s}
+.a-links li:nth-child(1) a{background:var(--a-c1)} .a-links li:nth-child(2) a{background:var(--a-c4)} .a-links li:nth-child(3) a{background:var(--a-c7)}
+.a-links li:nth-child(odd) a:hover{transform:rotate(-1.5deg)} .a-links li:nth-child(even) a:hover{transform:rotate(1.5deg)}
+.a-links b{font:800 clamp(18px,2.2vw,28px)/1 'Unbounded',var(--sans)}
+.a-links small{font-size:14px;opacity:.9}
+@media (max-width:640px){.a-links{grid-template-columns:1fr}.a-links a{gap:16px}}
+.a .hello input{border:2px solid var(--a-ink);background:transparent;color:var(--a-ink);padding:14px 16px;border-radius:14px}
+.a .hello input::placeholder{color:var(--a-mute)}
+.a .hello output{color:var(--a-mute)}
+
+/* ───────── 2 Tide ───────── */
+.b{position:relative;isolation:isolate;overflow-x:clip;background:var(--b-bg);color:var(--b-ink)}
+.b .wrap{gap:clamp(18px,3vw,32px);padding-right:calc(max(16px,env(safe-area-inset-right,0px)) + 40px)}
+.b .logo{font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:13px}
+.b .nav nav{font-size:15px}
+.b-word{margin:clamp(12px,5vh,56px) 0 0;font:900 min(430px,calc((100vw - 84px) / 2.95))/.8 'Big Shoulders Display',Impact,'Arial Narrow',sans-serif;
+  text-transform:uppercase;letter-spacing:-.005em;white-space:nowrap}
+.b-lede{margin:0;max-width:30ch;font-size:clamp(20px,2.4vw,30px);line-height:1.25;text-wrap:balance}
+.b-hint{margin:0;color:var(--b-mute);font:400 13px/1.4 var(--mono)}
+.b-btns{display:flex;gap:10px;flex-wrap:wrap}
+.b-btn{border:1.5px solid var(--b-ink);background:var(--b-ink);color:var(--b-bg);padding:13px 26px;border-radius:999px;font-weight:500}
+.b-btn.ghost{background:transparent;color:var(--b-ink)}
+.b-btn:hover{box-shadow:0 0 0 4px var(--b-bg),0 0 0 5.5px var(--b-ink)}
+.b-depths{list-style:none;margin:clamp(16px,4vh,48px) 0 0;padding:0;border-top:1.5px solid var(--b-ink)}
+.b-depths a{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;gap:16px;padding:18px 0;border-bottom:1.5px solid var(--b-ink);
+  color:inherit;text-decoration:none;transition:padding .2s}
+.b-depths a:hover{padding-left:16px}
+.b-depths b{font:900 clamp(34px,6vw,84px)/.9 'Big Shoulders Display',Impact,sans-serif;text-transform:uppercase}
+.b-depths span{font:400 13px/1 var(--mono);white-space:nowrap}
+.b .hello input{border:0;border-bottom:1.5px solid var(--b-ink);background:transparent;color:var(--b-ink);padding:12px 0;border-radius:0}
+.b .hello input::placeholder{color:var(--b-mute)}
+.b .hello output{color:var(--b-mute)}
+.b-ruler{position:fixed;top:0;bottom:0;right:env(safe-area-inset-right,0px);width:40px;pointer-events:none}
+.b-ruler i{position:absolute;right:0;width:100%;display:flex;align-items:center;justify-content:flex-end;gap:5px;transform:translateY(-50%);
+  font:900 17px/1 'Big Shoulders Display',Impact,sans-serif;font-style:normal;color:var(--b-ink)}
+.b-ruler i::after{content:"";width:12px;height:2px;background:var(--b-ink)}
+.b-ruler i.half{font-size:0}.b-ruler i.half::after{width:7px}
+.b-water{position:fixed;inset:0;pointer-events:none;clip-path:polygon(0 60%,100% 60%,100% 100%,0 100%)}
+.b-water.w1{background:var(--b-flip);mix-blend-mode:difference}
+.b-water.w2{background:var(--b-sea);mix-blend-mode:var(--b-mode)}
+.b-chip{position:fixed;top:0;right:calc(env(safe-area-inset-right,0px) + 46px);pointer-events:none;
+  font:500 12px/1 var(--mono);padding:6px 8px;background:var(--b-ink);color:var(--b-bg);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ───────── 3 Flip-dot ───────── */
+.c{background:var(--c-bg);color:var(--c-ink);font-family:var(--mono);font-size:14px}
+.c .wrap{gap:clamp(18px,2.6vw,30px)}
+.c .logo{font-weight:500;letter-spacing:.2em;text-transform:uppercase}
+.c .nav nav a{text-transform:uppercase;letter-spacing:.08em;font-size:13px}
+.c-sign{background:var(--c-panel);padding:clamp(8px,1.4vw,18px);border-radius:6px;line-height:0}
+.c-sign canvas{display:block;width:100%;touch-action:pan-y;cursor:crosshair}
+.c-head{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px 48px;align-items:start}
+.c-head h1{margin:0;font:500 clamp(24px,3.4vw,44px)/1.1 var(--sans);letter-spacing:-.02em;text-wrap:balance}
+.c-ctl{display:flex;flex-direction:column;gap:10px}
+.c-ctl label{color:var(--c-mute);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.c-ctl input{font:inherit;font-size:16px;width:100%;text-transform:uppercase;background:transparent;color:var(--c-ink);
+  border:1px solid var(--c-ink);border-radius:0;padding:12px}
+.c-ctl input::placeholder{color:var(--c-mute)}
+.c-btns{display:flex;gap:8px;flex-wrap:wrap}
+.c-btn{border:1px solid var(--c-ink);background:transparent;color:var(--c-ink);padding:10px 14px;border-radius:0;text-transform:uppercase;letter-spacing:.08em;font-size:13px}
+.c-btn:hover,.c-btn[aria-pressed="true"]{background:var(--c-ink);color:var(--c-bg)}
+.c-board{list-style:none;margin:0;padding:0;border-top:1px solid var(--c-rule)}
+.c-board li>*{display:grid;grid-template-columns:3.5em minmax(0,1fr) auto;gap:16px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--c-rule)}
+.c-board .th{color:var(--c-mute);font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:8px 0}
+.c-board a{color:inherit;text-decoration:none}
+.c-board a b{font:500 clamp(20px,2.6vw,30px)/1.1 var(--sans)}
+.c-board a:hover b{text-decoration:underline;text-underline-offset:5px}
+.c-board .st::before{content:"";display:inline-block;width:.7em;height:.7em;border-radius:50%;background:var(--c-on);border:1px solid var(--c-ink);margin-right:.6em}
+.c .hello input{border:1px solid var(--c-ink);background:transparent;color:var(--c-ink);padding:12px;border-radius:0;font-size:16px}
+.c .hello input::placeholder{color:var(--c-mute)}
+.c .hello output{color:var(--c-mute)}
+@media (max-width:720px){.c-head{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!-- ═════════ 1 ═════════ -->
+<section class="dir a" id="letters">
+  <div class="wrap">
+    <header class="nav">
+      <a class="logo" href="#letters">Kaitech</a>
+      <nav aria-label="Kaitech"><a href="#letters">Work</a><a href="#letters">About</a><a href="#letters">Contact</a></nav>
+    </header>
+    <h1 class="sr">Kaitech</h1>
+    <div class="a-stage" id="a-stage"><span class="a-note">Table · 7 loose letters</span></div>
+    <div class="a-row">
+      <p class="a-lede">Pick up a letter. Throw it at the others.</p>
+      <div class="a-btns">
+        <button class="a-btn" id="a-scatter" type="button">Scatter</button>
+        <button class="a-btn ghost" id="a-tidy" type="button">Tidy up</button>
+      </div>
+    </div>
+    <ul class="a-links">
+      <li><a href="#letters"><b>Work</b><small>Things Kaitech has made go here.</small></a></li>
+      <li><a href="#letters"><b>About</b><small>Who is behind the name.</small></a></li>
+      <li><a href="#letters"><b>Contact</b><small>One address. A person answers.</small></a></li>
+    </ul>
+    <form class="hello" id="a-hello">
+      <label class="sr" for="a-mail">Your email</label>
+      <input id="a-mail" type="email" placeholder="you@example.com" autocomplete="off">
+      <button class="a-btn" type="submit">Say hello</button>
+      <output></output>
+    </form>
+  </div>
+</section>
+
+<!-- ═════════ 2 ═════════ -->
+<section class="dir b" id="tide" hidden>
+  <div class="wrap">
+    <header class="nav">
+      <a class="logo" href="#tide">Kaitech</a>
+      <nav aria-label="Kaitech"><a href="#tide">Work</a><a href="#tide">About</a><a href="#tide">Contact</a></nav>
+    </header>
+    <h1 class="b-word" id="b-word">Kaitech</h1>
+    <p class="b-lede">Kai means sea. Everything on this page sits at the waterline, and the waterline is yours to move.</p>
+    <p class="b-hint">Move the cursor up and down. On a phone, drag.</p>
+    <div class="b-btns">
+      <button class="b-btn" id="b-high" type="button">High tide</button>
+      <button class="b-btn ghost" id="b-low" type="button">Low tide</button>
+    </div>
+    <ul class="b-depths">
+      <li><a href="#tide"><b>Work</b><span>surface</span></a></li>
+      <li><a href="#tide"><b>About</b><span>20 m down</span></a></li>
+      <li><a href="#tide"><b>Contact</b><span>sea floor</span></a></li>
+    </ul>
+    <form class="hello" id="b-hello">
+      <label class="sr" for="b-mail">Your email</label>
+      <input id="b-mail" type="email" placeholder="you@example.com" autocomplete="off">
+      <button class="b-btn" type="submit">Say hello</button>
+      <output></output>
+    </form>
+  </div>
+  <div class="b-ruler" id="b-ruler" aria-hidden="true"></div>
+  <div class="b-water w1" aria-hidden="true"></div>
+  <div class="b-water w2" aria-hidden="true"></div>
+  <div class="b-chip" id="b-chip" aria-hidden="true">WL 4.0 M</div>
+</section>
+
+<!-- ═════════ 3 ═════════ -->
+<section class="dir c" id="flipdot" hidden>
+  <div class="wrap">
+    <header class="nav">
+      <a class="logo" href="#flipdot">Kaitech</a>
+      <nav aria-label="Kaitech"><a href="#flipdot">Work</a><a href="#flipdot">About</a><a href="#flipdot">Contact</a></nav>
+    </header>
+    <div class="c-sign"><canvas id="c-canvas" role="img" aria-label="Flip-dot sign showing KAITECH"></canvas></div>
+    <div class="c-head">
+      <h1>The sign says Kaitech until you tell it otherwise.</h1>
+      <div class="c-ctl">
+        <label for="c-text">Put your words on the sign</label>
+        <input id="c-text" type="text" maxlength="28" placeholder="Type here" autocomplete="off" spellcheck="false">
+        <div class="c-btns">
+          <button class="c-btn" id="c-name" type="button" aria-pressed="true">Kaitech</button>
+          <button class="c-btn" id="c-clock" type="button" aria-pressed="false">Clock</button>
+        </div>
+      </div>
+    </div>
+    <ul class="c-board">
+      <li><div class="th"><span>Line</span><span>To</span><span>Status</span></div></li>
+      <li><a href="#flipdot"><span>K1</span><b>Work</b><span class="st">Awaiting first departure</span></a></li>
+      <li><a href="#flipdot"><span>K2</span><b>About</b><span class="st">On time</span></a></li>
+      <li><a href="#flipdot"><span>K3</span><b>Contact</b><span class="st">Boarding</span></a></li>
+    </ul>
+    <form class="hello" id="c-hello">
+      <label class="sr" for="c-mail">Your email</label>
+      <input id="c-mail" type="email" placeholder="you@example.com" autocomplete="off">
+      <button class="c-btn" type="submit">Say hello</button>
+      <output></output>
+    </form>
+  </div>
+</section>
+
+<nav class="pick" aria-label="UI directions"><div>
+  <span>Pick one</span>
+  <a href="#letters">1 Letters</a><a href="#tide">2 Tide</a><a href="#flipdot">3 Flip-dot</a>
+</div></nav>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const css = (el, name) => getComputedStyle(el).getPropertyValue(name).trim();
+
+/* ───────── 1 Loose letters: top-down table, sliding blocks ───────── */
+const A = (() => {
+  const stage = $('#a-stage');
+  const tiles = [...'KAITECH'].map((ch, i) => {
+    const el = document.createElement('div');
+    el.className = 'a-tile t' + (i + 1); el.textContent = ch; el.setAttribute('aria-hidden', 'true');
+    stage.appendChild(el);
+    return { el, x: 0, y: 0, vx: 0, vy: 0, a: 0, va: 0, hx: 0, hy: 0, drag: false, ox: 0, oy: 0 };
+  });
+  let S = 80, raf = 0, tidy = true, on = false, first = true;
+
+  function layout() {
+    const w = stage.clientWidth, h = stage.clientHeight;
+    if (!w) return;
+    S = Math.min(w / 8.2, h * 0.42, 150);
+    const gap = S * 0.12, total = 7 * S + 6 * gap;
+    tiles.forEach((t, i) => {
+      t.hx = (w - total) / 2 + i * (S + gap) + S / 2; t.hy = h * 0.54;
+      t.el.style.width = t.el.style.height = S + 'px'; t.el.style.fontSize = S * 0.56 + 'px';
+      if (first || tidy) { t.x = t.hx; t.y = t.hy; t.a = 0; t.vx = t.vy = t.va = 0; }
+      else { t.x = Math.min(w - S / 2, Math.max(S / 2, t.x)); t.y = Math.min(h - S / 2, Math.max(S / 2, t.y)); }
+    });
+    first = false; render();
+  }
+  function render() {
+    for (const t of tiles) t.el.style.transform = `translate(${t.x - S / 2}px,${t.y - S / 2}px) rotate(${t.a}rad)`;
+  }
+  function step() {
+    const w = stage.clientWidth, h = stage.clientHeight, r = S / 2;
+    let moving = false;
+    for (const t of tiles) {
+      if (t.drag) { moving = true; continue; }
+      if (tidy) {
+        t.vx = (t.vx + (t.hx - t.x) * 0.09) * 0.7; t.vy = (t.vy + (t.hy - t.y) * 0.09) * 0.7; t.va = (t.va - t.a * 0.09) * 0.7;
+      } else { t.vx *= 0.985; t.vy *= 0.985; t.va *= 0.975; }
+      t.x += t.vx; t.y += t.vy; t.a += t.va;
+      if (!tidy) {
+        if (t.x < r) { t.x = r; t.vx = Math.abs(t.vx) * 0.75; } if (t.x > w - r) { t.x = w - r; t.vx = -Math.abs(t.vx) * 0.75; }
+        if (t.y < r) { t.y = r; t.vy = Math.abs(t.vy) * 0.75; } if (t.y > h - r) { t.y = h - r; t.vy = -Math.abs(t.vy) * 0.75; }
+      }
+      if (Math.abs(t.vx) + Math.abs(t.vy) + Math.abs(t.va) * 20 > 0.06) moving = true;
+      else if (tidy && Math.hypot(t.hx - t.x, t.hy - t.y) > 0.4) moving = true;
+    }
+    if (!tidy) for (let i = 0; i < 7; i++) for (let j = i + 1; j < 7; j++) {
+      const p = tiles[i], q = tiles[j];
+      let dx = q.x - p.x, dy = q.y - p.y, d = Math.hypot(dx, dy); const min = S * 1.02;
+      if (d >= min) continue;
+      if (d < 0.01) { dx = 1; dy = 0; d = 1; }
+      const nx = dx / d, ny = dy / d, ov = min - d;
+      const pm = p.drag ? 0 : q.drag ? 1 : 0.5, qm = 1 - pm;
+      p.x -= nx * ov * pm; p.y -= ny * ov * pm; q.x += nx * ov * qm; q.y += ny * ov * qm;
+      const rv = (q.vx - p.vx) * nx + (q.vy - p.vy) * ny;
+      if (rv < 0) {
+        const jn = -1.8 * rv, tang = (q.vx - p.vx) * -ny + (q.vy - p.vy) * nx;
+        if (!p.drag) { p.vx -= nx * jn * (q.drag ? 1 : 0.5); p.vy -= ny * jn * (q.drag ? 1 : 0.5); p.va += tang * 0.004; }
+        if (!q.drag) { q.vx += nx * jn * (p.drag ? 1 : 0.5); q.vy += ny * jn * (p.drag ? 1 : 0.5); q.va -= tang * 0.004; }
+        moving = true;
+      }
+    }
+    render();
+    raf = moving && on ? requestAnimationFrame(step) : 0;
+  }
+  const kick = () => { if (!raf && on) raf = requestAnimationFrame(step); };
+
+  tiles.forEach(t => {
+    t.el.addEventListener('pointerdown', e => {
+      const b = stage.getBoundingClientRect();
+      t.drag = true; tidy = false; t.ox = e.clientX - b.left - t.x; t.oy = e.clientY - b.top - t.y; t.vx = t.vy = 0;
+      t.el.setPointerCapture(e.pointerId); t.el.style.zIndex = 2; kick(); e.preventDefault();
+    });
+    t.el.addEventListener('pointermove', e => {
+      if (!t.drag) return;
+      const b = stage.getBoundingClientRect(), nx = e.clientX - b.left - t.ox, ny = e.clientY - b.top - t.oy;
+      const cap = v => Math.max(-45, Math.min(45, v));
+      t.vx = cap(t.vx * 0.4 + (nx - t.x) * 0.6); t.vy = cap(t.vy * 0.4 + (ny - t.y) * 0.6);
+      t.x = nx; t.y = ny;
+    });
+    const drop = () => { if (!t.drag) return; t.drag = false; t.va += t.vx * 0.004; t.el.style.zIndex = ''; kick(); };
+    t.el.addEventListener('pointerup', drop); t.el.addEventListener('pointercancel', drop);
+  });
+  $('#a-scatter').addEventListener('click', () => {
+    tidy = false;
+    const w = stage.clientWidth, h = stage.clientHeight;
+    for (const t of tiles) {
+      if (reduced) { t.x = S / 2 + Math.random() * (w - S); t.y = S / 2 + Math.random() * (h - S); t.a = (Math.random() - 0.5) * 2; }
+      else { t.vx = (Math.random() - 0.5) * 50; t.vy = (Math.random() - 0.5) * 50; t.va = (Math.random() - 0.5) * 0.4; }
+    }
+    render(); kick();
+  });
+  $('#a-tidy').addEventListener('click', () => {
+    tidy = true;
+    for (const t of tiles) { t.a = ((t.a + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI; if (reduced) { t.x = t.hx; t.y = t.hy; t.a = 0; t.vx = t.vy = t.va = 0; } }
+    render(); kick();
+  });
+  new ResizeObserver(layout).observe(stage);
+  return { start() { on = true; layout(); kick(); }, stop() { on = false; cancelAnimationFrame(raf); raf = 0; } };
+})();
+
+/* ───────── 2 Tide: a wave-edged layer that recolours everything under it ───────── */
+const B = (() => {
+  const sec = $('#tide'), word = $('#b-word'), chip = $('#b-chip'), ruler = $('#b-ruler');
+  const waters = [...sec.querySelectorAll('.b-water')];
+  // draught marks: viewport bottom is the keel (0 M), top is 10 M
+  for (let i = 1; i < 20; i++) {
+    const m = document.createElement('i'); m.style.top = i * 5 + '%';
+    if (i % 2) m.className = 'half'; else m.textContent = 10 - i / 2;
+    ruler.appendChild(m);
+  }
+  let raf = 0, on = false, level = 0, target = 0, amp = 8, held = false;
+  const clampY = y => Math.max(70, Math.min(innerHeight - 90, y));
+  function rest() {
+    const r = word.getBoundingClientRect();
+    return clampY(r.top + scrollY + r.height * 0.56);
+  }
+  function frame(now) {
+    const W = innerWidth, H = innerHeight, t = reduced ? 0 : now / 1000;
+    level += (target - level) * (reduced ? 1 : 0.1);
+    amp += (7 - amp) * 0.04;
+    const n = Math.max(16, Math.round(W / 36)); let pts = '';
+    for (let i = 0; i <= n; i++) {
+      const x = W * i / n;
+      const y = level + amp * Math.sin(x * 0.011 + t * 1.5) + amp * 0.5 * Math.sin(x * 0.026 - t * 1.05);
+      pts += x.toFixed(1) + 'px ' + y.toFixed(1) + 'px,';
+    }
+    const clip = `polygon(${pts}${W}px ${H}px,0px ${H}px)`;
+    for (const w of waters) w.style.clipPath = clip;
+    chip.style.transform = `translateY(${(level - amp * 1.5 - 30).toFixed(1)}px)`;
+    chip.textContent = 'WL ' + Math.max(0, (1 - level / H) * 10).toFixed(1) + ' M';
+    if (on) raf = requestAnimationFrame(frame);
+  }
+  function move(e) {
+    if (!on || e.target.closest('.pick')) return;
+    const y = clampY(e.clientY);
+    amp = Math.min(30, amp + Math.abs(y - target) * 0.12); target = y; held = true;
+  }
+  addEventListener('pointermove', move, { passive: true });
+  addEventListener('pointerdown', move, { passive: true });
+  addEventListener('resize', () => { if (on && !held) level = target = rest(); });
+  $('#b-high').addEventListener('click', e => { e.stopPropagation(); target = clampY(innerHeight * 0.16); amp = 26; held = true; });
+  $('#b-low').addEventListener('click', e => { e.stopPropagation(); target = clampY(innerHeight); amp = 26; held = true; });
+  for (const id of ['#b-high', '#b-low']) $(id).addEventListener('pointerdown', e => e.stopPropagation());
+  return {
+    start() { on = true; held = false; level = target = rest(); raf = requestAnimationFrame(frame);
+      if (document.fonts) document.fonts.ready.then(() => { if (on && !held) level = target = rest(); }); },
+    stop() { on = false; cancelAnimationFrame(raf); }
+  };
+})();
+
+/* ───────── 3 Flip-dot: 5×7 glyphs on a grid of two-sided discs ───────── */
+const C = (() => {
+  const cv = $('#c-canvas'), ctx = cv.getContext('2d'), input = $('#c-text'), bName = $('#c-name'), bClock = $('#c-clock');
+  const F = { ' ': '00000000000000', A: '0E11111F111111', B: '1E11111E11111E', C: '0E11101010110E', D: '1E11111111111E', E: '1F10101E10101F',
+    F: '1F10101E101010', G: '0E11101711110F', H: '1111111F111111', I: '0E04040404040E', J: '0702020202120C', K: '11121418141211',
+    L: '1010101010101F', M: '111B1515111111', N: '11191513111111', O: '0E11111111110E', P: '1E11111E101010', Q: '0E11111115120D',
+    R: '1E11111E141211', S: '0F10100E01011E', T: '1F040404040404', U: '1111111111110E', V: '11111111110A04', W: '1111111515150A',
+    X: '11110A040A1111', Y: '11110A04040404', Z: '1F01020408101F', 0: '0E11131519110E', 1: '040C040404040E', 2: '0E11010204081F',
+    3: '1F02040201110E', 4: '02060A121F0202', 5: '1F101E0101110E', 6: '0608101E11110E', 7: '1F010204080808', 8: '0E11110E11110E',
+    9: '0E11110F01020C', ':': '000C0C000C0C00', '.': '00000000000C0C', '!': '04040404040004', '?': '0E110102040004', '-': '0000001F000000',
+    "'": '04040800000000', ',': '0000000000040408'.slice(0, 14), '+': '0004041F040400', '/': '01010204081010', '&': '0C12140815120D' };
+  const ROWS = 11, TOP = 2, FLIP = 130;
+  let cols = 45, pitch = 10, state, start, paint, strip = [], sweep = 0, t0 = 0, raf = 0, on = false, mode = 'name', tick = 0;
+
+  function setMessage(str, doSweep) {
+    strip = [];
+    for (const ch of str.toUpperCase()) {
+      const g = F[ch] || F['?'];
+      for (let x = 0; x < 5; x++) { let v = 0; for (let r = 0; r < 7; r++) if (parseInt(g.substr(r * 2, 2), 16) >> (4 - x) & 1) v |= 1 << r; strip.push(v); }
+      strip.push(0);
+    }
+    strip.pop();
+    if (doSweep) { sweep = performance.now(); t0 = sweep; }
+    cv.setAttribute('aria-label', 'Flip-dot sign showing ' + str);
+  }
+  function bit(c, r, now) {
+    r -= TOP; if (r < 0 || r > 6) return 0;
+    const w = strip.length; let x;
+    if (w <= cols - 2) x = c - ((cols - w) >> 1);
+    else { const loop = w + 9; x = (c + Math.floor((now - t0) / 170)) % loop; }
+    return x >= 0 && x < w ? strip[x] >> r & 1 : 0;
+  }
+  function size() {
+    const w = cv.clientWidth; if (!w) return;
+    const nc = w < 560 ? 27 : 45, dpr = Math.min(devicePixelRatio || 1, 2);
+    pitch = w / nc; cv.style.height = pitch * ROWS + 'px'; cv.width = Math.round(w * dpr); cv.height = Math.round(pitch * ROWS * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (nc !== cols || !state) {
+      cols = nc; const n = cols * ROWS, now = performance.now();
+      state = new Uint8Array(n); start = new Float64Array(n); paint = new Float64Array(n);
+      for (let i = 0; i < n; i++) state[i] = bit(i % cols, i / cols | 0, now);
+    }
+    if (!raf) draw(performance.now(), true);
+  }
+  function draw(now, once) {
+    const offC = css(cv, '--c-off'), onC = css(cv, '--c-on'), R = pitch * 0.41;
+    ctx.fillStyle = css(cv, '--c-panel'); ctx.fillRect(0, 0, cols * pitch, ROWS * pitch);
+    const sweeping = now - sweep < cols * 16 + 50;
+    for (let i = 0; i < state.length; i++) {
+      const c = i % cols, r = i / cols | 0;
+      const want = bit(c, r, now) ^ (paint[i] > now ? 1 : 0);
+      if (want !== state[i] && !start[i]) start[i] = sweeping ? Math.max(now, sweep + c * 16) : now;
+      let sx = 1, v = state[i];
+      if (start[i] && now >= start[i]) {
+        const p = reduced ? 1 : (now - start[i]) / FLIP;
+        if (p >= 1) { state[i] ^= 1; start[i] = 0; v = state[i]; }
+        else { sx = Math.abs(Math.cos(p * Math.PI)); if (p > 0.5) v ^= 1; }
+      }
+      ctx.fillStyle = v ? onC : offC;
+      ctx.beginPath(); ctx.ellipse((c + 0.5) * pitch, (r + 0.5) * pitch, Math.max(0.4, R * sx), R, 0, 0, 6.2832); ctx.fill();
+    }
+    if (on && !once) raf = requestAnimationFrame(draw);
+  }
+  function clockText() { const d = new Date(), p = n => String(n).padStart(2, '0'); return p(d.getHours()) + (d.getSeconds() % 2 ? ' ' : ':') + p(d.getMinutes()); }
+  function setMode(m, text) {
+    mode = m; clearInterval(tick);
+    bName.setAttribute('aria-pressed', m === 'name'); bClock.setAttribute('aria-pressed', m === 'clock');
+    if (m === 'clock') { setMessage(clockText(), true); tick = setInterval(() => on && setMessage(clockText(), false), 1000); }
+    else setMessage(m === 'name' ? 'KAITECH' : text, true);
+  }
+  input.addEventListener('input', () => { const v = input.value.trim(); v ? setMode('text', v) : setMode('name'); });
+  bName.addEventListener('click', () => { input.value = ''; setMode('name'); });
+  bClock.addEventListener('click', () => { input.value = ''; setMode('clock'); });
+  cv.addEventListener('pointermove', e => {
+    if (!state) return;
+    const b = cv.getBoundingClientRect(), c = (e.clientX - b.left) / pitch | 0, r = (e.clientY - b.top) / pitch | 0, until = performance.now() + 700;
+    for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+      const cc = c + dc, rr = r + dr;
+      if (cc >= 0 && cc < cols && rr >= 0 && rr < ROWS && Math.abs(dr) + Math.abs(dc) < 2) paint[rr * cols + cc] = until;
+    }
+  });
+  setMessage('KAITECH', false);
+  new ResizeObserver(size).observe(cv);
+  return { start() { on = true; size(); sweep = 0; cancelAnimationFrame(raf); raf = requestAnimationFrame(draw); }, stop() { on = false; cancelAnimationFrame(raf); raf = 0; } };
+})();
+
+/* ───────── picker + shared ───────── */
+const mods = { letters: A, tide: B, flipdot: C };
+let current = null;
+function show() {
+  let h = location.hash.slice(1); if (!mods[h]) h = 'letters';
+  if (h === current) return;
+  if (current) mods[current].stop();
+  for (const k in mods) document.getElementById(k).hidden = k !== h;
+  document.documentElement.dataset.dir = h;
+  document.querySelectorAll('.pick a').forEach(a => a.setAttribute('aria-current', a.getAttribute('href') === '#' + h));
+  current = h; scrollTo(0, 0); mods[h].start();
+}
+addEventListener('hashchange', show); show();
+document.querySelectorAll('.hello').forEach(f => f.addEventListener('submit', e => {
+  e.preventDefault(); f.querySelector('output').textContent = 'This is a preview, so nothing was sent.';
+}));
+})();
+</script>
+</body>
+</html>
