@@ -71,13 +71,23 @@ p{margin:0;text-wrap:pretty}
 .nav-links a:hover{color:var(--text)}
 .nav-links a.btn,.nav-links a.btn:hover{color:#fff}
 .nav .btn{padding:7px 14px;font-size:13px}
-.menu-btn{display:none;background:none;border:0;font:500 15px var(--font);color:var(--text);cursor:pointer;padding:8px}
+.menu-btn{display:none;background:none;border:0;cursor:pointer;padding:7px;margin-right:-7px;border-radius:12px;-webkit-tap-highlight-color:transparent}
+.menu-btn svg{display:block;overflow:visible}
+.menu-btn rect{transform-box:fill-box;transform-origin:center;transition:transform .45s cubic-bezier(.2,.9,.3,1.2), opacity .25s}
+.menu-btn[aria-expanded="true"] .b1{transform:translateY(8.2px) rotate(45deg)}
+.menu-btn[aria-expanded="true"] .b3{transform:translateY(-8.2px) rotate(-45deg)}
+.menu-btn[aria-expanded="true"] .b2{transform:scaleX(0);opacity:0}
+.menu-btn:active svg{transform:scale(.92)}
 @media (max-width:820px){
   .nav-links{display:none;position:absolute;top:52px;left:0;right:0;flex-direction:column;align-items:flex-start;gap:22px;padding:26px 24px 32px;background:rgba(255,255,255,.98);border-bottom:1px solid var(--line)}
   .nav-links.open{display:flex}
   .nav-links a{font-size:24px;font-weight:600;color:var(--text)}
   .nav-links .btn{font-size:17px;padding:12px 22px}
   .menu-btn{display:block}
+  .logo svg{display:none}
+  .nav-links.open{animation:menuIn .35s cubic-bezier(.2,.8,.2,1)}
+  .nav-links.open a{animation:menuItem .45s cubic-bezier(.2,.8,.2,1) both}
+  .nav-links.open a:nth-child(2){animation-delay:.04s}.nav-links.open a:nth-child(3){animation-delay:.08s}.nav-links.open a:nth-child(4){animation-delay:.12s}.nav-links.open a:nth-child(5){animation-delay:.16s}
 }
 
 /* HERO */
@@ -338,6 +348,8 @@ html.kava{--speed:3;filter:sepia(.45) saturate(.85)}
 .hero h1,.hero .sub,.hero .ctas{animation:rise 1s cubic-bezier(.2,.8,.2,1) both}
 .hero .sub{animation-delay:.12s}
 .hero .ctas{animation-delay:.24s}
+@keyframes menuIn{from{opacity:0;transform:translateY(-10px)}}
+@keyframes menuItem{from{opacity:0;transform:translateY(-8px)}}
 @keyframes rise{from{transform:translateY(34px);opacity:0;filter:blur(10px)}}
 .stage{perspective:1600px}
 .laptop{transform-style:preserve-3d}
@@ -613,7 +625,7 @@ form input[aria-invalid="true"]{border-color:#B42318;box-shadow:0 0 0 4px rgba(1
       <a href="#faq">FAQ</a>
       <a class="btn btn-blue" href="#contact">Book a demo</a>
     </div>
-    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navLinks" aria-label="Open menu"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect class="b1" x="2" y="4" width="26" height="5.6" rx="2.8" fill="#0B1A4A"/><rect class="b2" x="8" y="12.2" width="14" height="5.6" rx="2.8" fill="#0A63FF"/><rect class="b3" x="2" y="20.4" width="26" height="5.6" rx="2.8" fill="#0B1A4A"/></svg></button>
   </div>
 </nav>
 
@@ -1023,8 +1035,11 @@ form input[aria-invalid="true"]{border-color:#B42318;box-shadow:0 0 0 4px rgba(1
 
   /* ---------- Nav ---------- */
   var menuBtn = document.getElementById("menuBtn"), navLinks = document.getElementById("navLinks");
-  menuBtn.addEventListener("click", function(){ var o = navLinks.classList.toggle("open"); menuBtn.setAttribute("aria-expanded", o ? "true" : "false"); menuBtn.textContent = o ? "Close" : "Menu"; });
-  navLinks.addEventListener("click", function(e){ if (e.target.tagName === "A") { navLinks.classList.remove("open"); menuBtn.setAttribute("aria-expanded","false"); menuBtn.textContent = "Menu"; } });
+  function setMenu(o){ navLinks.classList.toggle("open", o); menuBtn.setAttribute("aria-expanded", o ? "true" : "false"); menuBtn.setAttribute("aria-label", o ? "Close menu" : "Open menu"); }
+  menuBtn.addEventListener("click", function(){ setMenu(!navLinks.classList.contains("open")); });
+  navLinks.addEventListener("click", function(e){ if (e.target.closest && e.target.closest("a")) setMenu(false); });
+  document.addEventListener("click", function(e){ if (navLinks.classList.contains("open") && !e.target.closest(".nav")) setMenu(false); });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && navLinks.classList.contains("open")) { setMenu(false); menuBtn.focus(); } });
 
   /* ---------- Scroll-linked 3D ---------- */
   var stage = document.querySelector(".stage"), lid = document.querySelector(".lid"), phone = document.querySelector(".phone");
