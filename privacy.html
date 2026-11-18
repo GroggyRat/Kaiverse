@@ -1,78 +1,57 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Privacy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy · KaiTech</title>
 <meta name="description" content="What the KaiTech website collects, which is only what you send in the demo request form.">
 <link rel="canonical" href="https://kaitechfj.vercel.app/privacy">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="KaiTech">
-<meta property="og:title" content="Privacy">
+<meta property="og:title" content="Privacy · KaiTech">
 <meta property="og:description" content="What the KaiTech website collects, which is only what you send in the demo request form.">
 <meta property="og:url" content="https://kaitechfj.vercel.app/privacy">
 <meta property="og:image" content="https://kaitechfj.vercel.app/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#030712">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&family=Inter+Tight:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Michroma&display=swap">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg0:#030712;--bg1:#14295A;--fg:#F5F6F9;--dim:#A3ACC0;--line:#243049;--accent:#4C8DF5;color-scheme:dark;
-  --display:'Michroma','Eurostile','Arial Black',sans-serif;--text:'Inter Tight',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+:root{--text:#1D1D1F;--muted:#6E6E73;--navy:#0B1A4A;--blue:#0A63FF;--line:#E2E2E7;--bg2:#F5F5F7;--font:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter Tight","Helvetica Neue",Arial,sans-serif;color-scheme:light}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg0) radial-gradient(90% 60% at 80% 0%,var(--bg1) 0%,var(--bg0) 70%) no-repeat;color:var(--fg);font:17px/1.6 var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
-.w{max-width:46rem;margin:0 auto;padding-block:22px 80px;padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px))}
-a{color:inherit;text-underline-offset:3px}
-a:focus-visible{outline:1px solid var(--fg);outline-offset:4px}
-header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:clamp(48px,10vh,110px)}
-.mark{display:flex;align-items:center;gap:11px;font:500 21px/1 'Inter',system-ui,sans-serif;letter-spacing:-.01em;text-decoration:none}
-.wm .t{color:var(--accent)}
-.mark svg{width:26px;height:26px}
-.back,.tag,footer{font:400 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--dim)}
-.tag{margin:0 0 18px}
-h1{margin:0 0 24px;font:400 clamp(28px,5vw,48px)/1.12 var(--display);letter-spacing:.01em;text-transform:uppercase;text-wrap:balance}
-h2{margin:44px 0 10px;font:400 12px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--accent)}
-h3{margin:28px 0 6px;font:500 19px/1.3 var(--text);color:var(--fg)}
-p,li{color:var(--dim);margin:0 0 14px;text-wrap:pretty}
-.lead{font-size:clamp(19px,2.2vw,23px);line-height:1.45;color:var(--fg)}
-strong{color:var(--fg);font-weight:500}
-ul{padding-left:1.1em;margin:0 0 14px}
-.acts{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 8px}
-.cta{display:inline-flex;margin-top:14px;padding:13px 22px;border-radius:999px;background:var(--accent);color:var(--bg0);border:1px solid var(--accent);text-decoration:none;font:500 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.12em}
-.acts .cta{margin-top:0}
-.cta:hover{background:var(--fg);border-color:var(--fg)}
-.cta.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
-.cta.ghost:hover{border-color:var(--fg)}
-dl{margin:28px 0 0;display:grid;grid-template-columns:auto minmax(0,1fr);font:400 12px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.06em}
-dt,dd{margin:0;padding:11px 0;border-top:1px solid var(--line)}
-dt{padding-right:20px;color:var(--fg)} dd{text-align:right;color:var(--dim)}
-.shots{display:grid;gap:18px;margin:36px 0 0}
-.shots.phone{grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))}
-.shots figure{margin:0;background:var(--bg1);border-radius:14px;padding:12px}
-.shots img{display:block;width:100%;height:auto;border-radius:8px}
-.shots figcaption{margin-top:10px;font-size:14px;color:var(--dim)}
-.more{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:10px}
-.more a{display:block;padding:16px;border:1px solid var(--line);border-radius:14px;text-decoration:none}
-.more a:hover{border-color:var(--fg)}
-.more b{display:block;font-weight:500;color:var(--fg)} .more span{font-size:14px;color:var(--dim)}
-.founder{display:flex;align-items:center;gap:18px;margin:0 0 26px}
-.founder img,.founder .ph{width:84px;height:84px;border-radius:50%;object-fit:cover;flex:none;background:var(--bg1);border:1px solid var(--line)}
-.founder .ph{display:grid;place-items:center;font:400 22px/1 var(--display);letter-spacing:.06em}
-.founder span{font:400 11px/1.5 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--dim)}
-.founder b{display:block;font:500 18px/1.3 var(--text);text-transform:none;letter-spacing:0;color:var(--fg)}
-.clients{display:flex;gap:28px;align-items:center;flex-wrap:wrap;margin:18px 0 6px}
-.clients img{height:22px;width:auto}
-.clients .tp{display:inline-flex;align-items:center;gap:10px;font:400 13px/1 var(--display);letter-spacing:.14em}
-.clients .tp svg{width:20px;height:20px}
-footer{margin-top:72px;padding-top:18px;border-top:1px solid var(--line);display:flex;gap:8px 22px;flex-wrap:wrap}
+body{margin:0;background:#fff;color:var(--text);font-family:var(--font);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+a{color:var(--blue)}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:6px}
+.wrap{width:min(760px,100% - 40px);margin-inline:auto}
+.nav{position:sticky;top:0;background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(0,0,0,.06);z-index:5}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:52px;width:min(1080px,100% - 40px)}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--navy);font-weight:700;font-size:19px;letter-spacing:-.03em}
+.logo span{color:var(--blue)}
+.back{font-size:14px;text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
+main{padding:64px 0 80px}
+.tag{color:var(--muted);font-size:14px;margin:0 0 10px}
+h1{font-size:clamp(38px,6vw,56px);letter-spacing:-.04em;line-height:1.05;margin:0 0 18px;font-weight:700;text-wrap:balance}
+.lead{font-size:20px;color:var(--muted);margin:0 0 34px;text-wrap:pretty}
+h2{font-size:22px;letter-spacing:-.02em;margin:36px 0 8px;font-weight:600}
+p,li{color:#3A3A3F;text-wrap:pretty}
+ul{padding-left:20px}
+footer{background:var(--bg2);border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;width:min(1080px,100% - 40px)}
+footer a{color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
+footer a:hover{color:var(--text)}
 </style>
 </head>
 <body>
-<div class="w">
-<header><a class="mark" href="index.html" aria-label="KaiTech home"><svg viewBox="0 0 26 26" aria-hidden="true"><rect x="0" y="1" width="26" height="6" rx="3" fill="#F5F6F9"/><rect x="6.5" y="10" width="13" height="6" rx="3" fill="#4C8DF5"/><rect x="0" y="19" width="26" height="6" rx="3" fill="#F5F6F9"/></svg><span class="wm"><span>Kai</span><span class="t">Tech</span></span></a><a class="back" href="index.html">Back to site</a></header>
-<main>
+<nav class="nav" aria-label="Main"><div class="wrap">
+  <a class="logo" href="/"><svg width="22" height="22" viewBox="0 0 30 30" aria-hidden="true"><rect x="2" y="4" width="26" height="5.6" rx="2.8" fill="#0B1A4A"/><rect x="8" y="12.2" width="14" height="5.6" rx="2.8" fill="#0A63FF"/><rect x="2" y="20.4" width="26" height="5.6" rx="2.8" fill="#0B1A4A"/></svg><b style="font-weight:700">Kai<span>Tech</span></b></a>
+  <a class="back" href="/">Back to the site</a>
+</div></nav>
+<main><div class="wrap">
 <p class="tag">Last updated 13 November 2026</p>
 <h1>Privacy</h1>
 <p class="lead">This website describes KaiTech's products. It has no accounts, no cookies of ours and no analytics. The only thing it collects is what you type into the demo request form.</p>
@@ -95,8 +74,7 @@ footer{margin-top:72px;padding-top:18px;border-top:1px solid var(--line);display
 
 <h2>Questions or removal</h2>
 <p>To ask what we hold about you, or to have it deleted, email <a href="mailto:kaitechfj@gmail.com">kaitechfj@gmail.com</a>.</p>
-</main>
-<footer><a href="index.html">Home</a><a href="workforce.html">KaiWorkforce</a><a href="billzilla.html">BillZilla</a><a href="inspect.html">KaiInspect</a><a href="drivo.html">Drivo</a><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></footer>
-</div>
+</div></main>
+<footer><div class="wrap"><span>Copyright &copy; 2026 KaiTech. Made in Suva, Fiji.</span><span><a href="/privacy">Privacy policy</a> &nbsp;|&nbsp; <a href="/terms">Terms of use</a></span></div></footer>
 </body>
 </html>

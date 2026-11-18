@@ -4,6 +4,28 @@ The public site for KaiTech: software that keeps Fiji business moving.
 
 It is a static site plus one small server function for the demo request form. Vercel serves the repository root as it is.
 
+## The current site (light, November 2026)
+
+The live site is the light design in `index.html`. Edit that file directly; there is no build step.
+
+| Path | What it is |
+|---|---|
+| `index.html` | The whole site: the 3D point object that morphs as you scroll (logo, clock set to Suva time, invoices, pass mark, route, Fiji), product tiles, real screens, websites, About, FAQ and the demo form. Styles and scripts are inside the file. |
+| `privacy.html`, `terms.html` | The legal pages, in the same light style. Their wording comes from `src/pages/`. |
+| `404.html` | Shown by Vercel for any address that does not exist. |
+| `assets/screens/` | Real product screens, shown with sample data. |
+| `assets/brand/kaitech-logo-trim.png` | The logo used in the footer and on the 404 page. |
+| `assets/founder.webp` | The photo on the About section. |
+| `assets/og.jpg` | The link preview image (1200 × 630). |
+| `api/demo.js` | Unchanged. The demo form posts to it: name, business and email are required, plus one product. |
+| `vercel.json` | Clean addresses, security headers, and redirects from the old product pages (`/billzilla`, `/workforce`, `/inspect`, `/drivo`, `/about`) to their sections on the home page. |
+
+When the site moves to its own domain, replace `https://kaitechfj.vercel.app` in `index.html`, `privacy.html`, `terms.html`, `robots.txt` and `sitemap.xml`.
+
+Easter eggs: tap the job title on the About section, spin the 3D logo fast, copy the email, visit between midnight and 4 am Suva time (or add `#night` to the address), switch tabs, and the "Delete this website" button in the footer.
+
+`build.py` and `src/` belong to the earlier dark site. `build.py` now refuses to run unless given `--old-site`, so it cannot overwrite the new pages by accident. The sections below describe that earlier site and the demo form setup, which is unchanged.
+
 ## Files
 
 | Path | What it is |

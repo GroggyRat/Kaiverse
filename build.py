@@ -9,6 +9,10 @@ src/pages/<name>.html -> <name>.html         About, Privacy, Terms
 
 Set SITE_URL to the site's address when it changes, for example SITE_URL=https://kaitech.com.fj python3 build.py
 Put a square photo at assets/founder.jpg and it appears on the About page."""
+import sys
+if '--old-site' not in sys.argv:
+    sys.exit('build.py builds the OLD dark site and would overwrite the new index.html, privacy.html and terms.html.\n'
+             'The current site is edited directly in index.html (see README). Run with --old-site only to bring the old site back.')
 import html, json, os, pathlib, re
 root = pathlib.Path(__file__).parent
 SITE = os.environ.get('SITE_URL', 'https://kaitechfj.vercel.app').rstrip('/')
