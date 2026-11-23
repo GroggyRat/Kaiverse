@@ -20,7 +20,7 @@ The live site is the light design in `index.html`. Edit that file directly; ther
 | `api/demo.js` | Unchanged. The demo form posts to it: name, business and email are required, plus one product. |
 | `vercel.json` | Clean addresses, security headers, and redirects from the old product pages (`/billzilla`, `/workforce`, `/inspect`, `/drivo`, `/about`) to their sections on the home page. |
 
-When the site moves to its own domain, replace `https://kaitechfj.vercel.app` in `index.html`, `privacy.html`, `terms.html`, `robots.txt` and `sitemap.xml`.
+The site lives at https://kaitechfj.com (verified in Google Search Console). The address appears in `index.html`, `privacy.html`, `terms.html` (canonical and preview tags), `robots.txt`, `sitemap.xml` and `llms.txt`. Update `<lastmod>` in `sitemap.xml` when a page changes, and keep `llms.txt` (the plain summary of the site for AI assistants) in step with the products and FAQ.
 
 Easter eggs: tap the job title on the About section, spin the 3D logo fast, copy the email, visit between midnight and 4 am Suva time (or add `#night` to the address), switch tabs, and the "Delete this website" button in the footer.
 

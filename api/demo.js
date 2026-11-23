@@ -51,7 +51,7 @@ module.exports = async function handler(req, res) {
   if (!row.business) return send(400, { error: 'Please enter your business name.', field: 'business' });
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) return send(400, { error: 'Please enter a valid email address.', field: 'email' });
   if (!PRODUCTS.includes(row.product)) row.product = 'Not sure yet';
-  if (ip && tooMany(ip)) return send(429, { error: 'You have sent several requests in a short time. Please wait a few minutes, or email kaitechfj@gmail.com.' });
+  if (ip && tooMany(ip)) return send(429, { error: 'You have sent several requests in a short time. Please wait a few minutes, or email bula@kaitechfj.com.' });
   if (!(await passesTurnstile(clean(b['cf-turnstile-response'], 4096), ip))) return send(400, { error: 'Please complete the check above the button, then send again.' });
 
   const url = process.env.SUPABASE_URL, key = process.env.SUPABASE_KEY;
@@ -72,6 +72,7 @@ module.exports = async function handler(req, res) {
     text: ['Name: ' + row.name, 'Business: ' + row.business, 'Email: ' + row.email, 'Phone: ' + (row.phone || 'not given'),
       'Product: ' + row.product, '', row.message || '(no message)', '', 'Reply to this email to answer ' + row.name + ' directly.'].join('\n'),
   };
+  const PUBLIC_EMAIL = process.env.PUBLIC_EMAIL || 'bula@kaitechfj.com';
   const gmailUser = process.env.GMAIL_USER, gmailPass = process.env.GMAIL_APP_PASSWORD;
   const resend = process.env.RESEND_API_KEY, from = process.env.DEMO_FROM_EMAIL;
   if (gmailUser && gmailPass) {
@@ -84,7 +85,8 @@ module.exports = async function handler(req, res) {
       if (process.env.DEMO_AUTO_REPLY !== 'off') {
         const what = row.product === 'Not sure yet' ? 'our software' : row.product;
         await t.sendMail({
-          from: 'KaiTech <' + gmailUser + '>', to: row.name + ' <' + row.email + '>', replyTo: gmailUser,
+          // Shown as bula@kaitechfj.com once it is added under Gmail's "Send mail as"; until then Gmail sends it from gmailUser.
+          from: 'KaiTech <' + PUBLIC_EMAIL + '>', to: row.name + ' <' + row.email + '>', replyTo: PUBLIC_EMAIL,
           subject: 'Your KaiTech demo request',
           text: ['Hi ' + row.name + ',', '', 'Thank you for asking about ' + what + '. We have your request and will be in touch to arrange a time for the demo.',
             '', 'If anything is urgent, reply to this email or call +679 756 9670.', '', 'Kartik Nand', 'KaiTech', 'Software that keeps Fiji business moving'].join('\n'),

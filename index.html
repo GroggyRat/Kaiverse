@@ -6,15 +6,18 @@
 <title>KaiTech · Software that keeps Fiji business moving</title>
 <meta name="description" content="Payroll, invoicing, delivery routing and cleaning inspections, built in Suva for Fiji businesses. FNPF, PAYE, VAT, M-PAiSA and MyCash built in. Book a demo.">
 <meta name="theme-color" content="#FFFFFF">
+<link rel="canonical" href="https://kaitechfj.com/">
+<meta property="og:url" content="https://kaitechfj.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="KaiTech">
 <meta property="og:title" content="KaiTech · Software that keeps Fiji business moving">
 <meta property="og:description" content="BillZilla, KaiWorkforce, Drivo and KaiInspect. Business software built in Suva for the way Fiji works.">
-<meta property="og:image" content="https://kaitechfj.vercel.app/assets/og.jpg">
+<meta property="og:image" content="https://kaitechfj.com/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="KaiTech logo with the line: Software that keeps Fiji business moving">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="text/markdown" href="/llms.txt" title="LLM-readable summary">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -946,7 +949,7 @@ form input[aria-invalid="true"]{border-color:#B42318;box-shadow:0 0 0 4px rgba(1
       <p class="lead">We'll show you KaiTech with your own business in mind. Expect a reply within 24 hours.</p>
       <div class="lines">
         <div><small>Call</small><a href="tel:+6799991115">999 1115</a><br><a href="tel:+6797569670">756 9670</a></div>
-        <div><small>Email</small><a href="mailto:kaitechfj@gmail.com" id="emailLink">kaitechfj@gmail.com</a> <button type="button" class="copy-mail" id="copyMail">Copy</button></div>
+        <div><small>Email</small><a href="mailto:bula@kaitechfj.com" id="emailLink">bula@kaitechfj.com</a> <button type="button" class="copy-mail" id="copyMail">Copy</button></div>
         <div><small>Follow</small><div class="soc"><a class="lnk" href="https://www.tiktok.com/@kaitech_fj" target="_blank" rel="noopener">TikTok</a></div></div>
       </div>
     </div>
@@ -1130,7 +1133,7 @@ form input[aria-invalid="true"]{border-color:#B42318;box-shadow:0 0 0 4px rgba(1
   })();
 
   /* ---------- Copying the email ---------- */
-  var MAIL = "kaitechfj@gmail.com", mailMsg = "Copied. We reply within 24 hours. Real hours, not Fiji time.";
+  var MAIL = "bula@kaitechfj.com", mailMsg = "Copied. We reply within 24 hours. Real hours, not Fiji time.";
   document.addEventListener("copy", function(){ var sel = String(window.getSelection ? getSelection() : ""); if (sel.indexOf(MAIL) > -1) toast(mailMsg); });
   document.getElementById("copyMail").addEventListener("click", function(){
     var btn = this;
@@ -1189,9 +1192,9 @@ form input[aria-invalid="true"]{border-color:#B42318;box-shadow:0 0 0 4px rgba(1
         if (window.turnstile && tsWidget !== null) { try { window.turnstile.reset(tsWidget); } catch (x) {} tsToken = ""; }
         var f = res.d && res.d.field && form[res.d.field];
         if (res.status === 400 || res.status === 429) return bad(f || null, (res.d && res.d.error) || "Something in the form needs another look.");
-        bad(null, "We couldn't send your request just now. Email kaitechfj@gmail.com or call 999 1115, and we'll sort it out.");
+        bad(null, "We couldn't send your request just now. Email bula@kaitechfj.com or call 999 1115, and we'll sort it out.");
       })
-      .catch(function(){ busy(false); bad(null, "You might be offline. Try again, or email kaitechfj@gmail.com or call 999 1115."); });
+      .catch(function(){ busy(false); bad(null, "You might be offline. Try again, or email bula@kaitechfj.com or call 999 1115."); });
   });
 
   frame();
