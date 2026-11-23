@@ -1,0 +1,28 @@
+# KaiTech
+
+> KaiTech is a software company in Suva, Fiji. It makes four business products for Fiji companies — KaiWorkforce (payroll and HR), BillZilla (invoicing), KaiInspect (cleaning quality control) and Drivo (delivery routing) — and builds websites and custom software. Fiji's own rules (VAT, FNPF, PAYE) and payment methods (M-PAiSA, MyCash) are built in.
+
+KaiTech was started by Kartik Nand to give Fiji businesses software they can afford, built around how work is done in Fiji rather than adapted from overseas software. Each product works on its own, and they connect when a business uses more than one. Everything runs online, anywhere in Fiji. Pricing depends on the products used and the number of staff; KaiTech sends a quote within 24 hours of a demo request.
+
+## Products
+
+- [KaiWorkforce](https://kaitechfj.com/#kaiworkforce): Payroll and HR for staffing agencies. Works out FNPF and PAYE on every pay run, emails payslips, and lets staff clock in at their work site. Also covers leave, timesheets and an org chart.
+- [BillZilla](https://kaitechfj.com/#billzilla): Invoicing and accounts receivable. Quotes become invoices with gap-free numbers, stock moves when an invoice is finalised, and customers get statements and reminders. Records bank transfers, cash, cash on delivery, cheques, M-PAiSA and MyCash, including part payments. Handles VAT (including zero-rated items) on quotes, invoices and credit notes, in FJD or the customer's own currency.
+- [KaiInspect](https://kaitechfj.com/#kaiinspect): Quality control for cleaning companies. An auditor marks each room Pass or Fail, every Fail needs a photo, and the cleaner sends back a photo of the fix through a WhatsApp link with no account needed. Saves inspections with no signal and produces customer and internal reports.
+- [Drivo](https://kaitechfj.com/#drivo): Delivery routing. Dispatchers plan routes from confirmed invoices, drivers navigate and record proof of delivery in the app, and every vehicle shows live on a map built on Fiji's own roads with no map fees. Connects to BillZilla (invoices become delivery stops) and KaiWorkforce (staff on the map).
+
+## Services
+
+- [Websites, apps and custom software](https://kaitechfj.com/#websites): Websites for Fiji businesses (shops and food, tourism, trades and services) on a domain registered in the client's name; ordering portals, staff tools and dashboards; and moving records between systems or connecting them. KaiTech also builds for overseas clients, including an inspection platform for a cleaning company in Vancouver, Canada.
+
+## Company
+
+- [About KaiTech](https://kaitechfj.com/#about): Founded by Kartik Nand, Chief Everything Officer, in Suva, Fiji.
+- [FAQ](https://kaitechfj.com/#faq): Pricing, payment methods, VAT/FNPF/PAYE, data security, moving data from Xero or spreadsheets, and using KaiTech outside Suva.
+- [Book a demo](https://kaitechfj.com/#contact): Phone 999 1115 or 756 9670, email kaitechfj@gmail.com. Replies within 24 hours.
+
+## Optional
+
+- [Privacy policy](https://kaitechfj.com/privacy)
+- [Terms of use](https://kaitechfj.com/terms)
+- [TikTok](https://www.tiktok.com/@kaitech_fj)
