@@ -18,8 +18,16 @@
 <meta property="og:image:alt" content="KaiTech logo with the line: Software that keeps Fiji business moving">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="alternate" type="text/markdown" href="/llms.txt" title="LLM-readable summary">
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"Organization","@id":"https://kaitechfj.com/#org","name":"KaiTech","alternateName":"KaiTech Fiji","url":"https://kaitechfj.com/","logo":"https://kaitechfj.com/assets/favicon-192.png","slogan":"Software that keeps Fiji business moving","description":"Business software built in Suva for Fiji businesses: KaiWorkforce (payroll and HR), BillZilla (invoicing), KaiInspect (cleaning inspections) and Drivo (delivery routing).","email":"bula@kaitechfj.com","telephone":["+679 999 1115","+679 756 9670"],"address":{"@type":"PostalAddress","addressLocality":"Suva","addressCountry":"FJ"},"areaServed":"FJ","sameAs":["https://www.tiktok.com/@kaitech_fj"]},
+{"@type":"WebSite","@id":"https://kaitechfj.com/#site","name":"KaiTech","url":"https://kaitechfj.com/","publisher":{"@id":"https://kaitechfj.com/#org"}}
+]}
+</script>
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -499,8 +507,8 @@ footer{overflow:hidden}
 #morphCv{position:absolute;inset:0;width:100%;height:100%;z-index:1;touch-action:pan-y;cursor:grab}
 #morphCv:active{cursor:grabbing}
 .mtext{position:relative;height:100%;z-index:2;pointer-events:none}
-.mstep{position:absolute;left:0;top:50%;max-width:min(540px,46%);opacity:0;visibility:hidden;transform:translateY(-50%) translateY(28px);transition:opacity .5s, transform .7s cubic-bezier(.2,.8,.2,1), visibility .5s;text-align:left}
-.mstep.on{opacity:1;visibility:visible;transform:translateY(-50%);pointer-events:auto}
+.mstep{position:absolute;left:0;top:50%;max-width:min(540px,46%);opacity:0;visibility:hidden;transform:translateY(-50%) translateY(28px);transition:opacity .2s, transform .45s cubic-bezier(.2,.8,.2,1), visibility 0s .2s;text-align:left}
+.mstep.on{opacity:1;visibility:visible;transform:translateY(-50%);pointer-events:auto;transition:opacity .4s .16s, transform .7s cubic-bezier(.2,.8,.2,1) .1s, visibility 0s .16s}
 .mstep .eyebrow{display:block;font-size:14px;font-weight:600;color:var(--blue);margin-bottom:14px}
 .mstep h1{font-size:clamp(46px,6.2vw,86px);line-height:1.02;letter-spacing:-.045em;font-weight:700;max-width:none}
 .mstep h1 .w{display:inline-block;animation:wordIn 1.1s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i) * 75ms)}
